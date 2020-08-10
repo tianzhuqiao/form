@@ -1,30 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:background="#ffffff"
-              android:orientation="vertical"
-              android:focusable="false"
-              android:clickable="false"
-              android:foreground="?android:attr/selectableItemBackground">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#ffffff"
+    android:clickable="false"
+    android:focusable="false"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:orientation="vertical">
 
     <LinearLayout
-            android:id="@+id/formElementMainLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:visibility="visible"
-            android:orientation="horizontal" android:gravity="center_vertical">
+        android:id="@+id/formElementMainLayout"
+        style="@style/formMainLayout">
 
-        <include layout="@layout/form_title"/>
+        <include layout="@layout/form_title" />
 
         <Space
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
@@ -35,7 +28,8 @@
             android:text=""
             android:textSize="17sp" />
 
-        <include layout="@layout/form_reorder"/>
+        <include layout="@layout/form_reorder" />
     </LinearLayout>
-    <include layout="@layout/form_divider"/>
+
+    <include layout="@layout/form_divider" />
 </LinearLayout>

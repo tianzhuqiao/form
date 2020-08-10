@@ -133,10 +133,12 @@ open class FylFormViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
 
     var titleView: TextView? = null
     var subtitleView: TextView? = null
+    var titleImageView: ImageView? = null
     var reorderView: ImageView? = null
     init {
         titleView = itemView.findViewById(R.id.formElementTitle)
         subtitleView = itemView.findViewById(R.id.formElementSubTitle)
+        titleImageView = itemView.findViewById(R.id.formElementTitleImage)
         reorderView = itemView.findViewById(R.id.formElementReorder)
     }
     open fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
@@ -152,6 +154,19 @@ open class FylFormViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
         } else {
             subtitleView?.visibility = View.GONE
         }
+
+        titleImageView?.layoutParams?.height = dpToPx(s.iconSize)
+        titleImageView?.layoutParams?.width = dpToPx(s.iconSize)
+        titleImageView?.setImageDrawable(s.iconTitle)
+        if (s.iconTitle != null) {
+            titleImageView?.visibility = View.VISIBLE
+            titleImageView?.setOnClickListener {
+                listener?.onTitleImageClicked(s)
+            }
+        } else {
+            titleImageView?.visibility = View.GONE
+        }
+
         reorderView?.visibility = if (s.dragable) View.VISIBLE else View.GONE
         reorderView?.setOnTouchListener { _, event ->
             if (event.actionMasked == MotionEvent.ACTION_DOWN)
@@ -226,8 +241,6 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
             }
         }
 
-
-
         if (s is FylFormItemText) {
             valueView?.textAlignment = s.textAlignment
             valueView?.isEnabled = !s.readOnly
@@ -241,9 +254,6 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
                     return s.readOnly // the listener has consumed the event
                 }
             })
-
-
-
 
             valueView?.setText(s.value)
             if (s.placeholder.isEmpty()) {
@@ -298,11 +308,6 @@ open class FylFormTextViewHolder(inflater: LayoutInflater, resource: Int, parent
 
 class FylFormTextGroupViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormBaseTextViewHolder(inflater, resource, parent) {
-    private var titleImgView: ImageView? = null
-
-    init {
-        titleImgView = itemView.findViewById(R.id.formElementTitleImage)
-    }
 
     override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
         super.bind(s, listener)
@@ -310,15 +315,6 @@ class FylFormTextGroupViewHolder(inflater: LayoutInflater, resource: Int, parent
         valueView?.gravity = Gravity.START
         valueView?.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
 
-        if (s.imageResId != null) {
-            titleImgView?.setImageResource(s.imageResId ?: 0)
-            titleImgView?.visibility = View.VISIBLE
-            titleImgView?.setOnClickListener {
-                listener?.onTitleImageClicked(s)
-            }
-        } else {
-            titleImgView?.visibility = View.GONE
-        }
     }
 }
 
@@ -326,15 +322,7 @@ class FylFormTextAreaViewHolder(inflater: LayoutInflater, resource: Int, parent:
     FylFormBaseTextViewHolder(inflater, resource, parent) {
 
     init {
-        titleView?.visibility = View.GONE
-        valueView?.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
-        valueView?.minLines = 6
-        valueView?.maxLines = 6
-        valueView?.minHeight = 120
         valueView?.gravity = Gravity.START
-        valueView?.inputType = (EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES or EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-                or EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE or EditorInfo.TYPE_CLASS_TEXT)
-        valueView?.imeOptions = EditorInfo.IME_NULL
     }
 
     override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
@@ -349,61 +337,52 @@ class FylFormTextAreaViewHolder(inflater: LayoutInflater, resource: Int, parent:
 class FylFormSectionViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormViewHolder(inflater, resource, parent) {
 
-    init {
-        titleView = itemView.findViewById(R.id.formElementTitle)
-    }
-
     override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
         super.bind(s, listener)
-        if (s.title.isNotEmpty()) {
-            titleView?.text = s.title.toUpperCase()
-            titleView?.visibility = View.VISIBLE
-        } else {
-            titleView?.visibility = View.GONE
-        }
+
+        titleView?.text = s.title.toUpperCase()
     }
 }
 
 class FylFormActionViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormViewHolder(inflater, resource, parent) {
-    var imgView: ImageView? = null
-
+    var leftSpace : Space? = null
+    var rightSpace : Space? = null
     init {
-        titleView = itemView.findViewById(R.id.formElementTitle)
-        imgView = itemView.findViewById(R.id.formElementImage)
+        leftSpace = itemView.findViewById(R.id.formSapceLeft)
+        rightSpace = itemView.findViewById(R.id.formSapceRight)
     }
 
     override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
         super.bind(s, listener)
-        titleView?.setOnClickListener {
-            listener?.onItemClicked(s, this)
-        }
-
-        titleView?.text = s.title
         if (s is FylFormItemAction) {
-            titleView?.textAlignment = s.textAlignment
+            itemView.setOnClickListener {
+                listener?.onItemClicked(s, this)
+            }
+            when (s.alignment) {
+                Gravity.CENTER -> {
+                    leftSpace?.visibility = View.VISIBLE
+                    rightSpace?.visibility = View.VISIBLE
+                }
+                Gravity.LEFT -> {
+                    leftSpace?.visibility = View.GONE
+                    rightSpace?.visibility = View.VISIBLE
+                }
+                Gravity.RIGHT -> {
+                    leftSpace?.visibility = View.VISIBLE
+                    rightSpace?.visibility = View.GONE
+                }
+            }
+            listener?.onSetup(s, this)
         }
-        imgView?.visibility = View.GONE
-        if (s.imageResId != null) {
-            imgView?.setImageResource(s.imageResId ?: 0)
-            imgView?.visibility = View.VISIBLE
-        }
-        if (s.value.isNotEmpty()) {
-            //imgView?.nearalImage(null, s.value, null)
-            imgView?.visibility = View.VISIBLE
-        }
-        listener?.onSetup(s, this)
     }
 }
 
 class FylFormSwitchNativeViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormViewHolder(inflater, resource, parent) {
-    private var imgView: ImageView? = null
     private var switchView: Switch? = null
 
     init {
-        titleView = itemView.findViewById(R.id.formElementTitle)
-        imgView = itemView.findViewById(R.id.formElementImage)
         switchView = itemView.findViewById(R.id.formElementSwitch)
     }
 
@@ -414,13 +393,6 @@ class FylFormSwitchNativeViewHolder(inflater: LayoutInflater, resource: Int, par
                 s.isOn = !s.isOn
                 switchView?.isChecked = s.isOn
                 listener?.onValueChanged(s)
-            }
-
-            titleView?.text = s.title
-            imgView?.visibility = View.GONE
-            if (s.imageResId != null) {
-                imgView?.setImageResource(s.imageResId ?: 0)
-                imgView?.visibility = View.VISIBLE
             }
 
             switchView?.setOnClickListener {
@@ -518,12 +490,10 @@ class FylFormRadioViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
 
 class FylFormNavViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormViewHolder(inflater, resource, parent) {
-    var imgView: ImageView? = null
     var badgeView: ConstraintLayout? = null
     var badgeViewTitle: TextView? = null
 
     init {
-        imgView = itemView.findViewById(R.id.formElementTitleImage)
         badgeView = itemView.findViewById(R.id.formElementBadge)
         badgeViewTitle = itemView.findViewById(R.id.formElementBadgeTitle)
     }
@@ -534,15 +504,6 @@ class FylFormNavViewHolder(inflater: LayoutInflater, resource: Int, parent: View
             listener?.onItemClicked(s, this)
         }
 
-        imgView?.visibility = View.GONE
-        if (s.imageResId != null) {
-            imgView?.setImageResource(s.imageResId ?: 0)
-            imgView?.visibility = View.VISIBLE
-        }
-        if (s.value.isNotEmpty()) {
-            //imgView?.nearalImage(null, s.value, null)
-            imgView?.visibility = View.VISIBLE
-        }
         if (s is FylFormItemNav) {
             if (s.badge == null) {
                 badgeView?.visibility = View.GONE

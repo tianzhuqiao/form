@@ -12,14 +12,7 @@
 
     <LinearLayout
             android:id="@+id/formElementMainLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:visibility="visible"
-            android:orientation="horizontal" android:gravity="center_vertical">
+            style="@style/formMainLayout">
 
         <include layout="@layout/form_title"/>
 
@@ -34,7 +27,8 @@
             android:layout_height="24dp"
             app:srcCompat="@drawable/ic_toggle_off" />
 
-        <include layout="@layout/form_reorder"/>
+        <include layout="@layout/form_reorder" />
     </LinearLayout>
-    <include layout="@layout/form_divider"/>
+
+    <include layout="@layout/form_divider" />
 </LinearLayout>
