@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="#ffffff"
+              android:orientation="vertical"
+              android:focusable="false"
+              android:clickable="false"
+              android:foreground="?android:attr/selectableItemBackground">
+
+    <LinearLayout
+            android:id="@+id/formElementMainLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:visibility="visible"
+            android:orientation="horizontal" android:gravity="center_vertical">
+
+        <include layout="@layout/form_title"/>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/formElementSwitch"
+            android:layout_width="48dp"
+            android:layout_height="24dp"
+            app:srcCompat="@drawable/ic_toggle_off" />
+
+        <include layout="@layout/form_reorder"/>
+    </LinearLayout>
+    <include layout="@layout/form_divider"/>
+</LinearLayout>

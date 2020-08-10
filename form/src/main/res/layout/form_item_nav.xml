@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="#ffffff"
+              android:orientation="vertical"
+              android:focusable="false"
+              android:clickable="false"
+              android:foreground="?android:attr/selectableItemBackground">
+
+    <LinearLayout
+            android:id="@+id/formElementMainLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:visibility="visible"
+            android:orientation="horizontal" android:gravity="center_vertical">
+
+        <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                app:srcCompat="@drawable/ic_about_settings"
+                android:id="@+id/formElementTitleImage"
+                android:visibility="gone"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/formElementBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:background="@drawable/ic_form_badge_background"
+            android:minWidth="10dp"
+            android:minHeight="10dp"
+            android:translationZ="3dp"
+            android:visibility="gone"
+            app:layout_constraintStart_toEndOf="@+id/formElementMainLayout"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginEnd="8dp">
+
+            <TextView
+                android:id="@+id/formElementBadgeTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:text="1"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <include layout="@layout/form_title"/>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/formElementChevron"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginEnd="8dp"
+            android:tint="#CDCDCD"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_form_chevron" />
+        <include layout="@layout/form_reorder"/>
+    </LinearLayout>
+
+    <include layout="@layout/form_divider"/>
+</LinearLayout>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="#ffffff"
+              android:orientation="vertical">
+
+    <LinearLayout
+            android:id="@+id/formElementMainLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="visible"
+            android:orientation="horizontal">
+
+        <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                app:srcCompat="@drawable/ic_more_features_tool_bar"
+                android:layout_marginEnd="10dp"
+                android:id="@+id/formElementImage"
+                android:visibility="gone"/>
+        <TextView
+                android:id="@+id/formElementTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#2196F3"
+                android:textSize="17sp"
+                app:layout_constraintStart_toEndOf="@+id/formElementImage"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="Action"
+                android:textAlignment="center"/>
+
+    </LinearLayout>
+    <include layout="@layout/form_divider"/>
+</LinearLayout>

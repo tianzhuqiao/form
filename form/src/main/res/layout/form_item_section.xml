@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="#00F7F7F7"
+              android:orientation="vertical">
+
+    <LinearLayout
+            android:id="@+id/formElementMainLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="4dp"
+            android:visibility="visible"
+            android:orientation="horizontal">
+
+        <include layout="@layout/form_title"/>
+    </LinearLayout>
+
+    <include layout="@layout/form_divider"/>
+</LinearLayout>
