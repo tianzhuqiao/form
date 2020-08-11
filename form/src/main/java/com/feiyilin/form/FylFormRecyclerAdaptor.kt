@@ -2,36 +2,97 @@ package com.feiyilin.form
 
 import android.content.Context
 import android.content.res.Resources
-import android.graphics.Color
+import android.graphics.*
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.TypedValue
 import android.view.*
+import android.view.View.OnTouchListener
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
-import android.view.MotionEvent
-import android.view.View.OnTouchListener
-import androidx.constraintlayout.widget.ConstraintLayout
 
 interface FlyFormItemCallback {
     fun onSetup(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) {}
     fun onValueChanged(item: FylFormItem) {}
     fun onItemClicked(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) {}
-    fun onStartReorder(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) {}
     fun onTitleImageClicked(item: FylFormItem) {}
-    fun onAction(item: FylFormItem) {}
+    fun onStartReorder(item: FylFormItem, viewHolder: RecyclerView.ViewHolder): Boolean {
+        return false
+    }
+    fun onMoveItem(src: Int, dest: Int): Boolean {
+        return false
+    }
 }
 
+interface FlyFormItemCallbackInteranl : FlyFormItemCallback {
+}
+
+abstract class SwipeToDeleteCallback(context: Context) :
+    ItemTouchHelper.SimpleCallback(ItemTouchHelper.DOWN or ItemTouchHelper.UP, 0) {
+
+    private val background = ColorDrawable()
+    private val backgroundColor = Color.parseColor("#f44336")
+    private val clearPaint = Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
+
+    override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+        /**
+         * To disable "swipe" for specific item return 0 here.
+         * For example:
+         * if (viewHolder?.itemViewType == YourAdapter.SOME_TYPE) return 0
+         * if (viewHolder?.adapterPosition == 0) return 0
+         */
+        return super.getMovementFlags(recyclerView, viewHolder)
+    }
+
+    override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+        return false
+    }
+
+    override fun isLongPressDragEnabled(): Boolean {
+        return false
+    }
+
+    override fun onChildDraw(
+        c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
+        dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean
+    ) {
+
+        val itemView = viewHolder.itemView
+        val itemHeight = itemView.bottom - itemView.top
+        val isCanceled = dX == 0f && !isCurrentlyActive
+
+        if (isCanceled) {
+            clearCanvas(c, itemView.right + dX, itemView.top.toFloat(), itemView.right.toFloat(), itemView.bottom.toFloat())
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+            return
+        }
+
+        // Draw the red delete background
+        background.color = backgroundColor
+        background.setBounds(itemView.right + dX.toInt(), itemView.top, itemView.right, itemView.bottom)
+        background.draw(c)
+
+        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+    }
+
+    private fun clearCanvas(c: Canvas?, left: Float, top: Float, right: Float, bottom: Float) {
+        c?.drawRect(left, top, right, bottom, clearPaint)
+    }
+}
 
 open class FylFormRecyclerAdaptor(
-    private var settings: List<FylFormItem>,
+    private var settings: MutableList<FylFormItem>,
     private var listener: FlyFormItemCallback? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private var itemTouchHelper: ItemTouchHelper? = null
 
     class ViewHolderItem(var type: String, var layoutId: Int, var viewHolderClass: Class<out FylFormViewHolder>)
     private var viewHolders: MutableList<ViewHolderItem> = mutableListOf()
@@ -49,6 +110,27 @@ open class FylFormRecyclerAdaptor(
             ViewHolderItem("nav", R.layout.form_item_nav, FylFormNavViewHolder::class.java),
             ViewHolderItem("label", R.layout.form_item_label, FylFormLabelViewHolder::class.java)
         )
+
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+
+        val touchHelper = object : SwipeToDeleteCallback(recyclerView.context) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            }
+
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                val src = viewHolder.adapterPosition
+                val des = target.adapterPosition
+                onFormItemCallback?.onMoveItem(src, des)
+
+                return super.onMove(recyclerView, viewHolder, target)
+            }
+        }
+
+        itemTouchHelper = ItemTouchHelper(touchHelper)
+        itemTouchHelper?.attachToRecyclerView(recyclerView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -71,7 +153,7 @@ open class FylFormRecyclerAdaptor(
     }
 
     fun setSettings(settings: List<FylFormItem>) {
-        this.settings = settings
+        this.settings = settings.toMutableList()
         notifyDataSetChanged()
     }
 
@@ -116,14 +198,25 @@ open class FylFormRecyclerAdaptor(
         override fun onSetup(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) {
             listener?.onSetup(item, viewHolder)
         }
-        override fun onStartReorder(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) {
-            listener?.onStartReorder(item, viewHolder)
+        override fun onStartReorder(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) : Boolean {
+            if (listener?.onStartReorder(item, viewHolder) == true)
+                return true
+            itemTouchHelper?.startDrag(viewHolder)
+            return true
         }
+
+        override fun onMoveItem(src: Int, dest: Int) : Boolean {
+            super.onMoveItem(src, dest)
+            if (listener?.onMoveItem(src, dest) == true)
+                return true
+            val item = settings.removeAt(src)
+            settings.add(dest, item)
+            notifyItemMoved(src, dest)
+            return true
+        }
+
         override fun onTitleImageClicked(item: FylFormItem) {
             listener?.onTitleImageClicked(item)
-        }
-        override fun onAction(item: FylFormItem) {
-            listener?.onAction(item)
         }
     }
 }
@@ -135,6 +228,7 @@ open class FylFormViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
     var subtitleView: TextView? = null
     var titleImageView: ImageView? = null
     var reorderView: ImageView? = null
+
     init {
         titleView = itemView.findViewById(R.id.formElementTitle)
         subtitleView = itemView.findViewById(R.id.formElementSubTitle)
@@ -142,6 +236,9 @@ open class FylFormViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
         reorderView = itemView.findViewById(R.id.formElementReorder)
     }
     open fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+        itemView.setOnClickListener {
+            listener?.onItemClicked(s, this)
+        }
         titleView?.text = s.title
         if (s.title.isNotEmpty()) {
             titleView?.visibility = View.VISIBLE
@@ -173,6 +270,8 @@ open class FylFormViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
                 listener?.onStartReorder(s, this)
             false
         }
+
+        listener?.onSetup(s, this)
     }
 
     fun dpToPx(dp: Int): Int {
@@ -230,18 +329,18 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
 
         this.listener = listener
         this.item = s
-
-        itemView.setOnClickListener {
-            valueView?.requestFocus()
-            if (s is FylFormItemText && !s.readOnly) {
-                val imm = itemView.context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-                if (imm is InputMethodManager) {
-                    imm.showSoftInput(valueView, InputMethodManager.SHOW_IMPLICIT)
+        if (s is FylFormItemText) {
+            itemView.setOnClickListener {
+                valueView?.requestFocus()
+                if (!s.readOnly) {
+                    val imm =
+                        itemView.context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+                    if (imm is InputMethodManager) {
+                        imm.showSoftInput(valueView, InputMethodManager.SHOW_IMPLICIT)
+                    }
                 }
             }
-        }
 
-        if (s is FylFormItemText) {
             valueView?.textAlignment = s.textAlignment
             valueView?.isEnabled = !s.readOnly
             if (s.readOnly) {
@@ -256,7 +355,7 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
             })
 
             valueView?.setText(s.value)
-            if (s.placeholder.isEmpty()) {
+            if (!s.readOnly && s.placeholder.isEmpty()) {
                 valueView?.hint = "Enter ${s.title} here"
             } else {
                 valueView?.hint = s.placeholder
@@ -356,9 +455,6 @@ class FylFormActionViewHolder(inflater: LayoutInflater, resource: Int, parent: V
     override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
         super.bind(s, listener)
         if (s is FylFormItemAction) {
-            itemView.setOnClickListener {
-                listener?.onItemClicked(s, this)
-            }
             when (s.alignment) {
                 Gravity.CENTER -> {
                     leftSpace?.visibility = View.VISIBLE
@@ -373,7 +469,6 @@ class FylFormActionViewHolder(inflater: LayoutInflater, resource: Int, parent: V
                     rightSpace?.visibility = View.GONE
                 }
             }
-            listener?.onSetup(s, this)
         }
     }
 }
@@ -532,10 +627,5 @@ class FylFormLabelViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
 
     override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
         super.bind(s, listener)
-        titleView?.setOnClickListener {
-            listener?.onItemClicked(s, this)
-        }
-
-        listener?.onSetup(s, this)
     }
 }
