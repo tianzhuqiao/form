@@ -1,10 +1,10 @@
 package com.feiyilin.form
 
+import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
 import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
@@ -17,7 +17,8 @@ import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import java.io.File
+import java.text.SimpleDateFormat
+
 
 interface FlyFormItemCallback {
     fun onSetup(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) {}
@@ -27,6 +28,7 @@ interface FlyFormItemCallback {
     fun onStartReorder(item: FylFormItem, viewHolder: RecyclerView.ViewHolder): Boolean {
         return false
     }
+
     fun onMoveItem(src: Int, dest: Int): Boolean {
         return false
     }
@@ -42,7 +44,10 @@ abstract class SwipeToDeleteCallback(context: Context) :
     private val backgroundColor = Color.parseColor("#f44336")
     private val clearPaint = Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
 
-    override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+    override fun getMovementFlags(
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder
+    ): Int {
         /**
          * To disable "swipe" for specific item return 0 here.
          * For example:
@@ -52,7 +57,11 @@ abstract class SwipeToDeleteCallback(context: Context) :
         return super.getMovementFlags(recyclerView, viewHolder)
     }
 
-    override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+    override fun onMove(
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder,
+        target: RecyclerView.ViewHolder
+    ): Boolean {
         return false
     }
 
@@ -70,14 +79,25 @@ abstract class SwipeToDeleteCallback(context: Context) :
         val isCanceled = dX == 0f && !isCurrentlyActive
 
         if (isCanceled) {
-            clearCanvas(c, itemView.right + dX, itemView.top.toFloat(), itemView.right.toFloat(), itemView.bottom.toFloat())
+            clearCanvas(
+                c,
+                itemView.right + dX,
+                itemView.top.toFloat(),
+                itemView.right.toFloat(),
+                itemView.bottom.toFloat()
+            )
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             return
         }
 
         // Draw the red delete background
         background.color = backgroundColor
-        background.setBounds(itemView.right + dX.toInt(), itemView.top, itemView.right, itemView.bottom)
+        background.setBounds(
+            itemView.right + dX.toInt(),
+            itemView.top,
+            itemView.right,
+            itemView.bottom
+        )
         background.draw(c)
 
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
@@ -93,32 +113,68 @@ open class FylFormRecyclerAdaptor(
     private var listener: FlyFormItemCallback? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var itemTouchHelper: ItemTouchHelper? = null
+    private var recyclerView: RecyclerView? = null
 
-    class ViewHolderItem(var type: String, var layoutId: Int, var viewHolderClass: Class<out FylFormViewHolder>)
+    class ViewHolderItem(
+        var type: String,
+        var layoutId: Int,
+        var viewHolderClass: Class<out FylFormViewHolder>
+    )
+
     private var viewHolders: MutableList<ViewHolderItem> = mutableListOf()
+
     init {
-        viewHolders = mutableListOf (
+        viewHolders = mutableListOf(
             ViewHolderItem("text", R.layout.form_item_text, FylFormTextViewHolder::class.java),
-            ViewHolderItem("section", R.layout.form_item_section, FylFormSectionViewHolder::class.java),
-            ViewHolderItem("text_area", R.layout.form_item_text, FylFormTextAreaViewHolder::class.java),
-            ViewHolderItem("action", R.layout.form_item_action, FylFormActionViewHolder::class.java),
-            ViewHolderItem("text_group", R.layout.form_item_text, FylFormTextGroupViewHolder::class.java),
-            ViewHolderItem("switch", R.layout.from_item_switch, FylFormSwitchViewHolder::class.java),
-            ViewHolderItem("switch_native", R.layout.from_item_switch_native, FylFormSwitchNativeViewHolder::class.java),
+            ViewHolderItem(
+                "section",
+                R.layout.form_item_section,
+                FylFormSectionViewHolder::class.java
+            ),
+            ViewHolderItem(
+                "text_area",
+                R.layout.form_item_text,
+                FylFormTextAreaViewHolder::class.java
+            ),
+            ViewHolderItem(
+                "action",
+                R.layout.form_item_action,
+                FylFormActionViewHolder::class.java
+            ),
+            ViewHolderItem(
+                "text_group",
+                R.layout.form_item_text,
+                FylFormTextGroupViewHolder::class.java
+            ),
+            ViewHolderItem(
+                "switch",
+                R.layout.from_item_switch,
+                FylFormSwitchViewHolder::class.java
+            ),
+            ViewHolderItem(
+                "switch_native",
+                R.layout.from_item_switch_native,
+                FylFormSwitchNativeViewHolder::class.java
+            ),
             ViewHolderItem("radio", R.layout.form_item_radio, FylFormRadioViewHolder::class.java),
             ViewHolderItem("nav", R.layout.form_item_nav, FylFormNavViewHolder::class.java),
-            ViewHolderItem("label", R.layout.form_item_label, FylFormLabelViewHolder::class.java)
+            ViewHolderItem("label", R.layout.form_item_label, FylFormLabelViewHolder::class.java),
+            ViewHolderItem("date", R.layout.form_item_date, FylFormDateViewHolder::class.java)
         )
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-
+        this.recyclerView = recyclerView
         val touchHelper = object : SwipeToDeleteCallback(recyclerView.context) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             }
 
-            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
                 val src = viewHolder.adapterPosition
                 val des = target.adapterPosition
                 onFormItemCallback?.onMoveItem(src, des)
@@ -157,11 +213,15 @@ open class FylFormRecyclerAdaptor(
 
     override fun getItemViewType(position: Int): Int {
         val m = settings[position]
-        val index = viewHolders.indexOfFirst {it.type == m.type}
+        val index = viewHolders.indexOfFirst { it.type == m.type }
         return index
     }
 
-    fun registerViewHolder(type: String, layoutId: Int, viewHolderClass: Class<out FylFormViewHolder>) : Boolean {
+    fun registerViewHolder(
+        type: String,
+        layoutId: Int,
+        viewHolderClass: Class<out FylFormViewHolder>
+    ): Boolean {
         viewHolders.add(ViewHolderItem(type, layoutId, viewHolderClass))
         return true
     }
@@ -174,36 +234,51 @@ open class FylFormRecyclerAdaptor(
     }
 
     fun updateRadioGroup(group: String, selected: String) {
-        for(i in 0 until settings.size) {
-            val item =  settings[i]
-            if(item is FylFormItemRadio && item.group == group ) {
-                    item.isOn = (item.tag == selected)
-                    updateItem(item)
+        for (i in 0 until settings.size) {
+            val item = settings[i]
+            if (item is FylFormItemRadio && item.group == group) {
+                item.isOn = (item.tag == selected)
+                updateItem(item)
             }
         }
     }
 
     private var onFormItemCallback = object : FlyFormItemCallback {
         override fun onValueChanged(item: FylFormItem) {
-             if (item is FylFormItemRadio) {
+            if (item is FylFormItemRadio) {
                 updateRadioGroup(item.group, item.tag)
             }
             listener?.onValueChanged(item)
         }
+
         override fun onItemClicked(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) {
+            val index = settings.indexOf(item)
+
+            Handler().postDelayed({
+                val act = recyclerView?.context as? Activity
+                //Do something after 100ms
+                act?.runOnUiThread {
+                    recyclerView?.smoothScrollToPosition(index)
+                }
+            }, 100)
             listener?.onItemClicked(item, viewHolder)
         }
+
         override fun onSetup(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) {
             listener?.onSetup(item, viewHolder)
         }
-        override fun onStartReorder(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) : Boolean {
+
+        override fun onStartReorder(
+            item: FylFormItem,
+            viewHolder: RecyclerView.ViewHolder
+        ): Boolean {
             if (listener?.onStartReorder(item, viewHolder) == true)
                 return true
             itemTouchHelper?.startDrag(viewHolder)
             return true
         }
 
-        override fun onMoveItem(src: Int, dest: Int) : Boolean {
+        override fun onMoveItem(src: Int, dest: Int): Boolean {
             super.onMoveItem(src, dest)
             if (listener?.onMoveItem(src, dest) == true)
                 return true
@@ -233,6 +308,7 @@ open class FylFormViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
         titleImageView = itemView.findViewById(R.id.formElementTitleImage)
         reorderView = itemView.findViewById(R.id.formElementReorder)
     }
+
     open fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
         itemView.setOnClickListener {
             listener?.onItemClicked(s, this)
@@ -275,7 +351,8 @@ open class FylFormViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
     fun dpToPx(dp: Int): Int {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
-            dp.toFloat() ?: 0f, Resources.getSystem().displayMetrics).toInt()
+            dp.toFloat() ?: 0f, Resources.getSystem().displayMetrics
+        ).toInt()
     }
 }
 
@@ -420,8 +497,9 @@ class FylFormSectionViewHolder(inflater: LayoutInflater, resource: Int, parent: 
 
 class FylFormActionViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormViewHolder(inflater, resource, parent) {
-    var leftSpace : Space? = null
-    var rightSpace : Space? = null
+    var leftSpace: Space? = null
+    var rightSpace: Space? = null
+
     init {
         leftSpace = itemView.findViewById(R.id.formSapceLeft)
         rightSpace = itemView.findViewById(R.id.formSapceRight)
@@ -477,7 +555,7 @@ class FylFormSwitchNativeViewHolder(inflater: LayoutInflater, resource: Int, par
 class FylFormSwitchViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormViewHolder(inflater, resource, parent) {
     private var switchView: ImageView? = null
-    private var item : FylFormItemRadio? = null
+    private var item: FylFormItemRadio? = null
 
     init {
         switchView = itemView.findViewById(R.id.formElementSwitch)
@@ -501,13 +579,13 @@ class FylFormSwitchViewHolder(inflater: LayoutInflater, resource: Int, parent: V
             if (item?.iconOn != null) {
                 switchView?.setImageDrawable(item?.iconOn)
             } else {
-                switchView?.setImageResource(R.drawable.ic_toggle_on)
+                switchView?.setImageResource(R.drawable.ic_form_toggle_on)
             }
         } else {
             if (item?.iconOff != null) {
                 switchView?.setImageDrawable(item?.iconOff)
             } else {
-                switchView?.setImageResource(R.drawable.ic_toggle_off)
+                switchView?.setImageResource(R.drawable.ic_form_toggle_off)
             }
         }
     }
@@ -517,7 +595,7 @@ class FylFormSwitchViewHolder(inflater: LayoutInflater, resource: Int, parent: V
 class FylFormRadioViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormViewHolder(inflater, resource, parent) {
     private var radioView: ImageView? = null
-    private var item : FylFormItemRadio? = null
+    private var item: FylFormItemRadio? = null
 
     init {
         radioView = itemView.findViewById(R.id.formElementRadio)
@@ -546,13 +624,13 @@ class FylFormRadioViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
             if (item?.iconOn != null) {
                 radioView?.setImageDrawable(item?.iconOn)
             } else {
-                radioView?.setImageResource(R.drawable.ic_radio_on)
+                radioView?.setImageResource(R.drawable.ic_form_radio_on)
             }
         } else {
             if (item?.iconOff != null) {
                 radioView?.setImageDrawable(item?.iconOff)
             } else {
-                radioView?.setImageResource(R.drawable.ic_radio_off)
+                radioView?.setImageResource(R.drawable.ic_form_radio_off)
             }
         }
     }
@@ -595,12 +673,97 @@ class FylFormNavViewHolder(inflater: LayoutInflater, resource: Int, parent: View
 }
 
 class FylFormLabelViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormViewHolder(inflater, resource, parent)  {
+    FylFormViewHolder(inflater, resource, parent) {
 
     init {
     }
 
     override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
         super.bind(s, listener)
+    }
+}
+
+class FylFormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FylFormViewHolder(inflater, resource, parent) {
+
+    var dateView: TextView? = null
+    var datePickerView: DatePicker? = null
+    var timeView: TextView? = null
+    var timePickerView: TimePicker? = null
+    var item: FylFormItemDate? = null
+    var listener: FlyFormItemCallback? = null
+
+    init {
+        dateView = itemView.findViewById(R.id.formElementDate)
+        datePickerView = itemView.findViewById(R.id.formElementDatePicker)
+        timeView = itemView.findViewById(R.id.formElementTime)
+        timePickerView = itemView.findViewById(R.id.formElementTimePicker)
+
+        datePickerView?.init(
+            2020,
+            0,
+            0,
+            { datePicker, year, month, dayOfMonth ->
+                item?.let {
+                    it.year = year
+                    it.month = month
+                    it.day = dayOfMonth
+                    dateView?.setText(SimpleDateFormat(it.dateFormat).format(it.date))
+                    listener?.onValueChanged(it)
+                }
+            })
+    }
+
+    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+        super.bind(s, listener)
+        if (s is FylFormItemDate) {
+            item = s
+            this.listener = listener
+            itemView.setOnClickListener() {
+                listener?.onItemClicked(s, this)
+            }
+            dateView?.setOnClickListener {
+                if (datePickerView?.visibility == View.GONE)
+                    datePickerView?.visibility = View.VISIBLE
+                else
+                    datePickerView?.visibility = View.GONE
+                timePickerView?.visibility = View.GONE
+                listener?.onItemClicked(s, this)
+            }
+            timeView?.setOnClickListener {
+                datePickerView?.visibility = View.GONE
+                if (timePickerView?.visibility == View.GONE) {
+                    timePickerView?.visibility = View.VISIBLE
+                } else {
+                    timePickerView?.visibility = View.GONE
+                }
+                listener?.onItemClicked(s, this)
+            }
+
+            datePickerView?.updateDate(s.year, s.month, s.day)
+            timePickerView?.hour = s.hour
+            timePickerView?.minute = s.minute
+
+            timePickerView?.setOnTimeChangedListener { view, hour, minute ->
+                s.hour = hour
+                s.minute = minute
+                timeView?.setText(SimpleDateFormat(s.timeFormat).format(s.date))
+                listener?.onValueChanged(s)
+            }
+            dateView?.setText(SimpleDateFormat(s.dateFormat).format(s.date))
+            timeView?.setText(SimpleDateFormat(s.timeFormat).format(s.date))
+            if (s.dateOnly) {
+                timeView?.visibility = View.GONE
+                timePickerView?.visibility = View.GONE
+            } else {
+                timeView?.visibility = View.VISIBLE
+            }
+            if (s.timeOnly) {
+                dateView?.visibility = View.GONE
+                datePickerView?.visibility = View.GONE
+            } else {
+                dateView?.visibility = View.VISIBLE
+            }
+        }
     }
 }

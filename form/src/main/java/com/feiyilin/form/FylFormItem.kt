@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import java.util.*
 
 open class FylFormItem(var type: String) {
     var title: String = ""
@@ -82,7 +83,7 @@ fun <T : FylFormItemText> T.focused(focused: Boolean) = apply {
     this.focused = focused
 }
 
-class FylFormItemTextArea() : FylFormItemText() {
+open class FylFormItemTextArea() : FylFormItemText() {
     var minLines: Int = 3
     var maxLines: Int = 6
 
@@ -104,10 +105,10 @@ fun <T : FylFormItemTextArea> T.maxLines(maxLines: Int) = apply {
     this.maxLines = maxLines
 }
 
-class FylFormItemSection() : FylFormItem("section") {
+open class FylFormItemSection() : FylFormItem("section") {
 }
 
-class FylFormItemAction() : FylFormItem("action") {
+open class FylFormItemAction() : FylFormItem("action") {
     var alignment: Int = Gravity.CENTER
 }
 
@@ -137,13 +138,13 @@ fun <T : FylFormItemToggleCustomDraw> T.iconOff(iconOff: Drawable?) = apply {
 }
 
 
-class FylFormItemSwitchNative() : FylFormItemToggle("switch_native") {
+open class FylFormItemSwitchNative() : FylFormItemToggle("switch_native") {
 }
 
-class FylFormItemSwitch() : FylFormItemToggleCustomDraw("switch") {
+open class FylFormItemSwitch() : FylFormItemToggleCustomDraw("switch") {
 }
 
-class FylFormItemRadio() : FylFormItemToggleCustomDraw("radio") {
+open class FylFormItemRadio() : FylFormItemToggleCustomDraw("radio") {
     var group: String = ""
 }
 
@@ -151,10 +152,101 @@ fun <T : FylFormItemRadio> T.group(group: String) = apply {
     this.group = group
 }
 
-class FylFormItemNav() : FylFormItem("nav") {
+open class FylFormItemNav() : FylFormItem("nav") {
     var badge: String? = null
 }
 
 fun <T : FylFormItemNav> T.badge(badge: String?) = apply {
     this.badge = badge
+}
+
+open class FylFormItemDate() : FylFormItem("date") {
+    var date: Date = Date()
+    var dateOnly: Boolean = false
+    var timeOnly: Boolean = false
+    var timeFormat: String = "hh:mm a"
+    var dateFormat: String = "MM/dd/yyyy"
+
+    var year: Int
+        get() {
+            val calendar: Calendar = Calendar.getInstance()
+            calendar.time = date
+            return calendar[Calendar.YEAR]
+        }
+        set(value: Int) {
+            val calendar: Calendar = Calendar.getInstance()
+            calendar.time = date
+            calendar.set(Calendar.YEAR, value)
+            date = calendar.time
+        }
+
+    var month: Int
+        get() {
+            val calendar: Calendar = Calendar.getInstance()
+            calendar.time = date
+            return calendar[Calendar.MONTH]
+        }
+        set(value: Int) {
+            val calendar: Calendar = Calendar.getInstance()
+            calendar.time = date
+            calendar.set(Calendar.MONTH, value)
+            date = calendar.time
+        }
+
+    var  day : Int
+        get() {
+            val calendar: Calendar = Calendar.getInstance()
+            calendar.time = date
+            return calendar[Calendar.DAY_OF_MONTH]
+        }
+        set(value: Int) {
+            val calendar: Calendar = Calendar.getInstance()
+            calendar.time = date
+            calendar.set(Calendar.DAY_OF_MONTH, value)
+            date = calendar.time
+        }
+
+    var hour : Int
+        get() {
+            val calendar: Calendar = Calendar.getInstance()
+            calendar.time = date
+            return calendar[Calendar.HOUR_OF_DAY]
+        }
+        set(value: Int) {
+            val calendar: Calendar = Calendar.getInstance()
+            calendar.time = date
+            calendar.set(Calendar.HOUR_OF_DAY, value)
+            date = calendar.time
+        }
+
+    var minute: Int
+        get() {
+            val calendar: Calendar = Calendar.getInstance()
+            calendar.time = date
+            return calendar[Calendar.MINUTE]
+        }
+        set(value: Int) {
+            val calendar: Calendar = Calendar.getInstance()
+            calendar.time = date
+            calendar.set(Calendar.MINUTE, value)
+            date = calendar.time
+        }
+}
+
+fun <T : FylFormItemDate> T.date(date: Date) = apply {
+    this.date = date
+}
+
+fun <T : FylFormItemDate> T.dateOnly(dateOnly: Boolean) = apply {
+    this.dateOnly = dateOnly
+}
+fun <T : FylFormItemDate> T.timeOnly(timeOnly: Boolean) = apply {
+    this.timeOnly = timeOnly
+}
+
+fun <T : FylFormItemDate> T.dateFormat(dateFormat: String) = apply {
+    this.dateFormat = dateFormat
+}
+fun <T : FylFormItemDate> T.timeFormat(timeFormat: String) = apply {
+    this.timeFormat = timeFormat
 }

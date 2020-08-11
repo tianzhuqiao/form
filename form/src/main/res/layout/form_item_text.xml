@@ -25,7 +25,7 @@
             android:maxLines="1"
             android:text=""
             android:textAlignment="textEnd"
-            android:textColor="#1d1d1d"
+            android:textColor="@color/colorFormText"
             android:textSize="18sp" />
 
         <include layout="@layout/form_reorder" />
