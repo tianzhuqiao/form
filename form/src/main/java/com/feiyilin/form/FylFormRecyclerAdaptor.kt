@@ -99,7 +99,6 @@ open class FylFormRecyclerAdaptor(
     init {
         viewHolders = mutableListOf (
             ViewHolderItem("text", R.layout.form_item_text, FylFormTextViewHolder::class.java),
-            ViewHolderItem("image", R.layout.form_item_image, FylFormImageViewHolder::class.java),
             ViewHolderItem("section", R.layout.form_item_section, FylFormSectionViewHolder::class.java),
             ViewHolderItem("text_area", R.layout.form_item_text, FylFormTextAreaViewHolder::class.java),
             ViewHolderItem("action", R.layout.form_item_action, FylFormActionViewHolder::class.java),
@@ -110,7 +109,6 @@ open class FylFormRecyclerAdaptor(
             ViewHolderItem("nav", R.layout.form_item_nav, FylFormNavViewHolder::class.java),
             ViewHolderItem("label", R.layout.form_item_label, FylFormLabelViewHolder::class.java)
         )
-
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -278,29 +276,6 @@ open class FylFormViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
             dp.toFloat() ?: 0f, Resources.getSystem().displayMetrics).toInt()
-    }
-}
-
-
-class FylFormImageViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormViewHolder(inflater, resource, parent) {
-    private var imgView: ImageView? = null
-    init {
-        imgView = itemView.findViewById(R.id.profile_image)
-    }
-
-    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
-
-        val file = File(s.value)
-        if (file.exists()) {
-            imgView?.setImageURI(Uri.fromFile(file))
-        } else {
-            //imgView?.profileImage(null, s.value, R.drawable.ic_btn_upload_photo_sign_in)
-        }
-
-        imgView?.setOnClickListener {
-            listener?.onValueChanged(s)
-        }
     }
 }
 

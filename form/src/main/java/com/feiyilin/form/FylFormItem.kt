@@ -48,8 +48,6 @@ fun <T : FylFormItem> T.dragable(dragable: Boolean) = apply {
 open class FylFormItemLabel() : FylFormItem("label") {
 }
 
-open class FylFormItemImage() : FylFormItem(type = "image") {
-}
 
 open class FylFormItemText() : FylFormItem(type = "text") {
     var placeholder: String = ""
