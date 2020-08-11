@@ -25,7 +25,7 @@
             android:id="@+id/formElementSwitch"
             android:layout_width="48dp"
             android:layout_height="24dp"
-            app:srcCompat="@drawable/ic_toggle_off" />
+            app:srcCompat="@drawable/ic_form_toggle_off" />
 
         <include layout="@layout/form_reorder" />
     </LinearLayout>

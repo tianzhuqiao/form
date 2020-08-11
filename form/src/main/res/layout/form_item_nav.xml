@@ -17,7 +17,7 @@
         <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                app:srcCompat="@drawable/ic_about_settings"
+                app:srcCompat="@drawable/ic_form_info"
                 android:id="@+id/formElementTitleImage"
                 android:visibility="gone"/>
 
