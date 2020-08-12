@@ -2,6 +2,8 @@ package com.feiyilin.app
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -9,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.feiyilin.form.FylFormRecyclerAdaptor
 import com.feiyilin.form.*
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -35,6 +38,7 @@ class MainActivity : AppCompatActivity() {
             FylFormItemText().title("Company").tag("company"),
             FylFormItemText().title("Ready only").tag("read_only").value("www.feiyilin.com")
                 .readOnly(true),
+            FylFormItemTextFloatingHint().placeholder("Text with floating hint").tag("text").gravity(Gravity.START),
             FylFormItemLabel().title("Label").tag("label"),
             FylFormItemSection(),
             FylFormItemNav().title("Check my website").subTitle("www.abc.com")
@@ -86,11 +90,11 @@ class MainActivity : AppCompatActivity() {
 
     private var onSettingProfileItemClickListener = object : FlyFormItemCallback {
         override fun onValueChanged(item: FylFormItem) {
-
+            Log.i("onValueChanged", item.toString())
         }
 
         override fun onItemClicked(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) {
-
+            Log.i("onItemClicked", item.toString())
         }
     }
 }
@@ -114,7 +118,7 @@ class FylFormImageViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
     override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
 
         if (s is FylFormItemImage) {
-            imgView?.setImageResource(s.image)
+            Picasso.get().load(s.image).fit().centerInside().into(imgView)
 
             imgView?.setOnClickListener {
                 listener?.onValueChanged(s)

@@ -24,7 +24,7 @@
             android:inputType="textNoSuggestions"
             android:maxLines="1"
             android:text=""
-            android:textAlignment="textEnd"
+            android:gravity="end"
             android:textColor="@color/colorFormText"
             android:textSize="18sp" />
 

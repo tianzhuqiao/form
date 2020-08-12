@@ -16,6 +16,7 @@ import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.textfield.TextInputLayout
 import java.text.SimpleDateFormat
 
 interface FlyFormItemCallback {
@@ -49,11 +50,16 @@ open class FylFormRecyclerAdaptor(
 
     init {
         viewHolders = mutableListOf(
-            ViewHolderItem("text", R.layout.form_item_text, FylFormTextViewHolder::class.java),
             ViewHolderItem(
                 "section",
                 R.layout.form_item_section,
                 FylFormSectionViewHolder::class.java
+            ),
+            ViewHolderItem("text", R.layout.form_item_text, FylFormTextViewHolder::class.java),
+            ViewHolderItem(
+                "text_floating_hint",
+                R.layout.form_item_text_floating_hint,
+                FylFormTextViewHolder::class.java
             ),
             ViewHolderItem(
                 "text_area",
@@ -61,14 +67,14 @@ open class FylFormRecyclerAdaptor(
                 FylFormTextAreaViewHolder::class.java
             ),
             ViewHolderItem(
+                "text_area_floating_hint",
+                R.layout.form_item_text_floating_hint,
+                FylFormTextAreaViewHolder::class.java
+            ),
+            ViewHolderItem(
                 "action",
                 R.layout.form_item_action,
                 FylFormActionViewHolder::class.java
-            ),
-            ViewHolderItem(
-                "text_group",
-                R.layout.form_item_text,
-                FylFormTextGroupViewHolder::class.java
             ),
             ViewHolderItem(
                 "switch",
@@ -288,9 +294,11 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
     var valueView: EditText? = null
     var listener: FlyFormItemCallback? = null
     var item: FylFormItem? = null
+    var hintView: TextInputLayout? = null
 
     init {
         valueView = itemView.findViewById(R.id.formElementValue)
+        hintView = itemView.findViewById(R.id.formElementValueHint)
         reorderView = itemView.findViewById(R.id.formElementReorder)
         valueView?.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -337,8 +345,7 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
                     }
                 }
             }
-
-            valueView?.textAlignment = s.textAlignment
+            valueView?.gravity = s.gravity
             valueView?.isEnabled = !s.readOnly
             if (s.readOnly) {
                 valueView?.setTextColor(Color.GRAY)
@@ -352,11 +359,17 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
             })
 
             valueView?.setText(s.value)
+            var hint = s.placeholder
             if (!s.readOnly && s.placeholder.isEmpty()) {
-                valueView?.hint = "Enter ${s.title} here"
-            } else {
-                valueView?.hint = s.placeholder
+                hint = "Enter ${s.title} here"
             }
+            if (hintView != null) {
+                hintView?.hint = hint
+                valueView?.hint = ""
+            } else {
+                valueView?.hint = hint
+            }
+
             if (s.imeOptions != 0) {
                 valueView?.imeOptions = s.imeOptions
             } else {

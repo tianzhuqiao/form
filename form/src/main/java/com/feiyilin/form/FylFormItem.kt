@@ -2,7 +2,6 @@ package com.feiyilin.form
 
 import android.graphics.drawable.Drawable
 import android.view.Gravity
-import android.view.View
 import android.view.inputmethod.EditorInfo
 import java.util.*
 
@@ -52,19 +51,25 @@ open class FylFormItemLabel() : FylFormItem("label") {
 
 open class FylFormItemText() : FylFormItem(type = "text") {
     var placeholder: String = ""
-    var textAlignment: Int = View.TEXT_ALIGNMENT_TEXT_END
+    var gravity: Int = Gravity.END
     var readOnly: Boolean = false
     var imeOptions: Int = 0
     var inputType: Int = 0
     var focused: Boolean = false
 }
 
+open class FylFormItemTextFloatingHint() : FylFormItemText() {
+    init {
+        type = "text_floating_hint"
+    }
+}
+
 fun <T : FylFormItemText> T.placeholder(placeholder: String) = apply {
     this.placeholder = placeholder
 }
 
-fun <T : FylFormItemText> T.textAlignment(textAlignment: Int) = apply {
-    this.textAlignment = textAlignment
+fun <T : FylFormItemText> T.gravity(gravity: Int) = apply {
+    this.gravity = gravity
 }
 
 fun <T : FylFormItemText> T.readOnly(readOnly: Boolean) = apply {
@@ -89,11 +94,17 @@ open class FylFormItemTextArea() : FylFormItemText() {
 
     init {
         this.type = "text_area"
-        this.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
+        this.gravity = Gravity.START
         this.inputType =
             (EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES or EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS
                     or EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE or EditorInfo.TYPE_CLASS_TEXT)
         this.imeOptions = EditorInfo.IME_NULL
+    }
+}
+
+open class FylFormItemTextAreaFloatingHint() : FylFormItemTextArea() {
+    init {
+        type = "text_floating_hint"
     }
 }
 
