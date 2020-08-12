@@ -90,20 +90,25 @@ open class FylFormRecyclerAdaptor(
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
-        val touchHelper = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.DOWN or ItemTouchHelper.UP, 0) {
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            }
+        val touchHelper =
+            object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.DOWN or ItemTouchHelper.UP, 0) {
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                }
 
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                val src = viewHolder.adapterPosition
-                val des = target.adapterPosition
-                return onFormItemCallback.onMoveItem(src, des)
+                override fun isLongPressDragEnabled(): Boolean {
+                    return false
+                }
+
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+                    val src = viewHolder.adapterPosition
+                    val des = target.adapterPosition
+                    return onFormItemCallback.onMoveItem(src, des)
+                }
             }
-        }
 
         itemTouchHelper = ItemTouchHelper(touchHelper)
         itemTouchHelper?.attachToRecyclerView(recyclerView)
