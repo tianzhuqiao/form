@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.*
-import android.graphics.drawable.ColorDrawable
 import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
@@ -19,7 +18,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 
-
 interface FlyFormItemCallback {
     fun onSetup(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) {}
     fun onValueChanged(item: FylFormItem) {}
@@ -31,80 +29,6 @@ interface FlyFormItemCallback {
 
     fun onMoveItem(src: Int, dest: Int): Boolean {
         return false
-    }
-}
-
-interface FlyFormItemCallbackInteranl : FlyFormItemCallback {
-}
-
-abstract class SwipeToDeleteCallback(context: Context) :
-    ItemTouchHelper.SimpleCallback(ItemTouchHelper.DOWN or ItemTouchHelper.UP, 0) {
-
-    private val background = ColorDrawable()
-    private val backgroundColor = Color.parseColor("#f44336")
-    private val clearPaint = Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
-
-    override fun getMovementFlags(
-        recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder
-    ): Int {
-        /**
-         * To disable "swipe" for specific item return 0 here.
-         * For example:
-         * if (viewHolder?.itemViewType == YourAdapter.SOME_TYPE) return 0
-         * if (viewHolder?.adapterPosition == 0) return 0
-         */
-        return super.getMovementFlags(recyclerView, viewHolder)
-    }
-
-    override fun onMove(
-        recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder,
-        target: RecyclerView.ViewHolder
-    ): Boolean {
-        return false
-    }
-
-    override fun isLongPressDragEnabled(): Boolean {
-        return false
-    }
-
-    override fun onChildDraw(
-        c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
-        dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean
-    ) {
-
-        val itemView = viewHolder.itemView
-        val itemHeight = itemView.bottom - itemView.top
-        val isCanceled = dX == 0f && !isCurrentlyActive
-
-        if (isCanceled) {
-            clearCanvas(
-                c,
-                itemView.right + dX,
-                itemView.top.toFloat(),
-                itemView.right.toFloat(),
-                itemView.bottom.toFloat()
-            )
-            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-            return
-        }
-
-        // Draw the red delete background
-        background.color = backgroundColor
-        background.setBounds(
-            itemView.right + dX.toInt(),
-            itemView.top,
-            itemView.right,
-            itemView.bottom
-        )
-        background.draw(c)
-
-        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-    }
-
-    private fun clearCanvas(c: Canvas?, left: Float, top: Float, right: Float, bottom: Float) {
-        c?.drawRect(left, top, right, bottom, clearPaint)
     }
 }
 
@@ -166,7 +90,7 @@ open class FylFormRecyclerAdaptor(
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
-        val touchHelper = object : SwipeToDeleteCallback(recyclerView.context) {
+        val touchHelper = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.DOWN or ItemTouchHelper.UP, 0) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             }
 
@@ -177,9 +101,7 @@ open class FylFormRecyclerAdaptor(
             ): Boolean {
                 val src = viewHolder.adapterPosition
                 val des = target.adapterPosition
-                onFormItemCallback?.onMoveItem(src, des)
-
-                return super.onMove(recyclerView, viewHolder, target)
+                return onFormItemCallback.onMoveItem(src, des)
             }
         }
 
@@ -213,8 +135,7 @@ open class FylFormRecyclerAdaptor(
 
     override fun getItemViewType(position: Int): Int {
         val m = settings[position]
-        val index = viewHolders.indexOfFirst { it.type == m.type }
-        return index
+        return viewHolders.indexOfFirst { it.type == m.type }
     }
 
     fun registerViewHolder(
@@ -351,7 +272,8 @@ open class FylFormViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
     fun dpToPx(dp: Int): Int {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
-            dp.toFloat() ?: 0f, Resources.getSystem().displayMetrics
+            dp.toFloat(),
+            Resources.getSystem().displayMetrics
         ).toInt()
     }
 }
@@ -497,8 +419,8 @@ class FylFormSectionViewHolder(inflater: LayoutInflater, resource: Int, parent: 
 
 class FylFormActionViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormViewHolder(inflater, resource, parent) {
-    var leftSpace: Space? = null
-    var rightSpace: Space? = null
+    private var leftSpace: Space? = null
+    private var rightSpace: Space? = null
 
     init {
         leftSpace = itemView.findViewById(R.id.formSapceLeft)
@@ -674,13 +596,6 @@ class FylFormNavViewHolder(inflater: LayoutInflater, resource: Int, parent: View
 
 class FylFormLabelViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormViewHolder(inflater, resource, parent) {
-
-    init {
-    }
-
-    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
-        super.bind(s, listener)
-    }
 }
 
 class FylFormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
@@ -699,19 +614,7 @@ class FylFormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: Vie
         timeView = itemView.findViewById(R.id.formElementTime)
         timePickerView = itemView.findViewById(R.id.formElementTimePicker)
 
-        datePickerView?.init(
-            2020,
-            0,
-            0,
-            { datePicker, year, month, dayOfMonth ->
-                item?.let {
-                    it.year = year
-                    it.month = month
-                    it.day = dayOfMonth
-                    dateView?.setText(SimpleDateFormat(it.dateFormat).format(it.date))
-                    listener?.onValueChanged(it)
-                }
-            })
+
     }
 
     override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
@@ -740,29 +643,36 @@ class FylFormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: Vie
                 listener?.onItemClicked(s, this)
             }
 
-            datePickerView?.updateDate(s.year, s.month, s.day)
-            timePickerView?.hour = s.hour
-            timePickerView?.minute = s.minute
-
-            timePickerView?.setOnTimeChangedListener { view, hour, minute ->
+            timePickerView?.setOnTimeChangedListener { _, hour, minute ->
                 s.hour = hour
                 s.minute = minute
-                timeView?.setText(SimpleDateFormat(s.timeFormat).format(s.date))
+                timeView?.text = SimpleDateFormat(s.timeFormat).format(s.date)
                 listener?.onValueChanged(s)
             }
-            dateView?.setText(SimpleDateFormat(s.dateFormat).format(s.date))
-            timeView?.setText(SimpleDateFormat(s.timeFormat).format(s.date))
+            dateView?.text = SimpleDateFormat(s.dateFormat).format(s.date)
+            timeView?.text = SimpleDateFormat(s.timeFormat).format(s.date)
+
             if (s.dateOnly) {
                 timeView?.visibility = View.GONE
                 timePickerView?.visibility = View.GONE
             } else {
                 timeView?.visibility = View.VISIBLE
+                timePickerView?.hour = s.hour
+                timePickerView?.minute = s.minute
             }
             if (s.timeOnly) {
                 dateView?.visibility = View.GONE
                 datePickerView?.visibility = View.GONE
             } else {
                 dateView?.visibility = View.VISIBLE
+                //datePickerView?.updateDate(s.year, s.month, s.day)
+                datePickerView?.init( s.year, s.month, s.day) { _, year, month, dayOfMonth ->
+                    s.year = year
+                    s.month = month
+                    s.day = dayOfMonth
+                    dateView?.text = SimpleDateFormat(s.dateFormat).format(s.date)
+                    listener?.onValueChanged(s)
+                }
             }
         }
     }
