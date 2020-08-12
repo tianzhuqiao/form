@@ -292,6 +292,24 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
     init {
         valueView = itemView.findViewById(R.id.formElementValue)
         reorderView = itemView.findViewById(R.id.formElementReorder)
+        valueView?.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+                item?.let {
+                    if (it.value != s.toString()) {
+                        it.value = s.toString()
+                        listener?.onValueChanged(it)
+                    }
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+        }
+        )
         valueView?.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
                 if (v is EditText) {
@@ -349,7 +367,7 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
                 valueView?.inputType = s.inputType
             }
 
-            valueView?.addTextChangedListener(valueWatcher)
+
             if (s.focused) {
                 Handler().postDelayed({
                     s.focused = false
@@ -575,10 +593,6 @@ class FylFormNavViewHolder(inflater: LayoutInflater, resource: Int, parent: View
 
     override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
         super.bind(s, listener)
-        itemView.setOnClickListener {
-            listener?.onItemClicked(s, this)
-        }
-
         if (s is FylFormItemNav) {
             if (s.badge == null) {
                 badgeView?.visibility = View.GONE
@@ -593,6 +607,13 @@ class FylFormNavViewHolder(inflater: LayoutInflater, resource: Int, parent: View
                 badgeViewTitle?.visibility = View.VISIBLE
                 badgeView?.minHeight = dpToPx(20)
                 badgeView?.minWidth = dpToPx(20)
+            }
+            if (titleImageView?.visibility == View.VISIBLE) {
+                titleImageView?.let {
+                    badgeView?.x = it.x + it.width - dpToPx(8)
+                }
+            } else {
+                badgeView?.x = 0F
             }
         }
         listener?.onSetup(s, this)
@@ -610,26 +631,17 @@ class FylFormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: Vie
     var datePickerView: DatePicker? = null
     var timeView: TextView? = null
     var timePickerView: TimePicker? = null
-    var item: FylFormItemDate? = null
-    var listener: FlyFormItemCallback? = null
 
     init {
         dateView = itemView.findViewById(R.id.formElementDate)
         datePickerView = itemView.findViewById(R.id.formElementDatePicker)
         timeView = itemView.findViewById(R.id.formElementTime)
         timePickerView = itemView.findViewById(R.id.formElementTimePicker)
-
-
     }
 
     override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
         super.bind(s, listener)
         if (s is FylFormItemDate) {
-            item = s
-            this.listener = listener
-            itemView.setOnClickListener() {
-                listener?.onItemClicked(s, this)
-            }
             dateView?.setOnClickListener {
                 if (datePickerView?.visibility == View.GONE)
                     datePickerView?.visibility = View.VISIBLE
@@ -670,7 +682,6 @@ class FylFormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: Vie
                 datePickerView?.visibility = View.GONE
             } else {
                 dateView?.visibility = View.VISIBLE
-                //datePickerView?.updateDate(s.year, s.month, s.day)
                 datePickerView?.init( s.year, s.month, s.day) { _, year, month, dayOfMonth ->
                     s.year = year
                     s.month = month
