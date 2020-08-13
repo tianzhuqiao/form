@@ -6,13 +6,14 @@ import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.feiyilin.form.FylFormRecyclerAdaptor
 import com.feiyilin.form.*
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -28,42 +29,59 @@ class MainActivity : AppCompatActivity() {
         cal.set(2020, 6, 19)
 
         settings = mutableListOf(
-            FylFormItemSection().title("Text"),
+            FylFormItemSection().title("Text section"),
             FylFormItemText().title("Text").tag("text"),
             FylFormItemText().title("Text").subTitle("here is subtitle").tag("text_subtitle"),
             FylFormItemText().title("Text").subTitle("dragable").dragable(true)
                 .tag("text_dragable"),
-            FylFormItemText().title("Profession")
-                .iconTitle(resources.getDrawable(R.drawable.ic_form_info)).tag("profession"),
-            FylFormItemText().title("Company").tag("company"),
+            FylFormItemText().title("With icon")
+                .iconTitle(ContextCompat.getDrawable(this, R.drawable.ic_form_info)).tag("text_icon"),
             FylFormItemText().title("Ready only").tag("read_only").value("www.feiyilin.com")
                 .readOnly(true),
-            FylFormItemTextFloatingHint().placeholder("Text with floating hint").tag("text").gravity(Gravity.START),
-            FylFormItemLabel().title("Label").tag("label"),
+            FylFormItemTextFloatingHint().hint("Text with floating hint").tag("text").gravity(Gravity.START),
+            FylFormItemText().title("Email").tag("email").inputType(EditorInfo.TYPE_TEXT_VARIATION_EMAIL_ADDRESS),
+            FylFormItemText().title("Number").tag("number").inputType(EditorInfo.TYPE_CLASS_NUMBER),
+            FylFormItemText().title("Phone").tag("phone").inputType(EditorInfo.TYPE_CLASS_PHONE),
             FylFormItemSection(),
-            FylFormItemNav().title("Check my website").subTitle("www.abc.com")
-                .tag("website").badge("1")
-                .iconTitle(resources.getDrawable(R.drawable.ic_form_info)),
-            FylFormItemText().title("Email").tag("email"),
-            FylFormItemSection().title("BULLETIN BOARD"),
-            FylFormItemTextArea().placeholder("Tell people what you think ...").tag("notes"),
+            FylFormItemTextArea().hint("Multi-line text here ...").tag("notes"),
+
+            FylFormItemSection().title("Navigation item"),
+            //FylFormItemLabel().title("Label").tag("label"),
+            FylFormItemNav().title("Nav item").tag("nav_item"),
+            FylFormItemNav().title("Nav item with subtitle").subTitle("www.abc.com")
+                .tag("nav_item_subtitle"),
+            FylFormItemNav().title("Nav item with badge").tag("nav_item_badge").badge("")
+                .iconTitle(ContextCompat.getDrawable(this, R.drawable.ic_form_info)),
+            FylFormItemNav().title("Nav item with number badge").tag("nav_item_badge_num").badge("99").iconSize(32)
+                .iconTitle(ContextCompat.getDrawable(this, R.drawable.ic_form_info)),
 
             FylFormItemSection().title("Radio"),
+            FylFormItemRadio().isOn(true).group("radio0")
+                .title("item 0")
+                .tag("radio0_item0"),
+            FylFormItemRadio().group("radio0").title("item 1")
+                .tag("radio0_item1"),
 
-            FylFormItemRadio().isOn(true).group("privacy")
-                .title("Public: open to chat with anyone")
-                .tag("privacy_public"),
-            FylFormItemRadio().group("privacy").title("Private: need my approval")
-                .tag("privacy_private"),
+            FylFormItemSection().title("Radio native"),
+            FylFormItemRadioNative().isOn(true).group("radio1")
+                .title("item 0")
+                .tag("radio1_item0"),
+            FylFormItemRadioNative().group("radio1").title("item 1")
+                .tag("radio1_item1"),
+
             FylFormItemSection().title("Switch"),
             FylFormItemSwitch().isOn(true).title("Switch").tag("switch"),
             FylFormItemSwitchNative().isOn(true).title("Switch native").tag("switch_native"),
             FylFormItemAction().title("Action").tag("action").subTitle("description")
-                .iconTitle(resources.getDrawable(R.drawable.ic_form_info)),
-            FylFormItemImage().tag("image").image(R.drawable.image1),
+                .iconTitle(ContextCompat.getDrawable(this, R.drawable.ic_form_info)),
+
+            FylFormItemSection().title("Date and Time"),
             FylFormItemDate().tag("date").title("Date").date(cal.time),
             FylFormItemDate().tag("date_only").title("Date only").date(cal.time).dateOnly(true),
-            FylFormItemDate().tag("time_only").title("Time only").date(cal.time).timeOnly(true)
+            FylFormItemDate().tag("time_only").title("Time only").date(cal.time).timeOnly(true),
+
+            FylFormItemSection().title("Custom item"),
+            FylFormItemImage().tag("image").image(R.drawable.image1)
         )
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
@@ -74,16 +92,6 @@ class MainActivity : AppCompatActivity() {
                     R.layout.form_item_image,
                     FylFormImageViewHolder::class.java
                 )
-            }
-        }
-    }
-
-    fun updateItem(item: FylFormItem) {
-        val index = settings.indexOf(item)
-        if (index >= 0 && index < settings.size) {
-            this.runOnUiThread {
-                val adapter = setting_profile_recyclerView.adapter as? FylFormRecyclerAdaptor
-                adapter?.notifyItemChanged(index)
             }
         }
     }
@@ -99,7 +107,7 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-open class FylFormItemImage() : FylFormItem(type = "image") {
+open class FylFormItemImage : FylFormItem(type = "image") {
     var image: Int = 0
 }
 
