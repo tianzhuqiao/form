@@ -12,7 +12,9 @@
 
     <LinearLayout
             android:id="@+id/formElementMainLayout"
-            style="@style/formMainLayout">
+            style="@style/formMainLayout"
+            android:layout_marginTop = "0dp"
+            android:layout_marginBottom = "0dp">
 
         <ImageView
                 android:layout_width="24dp"
@@ -25,15 +27,16 @@
             android:id="@+id/formElementBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
+            android:layout_gravity="top"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="8dp"
             android:background="@drawable/ic_form_badge_background"
             android:minWidth="10dp"
             android:minHeight="10dp"
             android:translationZ="3dp"
             android:visibility="gone"
-            app:layout_constraintStart_toEndOf="@+id/formElementMainLayout"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginEnd="8dp">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/formElementBadgeTitle"
@@ -51,7 +54,11 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-        <include layout="@layout/form_title"/>
+        <include layout="@layout/form_title"
+            android:layout_marginTop = "10dp"
+            android:layout_marginBottom = "10dp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content" />
 
         <Space
             android:layout_width="0dp"

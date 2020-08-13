@@ -2,6 +2,7 @@ package com.feiyilin.form
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.graphics.*
 import android.os.Handler
@@ -14,6 +15,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputLayout
@@ -132,6 +134,7 @@ open class FylFormRecyclerAdaptor(
         val s = settings[position]
         if (holder is FylFormViewHolder) {
             holder.bind(s, onFormItemCallback)
+            listener?.onSetup(s, holder)
         }
     }
 
@@ -251,11 +254,22 @@ open class FylFormViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
         } else {
             titleView?.visibility = View.GONE
         }
+        s.titleColor?.let {
+            titleView?.setTextColor(it)
+        } ?: run {
+            titleView?.setTextColor(ContextCompat.getColor(itemView.context, R.color.colorFormTitle))
+        }
+
         subtitleView?.text = s.subTitle
         if (s.subTitle.isNotEmpty()) {
             subtitleView?.visibility = View.VISIBLE
         } else {
             subtitleView?.visibility = View.GONE
+        }
+        s.subTitleColor?.let {
+            subtitleView?.setTextColor(it)
+        } ?: run {
+            subtitleView?.setTextColor(ContextCompat.getColor(itemView.context, R.color.colorFormSubtitle))
         }
 
         titleImageView?.layoutParams?.height = dpToPx(s.iconSize)
@@ -276,8 +290,6 @@ open class FylFormViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
                 listener?.onStartReorder(s, this)
             false
         }
-
-        listener?.onSetup(s, this)
     }
 
     fun dpToPx(dp: Int): Int {
@@ -293,7 +305,7 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
     FylFormViewHolder(inflater, resource, parent) {
     var valueView: EditText? = null
     var listener: FlyFormItemCallback? = null
-    var item: FylFormItem? = null
+    var item: FylFormItemText? = null
     var hintView: TextInputLayout? = null
 
     init {
@@ -302,7 +314,6 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
         reorderView = itemView.findViewById(R.id.formElementReorder)
         valueView?.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
                 item?.let {
                     if (it.value != s.toString()) {
                         it.value = s.toString()
@@ -333,8 +344,8 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
         super.bind(s, listener)
 
         this.listener = listener
-        this.item = s
         if (s is FylFormItemText) {
+            this.item = s
             itemView.setOnClickListener {
                 valueView?.requestFocus()
                 if (!s.readOnly) {
@@ -359,8 +370,14 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
             })
 
             valueView?.setText(s.value)
-            var hint = s.placeholder
-            if (!s.readOnly && s.placeholder.isEmpty()) {
+            s.valueColor?.let {
+                valueView?.setTextColor(it)
+            } ?: run {
+                valueView?.setTextColor(ContextCompat.getColor(itemView.context, R.color.colorFormText))
+            }
+
+            var hint = s.hint
+            if (!s.readOnly && s.hint.isEmpty()) {
                 hint = "Enter ${s.title} here"
             }
             if (hintView != null) {
@@ -368,6 +385,14 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
                 valueView?.hint = ""
             } else {
                 valueView?.hint = hint
+            }
+            s.hintColor?.let {
+                valueView?.setHintTextColor(it)
+                hintView?.hintTextColor = ColorStateList.valueOf(it)
+            } ?: run {
+
+                valueView?.setHintTextColor(ContextCompat.getColor(itemView.context, R.color.colorFormHint))
+                hintView?.hintTextColor = ColorStateList.valueOf(ContextCompat.getColor(itemView.context, R.color.colorFormHint))
             }
 
             if (s.imeOptions != 0) {
@@ -613,23 +638,24 @@ class FylFormNavViewHolder(inflater: LayoutInflater, resource: Int, parent: View
                 // dot
                 badgeView?.visibility = View.VISIBLE
                 badgeViewTitle?.visibility = View.GONE
+                badgeViewTitle?.text = s.badge
                 badgeView?.minHeight = dpToPx(10)
                 badgeView?.minWidth = dpToPx(10)
             } else {
                 badgeView?.visibility = View.VISIBLE
                 badgeViewTitle?.visibility = View.VISIBLE
+                badgeViewTitle?.text = s.badge
                 badgeView?.minHeight = dpToPx(20)
                 badgeView?.minWidth = dpToPx(20)
             }
             if (titleImageView?.visibility == View.VISIBLE) {
                 titleImageView?.let {
-                    badgeView?.x = it.x + it.width - dpToPx(8)
+                    badgeView?.x = it.x + it.width - dpToPx(5)
                 }
             } else {
                 badgeView?.x = 0F
             }
         }
-        listener?.onSetup(s, this)
     }
 }
 
@@ -681,6 +707,18 @@ class FylFormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: Vie
             }
             dateView?.text = SimpleDateFormat(s.dateFormat).format(s.date)
             timeView?.text = SimpleDateFormat(s.timeFormat).format(s.date)
+
+            s.dateColor?.let {
+                dateView?.setTextColor(it)
+            } ?: run {
+                dateView?.setTextColor(ContextCompat.getColor(itemView.context, R.color.colorFormText))
+            }
+
+            s.timeColor?.let {
+                timeView?.setTextColor(it)
+            } ?: run {
+                timeView?.setTextColor(ContextCompat.getColor(itemView.context, R.color.colorFormText))
+            }
 
             if (s.dateOnly) {
                 timeView?.visibility = View.GONE

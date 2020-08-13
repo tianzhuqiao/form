@@ -7,10 +7,11 @@ import java.util.*
 
 open class FylFormItem(var type: String) {
     var title: String = ""
+    var titleColor: Int? = null
     var subTitle: String = ""
+    var subTitleColor: Int? = null
     var iconTitle: Drawable? = null
     var iconSize: Int = 24
-    var value: String = ""
     var dragable: Boolean = false
     var tag: String = ""
     var originalValue: String = ""
@@ -20,8 +21,16 @@ fun <T : FylFormItem> T.title(title: String) = apply {
     this.title = title
 }
 
+fun <T : FylFormItem> T.titleColor(titleColor: Int?) = apply {
+    this.titleColor = titleColor
+}
+
 fun <T : FylFormItem> T.subTitle(subTitle: String) = apply {
     this.subTitle = subTitle
+}
+
+fun <T : FylFormItem> T.subTitleColor(subTitleColor: Int) = apply {
+    this.subTitleColor = subTitleColor
 }
 
 fun <T : FylFormItem> T.iconTitle(iconTitle: Drawable?) = apply {
@@ -32,10 +41,6 @@ fun <T : FylFormItem> T.iconSize(iconSize: Int) = apply {
     this.iconSize = iconSize
 }
 
-fun <T : FylFormItem> T.value(value: String) = apply {
-    this.value = value
-}
-
 fun <T : FylFormItem> T.tag(tag: String) = apply {
     this.tag = tag
 }
@@ -44,13 +49,14 @@ fun <T : FylFormItem> T.dragable(dragable: Boolean) = apply {
     this.dragable = dragable
 }
 
-
 open class FylFormItemLabel() : FylFormItem("label") {
 }
 
-
 open class FylFormItemText() : FylFormItem(type = "text") {
-    var placeholder: String = ""
+    var value: String = ""
+    var valueColor: Int? = null
+    var hint: String = ""
+    var hintColor: Int? = null
     var gravity: Int = Gravity.END
     var readOnly: Boolean = false
     var imeOptions: Int = 0
@@ -64,8 +70,20 @@ open class FylFormItemTextFloatingHint() : FylFormItemText() {
     }
 }
 
-fun <T : FylFormItemText> T.placeholder(placeholder: String) = apply {
-    this.placeholder = placeholder
+fun <T : FylFormItemText> T.value(value: String) = apply {
+    this.value = value
+}
+
+fun <T : FylFormItemText> T.valueColor(valueColor: Int) = apply {
+    this.valueColor = valueColor
+}
+
+fun <T : FylFormItemText> T.hint(hint: String) = apply {
+    this.hint = hint
+}
+
+fun <T : FylFormItemText> T.hintColor(hintColor: Int) = apply {
+    this.hintColor = hintColor
 }
 
 fun <T : FylFormItemText> T.gravity(gravity: Int) = apply {
@@ -177,6 +195,8 @@ open class FylFormItemDate() : FylFormItem("date") {
     var timeOnly: Boolean = false
     var timeFormat: String = "hh:mm a"
     var dateFormat: String = "MM/dd/yyyy"
+    var dateColor: Int? = null
+    var timeColor: Int? = null
 
     var year: Int
         get() {
@@ -260,4 +280,12 @@ fun <T : FylFormItemDate> T.dateFormat(dateFormat: String) = apply {
 }
 fun <T : FylFormItemDate> T.timeFormat(timeFormat: String) = apply {
     this.timeFormat = timeFormat
+}
+
+fun <T : FylFormItemDate> T.dateColor(dateColor: Int?) = apply {
+    this.dateColor = dateColor
+}
+
+fun <T : FylFormItemDate> T.timeColor(timeColor: Int?) = apply {
+    this.timeColor = timeColor
 }
