@@ -173,6 +173,14 @@ open class FylFormItemSwitchNative() : FylFormItemToggle("switch_native") {
 open class FylFormItemSwitch() : FylFormItemToggleCustomDraw("switch") {
 }
 
+open class FylFormItemRadioNative() : FylFormItemToggle("radio_native") {
+    var group: String = ""
+}
+
+fun <T : FylFormItemRadioNative> T.group(group: String) = apply {
+    this.group = group
+}
+
 open class FylFormItemRadio() : FylFormItemToggleCustomDraw("radio") {
     var group: String = ""
 }

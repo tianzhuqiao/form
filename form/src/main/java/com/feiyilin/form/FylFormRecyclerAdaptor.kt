@@ -89,6 +89,7 @@ open class FylFormRecyclerAdaptor(
                 FylFormSwitchNativeViewHolder::class.java
             ),
             ViewHolderItem("radio", R.layout.form_item_radio, FylFormRadioViewHolder::class.java),
+            ViewHolderItem("radio_native", R.layout.form_item_radio_native, FylFormRadioNativeViewHolder::class.java),
             ViewHolderItem("nav", R.layout.form_item_nav, FylFormNavViewHolder::class.java),
             ViewHolderItem("label", R.layout.form_item_label, FylFormLabelViewHolder::class.java),
             ViewHolderItem("date", R.layout.form_item_date, FylFormDateViewHolder::class.java)
@@ -164,7 +165,12 @@ open class FylFormRecyclerAdaptor(
     fun updateItem(item: FylFormItem) {
         val index = settings.indexOf(item)
         if (index >= 0 && index < settings.size) {
-            notifyItemChanged(index)
+            val activity = recyclerView?.context as? Activity
+            activity?.let {
+                it.runOnUiThread {
+                    notifyItemChanged(index)
+                }
+            }
         }
     }
 
@@ -174,6 +180,9 @@ open class FylFormRecyclerAdaptor(
             if (item is FylFormItemRadio && item.group == group) {
                 item.isOn = (item.tag == selected)
                 updateItem(item)
+            } else if (item is FylFormItemRadioNative && item.group == group) {
+                item.isOn = (item.tag == selected)
+                updateItem(item)
             }
         }
     }
@@ -181,6 +190,9 @@ open class FylFormRecyclerAdaptor(
     private var onFormItemCallback = object : FlyFormItemCallback {
         override fun onValueChanged(item: FylFormItem) {
             if (item is FylFormItemRadio) {
+                updateRadioGroup(item.group, item.tag)
+            }
+            if (item is FylFormItemRadioNative) {
                 updateRadioGroup(item.group, item.tag)
             }
             listener?.onValueChanged(item)
@@ -527,7 +539,7 @@ class FylFormSwitchNativeViewHolder(inflater: LayoutInflater, resource: Int, par
             }
 
             switchView?.setOnClickListener {
-                s.isOn = !s.isOn
+                s.isOn = switchView?.isChecked ?: (!s.isOn)
                 listener?.onValueChanged(s)
             }
             switchView?.isChecked = s.isOn
@@ -574,7 +586,6 @@ class FylFormSwitchViewHolder(inflater: LayoutInflater, resource: Int, parent: V
     }
 }
 
-
 class FylFormRadioViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormViewHolder(inflater, resource, parent) {
     private var radioView: ImageView? = null
@@ -614,6 +625,35 @@ class FylFormRadioViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
                 radioView?.setImageDrawable(item?.iconOff)
             } else {
                 radioView?.setImageResource(R.drawable.ic_form_radio_off)
+            }
+        }
+    }
+}
+
+class FylFormRadioNativeViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FylFormViewHolder(inflater, resource, parent) {
+    private var radioView: RadioButton? = null
+
+    init {
+        radioView = itemView.findViewById(R.id.formElementRadio)
+    }
+
+    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+        super.bind(s, listener)
+        itemView.setOnClickListener {
+            if (s is FylFormItemRadioNative) {
+                if (s.isOn) {
+                    return@setOnClickListener
+                }
+                s.isOn = !s.isOn
+                listener?.onValueChanged(s)
+            }
+        }
+        if (s is FylFormItemRadioNative) {
+            radioView?.isChecked = s.isOn
+            radioView?.setOnCheckedChangeListener { view, checked ->
+                s.isOn = checked
+                listener?.onValueChanged(s)
             }
         }
     }
