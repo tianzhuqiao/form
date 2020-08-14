@@ -14,7 +14,7 @@ allprojects {
 }
 ```
 
-Add **imageslide** to dependencies in your app's build.gradle: 
+Add **form** to dependencies in your app's build.gradle: 
 ```gradle
 dependencies {
     ...
