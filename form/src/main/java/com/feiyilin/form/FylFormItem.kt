@@ -5,7 +5,7 @@ import android.view.Gravity
 import android.view.inputmethod.EditorInfo
 import java.util.*
 
-open class FylFormItem(var type: String) {
+open class FylFormItem {
     var title: String = ""
     var titleColor: Int? = null
     var subTitle: String = ""
@@ -49,10 +49,10 @@ fun <T : FylFormItem> T.dragable(dragable: Boolean) = apply {
     this.dragable = dragable
 }
 
-open class FylFormItemLabel : FylFormItem("label") {
+open class FylFormItemLabel : FylFormItem() {
 }
 
-open class FylFormItemText : FylFormItem(type = "text") {
+open class FylFormItemText : FylFormItem() {
     var value: String = ""
     var valueColor: Int? = null
     var hint: String = ""
@@ -65,9 +65,6 @@ open class FylFormItemText : FylFormItem(type = "text") {
 }
 
 open class FylFormItemTextFloatingHint : FylFormItemText() {
-    init {
-        type = "text_floating_hint"
-    }
 }
 
 fun <T : FylFormItemText> T.value(value: String) = apply {
@@ -111,7 +108,6 @@ open class FylFormItemTextArea : FylFormItemText() {
     var maxLines: Int = 6
 
     init {
-        this.type = "text_area"
         this.gravity = Gravity.START
         this.inputType =
             (EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES or EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS
@@ -121,9 +117,6 @@ open class FylFormItemTextArea : FylFormItemText() {
 }
 
 open class FylFormItemTextAreaFloatingHint : FylFormItemTextArea() {
-    init {
-        type = "text_area_floating_hint"
-    }
 }
 
 fun <T : FylFormItemTextArea> T.minLines(minLines: Int) = apply {
@@ -134,10 +127,10 @@ fun <T : FylFormItemTextArea> T.maxLines(maxLines: Int) = apply {
     this.maxLines = maxLines
 }
 
-open class FylFormItemSection : FylFormItem("section") {
+open class FylFormItemSection : FylFormItem() {
 }
 
-open class FylFormItemAction : FylFormItem("action") {
+open class FylFormItemAction : FylFormItem() {
     var alignment: Int = Gravity.CENTER
 }
 
@@ -145,7 +138,7 @@ fun <T : FylFormItemAction> T.alignment(alignment: Int) = apply {
     this.alignment = alignment
 }
 
-abstract class FylFormItemToggle(type: String) : FylFormItem(type) {
+abstract class FylFormItemToggle : FylFormItem() {
     var isOn: Boolean = false
 }
 
@@ -153,7 +146,7 @@ fun <T : FylFormItemToggle> T.isOn(isOn: Boolean) = apply {
     this.isOn = isOn
 }
 
-abstract class FylFormItemToggleCustomDraw(type: String) : FylFormItemToggle(type) {
+abstract class FylFormItemToggleCustomDraw : FylFormItemToggle() {
     var iconOff: Drawable? = null
     var iconOn: Drawable? = null
 }
@@ -167,13 +160,13 @@ fun <T : FylFormItemToggleCustomDraw> T.iconOff(iconOff: Drawable?) = apply {
 }
 
 
-open class FylFormItemSwitchNative : FylFormItemToggle("switch_native") {
+open class FylFormItemSwitchNative : FylFormItemToggle() {
 }
 
-open class FylFormItemSwitch : FylFormItemToggleCustomDraw("switch") {
+open class FylFormItemSwitch : FylFormItemToggleCustomDraw() {
 }
 
-open class FylFormItemRadioNative : FylFormItemToggle("radio_native") {
+open class FylFormItemRadioNative : FylFormItemToggle() {
     var group: String = ""
 }
 
@@ -181,7 +174,7 @@ fun <T : FylFormItemRadioNative> T.group(group: String) = apply {
     this.group = group
 }
 
-open class FylFormItemRadio : FylFormItemToggleCustomDraw("radio") {
+open class FylFormItemRadio : FylFormItemToggleCustomDraw() {
     var group: String = ""
 }
 
@@ -189,7 +182,7 @@ fun <T : FylFormItemRadio> T.group(group: String) = apply {
     this.group = group
 }
 
-open class FylFormItemNav : FylFormItem("nav") {
+open class FylFormItemNav : FylFormItem() {
     var badge: String? = null
 }
 
@@ -197,7 +190,7 @@ fun <T : FylFormItemNav> T.badge(badge: String?) = apply {
     this.badge = badge
 }
 
-open class FylFormItemDate : FylFormItem("date") {
+open class FylFormItemDate : FylFormItem() {
     var date: Date = Date()
     var dateOnly: Boolean = false
     var timeOnly: Boolean = false

@@ -43,7 +43,7 @@ open class FylFormRecyclerAdaptor(
     private var recyclerView: RecyclerView? = null
 
     class ViewHolderItem(
-        var type: String,
+        var type: Class<out FylFormItem>,
         var layoutId: Int,
         var viewHolderClass: Class<out FylFormViewHolder>
     )
@@ -53,46 +53,70 @@ open class FylFormRecyclerAdaptor(
     init {
         viewHolders = mutableListOf(
             ViewHolderItem(
-                "section",
+                FylFormItemSection::class.java,
                 R.layout.form_item_section,
                 FylFormSectionViewHolder::class.java
             ),
-            ViewHolderItem("text", R.layout.form_item_text, FylFormTextViewHolder::class.java),
             ViewHolderItem(
-                "text_floating_hint",
+                FylFormItemText::class.java,
+                R.layout.form_item_text,
+                FylFormTextViewHolder::class.java
+            ),
+            ViewHolderItem(
+                FylFormItemTextFloatingHint::class.java,
                 R.layout.form_item_text_floating_hint,
                 FylFormTextViewHolder::class.java
             ),
             ViewHolderItem(
-                "text_area",
+                FylFormItemTextArea::class.java,
                 R.layout.form_item_text,
                 FylFormTextAreaViewHolder::class.java
             ),
             ViewHolderItem(
-                "text_area_floating_hint",
+                FylFormItemTextAreaFloatingHint::class.java,
                 R.layout.form_item_text_floating_hint,
                 FylFormTextAreaViewHolder::class.java
             ),
             ViewHolderItem(
-                "action",
+                FylFormItemAction::class.java,
                 R.layout.form_item_action,
                 FylFormActionViewHolder::class.java
             ),
             ViewHolderItem(
-                "switch",
+                FylFormItemSwitch::class.java,
                 R.layout.from_item_switch,
                 FylFormSwitchViewHolder::class.java
             ),
             ViewHolderItem(
-                "switch_native",
+                FylFormItemSwitchNative::class.java,
                 R.layout.from_item_switch_native,
                 FylFormSwitchNativeViewHolder::class.java
             ),
-            ViewHolderItem("radio", R.layout.form_item_radio, FylFormRadioViewHolder::class.java),
-            ViewHolderItem("radio_native", R.layout.form_item_radio_native, FylFormRadioNativeViewHolder::class.java),
-            ViewHolderItem("nav", R.layout.form_item_nav, FylFormNavViewHolder::class.java),
-            ViewHolderItem("label", R.layout.form_item_label, FylFormLabelViewHolder::class.java),
-            ViewHolderItem("date", R.layout.form_item_date, FylFormDateViewHolder::class.java)
+            ViewHolderItem(
+                FylFormItemRadio::class.java,
+                R.layout.form_item_radio,
+                FylFormRadioViewHolder::class.java
+            ),
+            ViewHolderItem(
+                FylFormItemRadioNative::class.java,
+                R.layout.form_item_radio_native,
+                FylFormRadioNativeViewHolder::class.java
+            ),
+            ViewHolderItem(
+                FylFormItemNav::class.java,
+                R.layout.form_item_nav,
+                FylFormNavViewHolder::class.java
+            ),
+            ViewHolderItem(
+                FylFormItemLabel::class.java,
+                R.layout.form_item_label,
+                FylFormLabelViewHolder::class.java
+            ),
+            ViewHolderItem(
+                FylFormItemDate::class.java,
+                R.layout.form_item_date,
+                FylFormDateViewHolder::class.java
+            )
         )
     }
 
@@ -150,11 +174,11 @@ open class FylFormRecyclerAdaptor(
 
     override fun getItemViewType(position: Int): Int {
         val m = settings[position]
-        return viewHolders.indexOfFirst { it.type == m.type }
+        return viewHolders.indexOfFirst { it.type == m::class.java }
     }
 
     fun registerViewHolder(
-        type: String,
+        type: Class<out FylFormItem>,
         layoutId: Int,
         viewHolderClass: Class<out FylFormViewHolder>
     ): Boolean {
@@ -269,7 +293,12 @@ open class FylFormViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
         s.titleColor?.let {
             titleView?.setTextColor(it)
         } ?: run {
-            titleView?.setTextColor(ContextCompat.getColor(itemView.context, R.color.colorFormTitle))
+            titleView?.setTextColor(
+                ContextCompat.getColor(
+                    itemView.context,
+                    R.color.colorFormTitle
+                )
+            )
         }
 
         subtitleView?.text = s.subTitle
@@ -281,7 +310,12 @@ open class FylFormViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
         s.subTitleColor?.let {
             subtitleView?.setTextColor(it)
         } ?: run {
-            subtitleView?.setTextColor(ContextCompat.getColor(itemView.context, R.color.colorFormSubtitle))
+            subtitleView?.setTextColor(
+                ContextCompat.getColor(
+                    itemView.context,
+                    R.color.colorFormSubtitle
+                )
+            )
         }
 
         titleImageView?.layoutParams?.height = dpToPx(s.iconSize)
@@ -385,7 +419,12 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
             s.valueColor?.let {
                 valueView?.setTextColor(it)
             } ?: run {
-                valueView?.setTextColor(ContextCompat.getColor(itemView.context, R.color.colorFormText))
+                valueView?.setTextColor(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        R.color.colorFormText
+                    )
+                )
             }
 
             var hint = s.hint
@@ -403,8 +442,18 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
                 hintView?.hintTextColor = ColorStateList.valueOf(it)
             } ?: run {
 
-                valueView?.setHintTextColor(ContextCompat.getColor(itemView.context, R.color.colorFormHint))
-                hintView?.hintTextColor = ColorStateList.valueOf(ContextCompat.getColor(itemView.context, R.color.colorFormHint))
+                valueView?.setHintTextColor(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        R.color.colorFormHint
+                    )
+                )
+                hintView?.hintTextColor = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        R.color.colorFormHint
+                    )
+                )
             }
 
             if (s.imeOptions != 0) {
@@ -751,13 +800,23 @@ class FylFormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: Vie
             s.dateColor?.let {
                 dateView?.setTextColor(it)
             } ?: run {
-                dateView?.setTextColor(ContextCompat.getColor(itemView.context, R.color.colorFormText))
+                dateView?.setTextColor(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        R.color.colorFormText
+                    )
+                )
             }
 
             s.timeColor?.let {
                 timeView?.setTextColor(it)
             } ?: run {
-                timeView?.setTextColor(ContextCompat.getColor(itemView.context, R.color.colorFormText))
+                timeView?.setTextColor(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        R.color.colorFormText
+                    )
+                )
             }
 
             if (s.dateOnly) {
@@ -773,7 +832,7 @@ class FylFormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: Vie
                 datePickerView?.visibility = View.GONE
             } else {
                 dateView?.visibility = View.VISIBLE
-                datePickerView?.init( s.year, s.month, s.day) { _, year, month, dayOfMonth ->
+                datePickerView?.init(s.year, s.month, s.day) { _, year, month, dayOfMonth ->
                     s.year = year
                     s.month = month
                     s.day = dayOfMonth

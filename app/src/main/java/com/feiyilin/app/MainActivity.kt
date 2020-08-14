@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         cal.set(2020, 6, 19)
 
         settings = mutableListOf(
-            FylFormItemSection().title("Text section"),
+            FylFormItemSection().title("Text"),
             FylFormItemText().title("Text").tag("text"),
             FylFormItemText().title("Text").subTitle("here is subtitle").tag("text_subtitle"),
             FylFormItemText().title("Text").subTitle("dragable").dragable(true)
@@ -42,8 +42,9 @@ class MainActivity : AppCompatActivity() {
             FylFormItemText().title("Email").tag("email").inputType(EditorInfo.TYPE_TEXT_VARIATION_EMAIL_ADDRESS),
             FylFormItemText().title("Number").tag("number").inputType(EditorInfo.TYPE_CLASS_NUMBER),
             FylFormItemText().title("Phone").tag("phone").inputType(EditorInfo.TYPE_CLASS_PHONE),
-            FylFormItemSection(),
+            FylFormItemSection().title("Multi-line text"),
             FylFormItemTextArea().hint("Multi-line text here ...").tag("notes"),
+            FylFormItemTextAreaFloatingHint().hint("Multi-line text with floating hint here ...").tag("notes"),
 
             FylFormItemSection().title("Navigation item"),
             //FylFormItemLabel().title("Label").tag("label"),
@@ -75,7 +76,7 @@ class MainActivity : AppCompatActivity() {
             FylFormItemAction().title("Action").tag("action").subTitle("description")
                 .iconTitle(ContextCompat.getDrawable(this, R.drawable.ic_form_info)),
 
-            FylFormItemSection().title("Date and Time"),
+            FylFormItemSection().title("Date / Time"),
             FylFormItemDate().tag("date").title("Date").date(cal.time),
             FylFormItemDate().tag("date_only").title("Date only").date(cal.time).dateOnly(true),
             FylFormItemDate().tag("time_only").title("Time only").date(cal.time).timeOnly(true),
@@ -83,12 +84,13 @@ class MainActivity : AppCompatActivity() {
             FylFormItemSection().title("Custom item"),
             FylFormItemImage().tag("image").image(R.drawable.image1)
         )
+
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
 
             adapter = FylFormRecyclerAdaptor(settings, onSettingProfileItemClickListener).apply {
                 this.registerViewHolder(
-                    "image",
+                    FylFormItemImage::class.java,
                     R.layout.form_item_image,
                     FylFormImageViewHolder::class.java
                 )
@@ -107,7 +109,7 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-open class FylFormItemImage : FylFormItem(type = "image") {
+open class FylFormItemImage : FylFormItem() {
     var image: Int = 0
 }
 
