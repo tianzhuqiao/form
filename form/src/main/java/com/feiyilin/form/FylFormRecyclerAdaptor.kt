@@ -700,7 +700,7 @@ class FylFormRadioNativeViewHolder(inflater: LayoutInflater, resource: Int, pare
         }
         if (s is FylFormItemRadioNative) {
             radioView?.isChecked = s.isOn
-            radioView?.setOnCheckedChangeListener { view, checked ->
+            radioView?.setOnCheckedChangeListener { _, checked ->
                 s.isOn = checked
                 listener?.onValueChanged(s)
             }
