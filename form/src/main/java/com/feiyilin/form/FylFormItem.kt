@@ -49,10 +49,10 @@ fun <T : FylFormItem> T.dragable(dragable: Boolean) = apply {
     this.dragable = dragable
 }
 
-open class FylFormItemLabel() : FylFormItem("label") {
+open class FylFormItemLabel : FylFormItem("label") {
 }
 
-open class FylFormItemText() : FylFormItem(type = "text") {
+open class FylFormItemText : FylFormItem(type = "text") {
     var value: String = ""
     var valueColor: Int? = null
     var hint: String = ""
@@ -64,7 +64,7 @@ open class FylFormItemText() : FylFormItem(type = "text") {
     var focused: Boolean = false
 }
 
-open class FylFormItemTextFloatingHint() : FylFormItemText() {
+open class FylFormItemTextFloatingHint : FylFormItemText() {
     init {
         type = "text_floating_hint"
     }
@@ -106,7 +106,7 @@ fun <T : FylFormItemText> T.focused(focused: Boolean) = apply {
     this.focused = focused
 }
 
-open class FylFormItemTextArea() : FylFormItemText() {
+open class FylFormItemTextArea : FylFormItemText() {
     var minLines: Int = 3
     var maxLines: Int = 6
 
@@ -120,9 +120,9 @@ open class FylFormItemTextArea() : FylFormItemText() {
     }
 }
 
-open class FylFormItemTextAreaFloatingHint() : FylFormItemTextArea() {
+open class FylFormItemTextAreaFloatingHint : FylFormItemTextArea() {
     init {
-        type = "text_floating_hint"
+        type = "text_area_floating_hint"
     }
 }
 
@@ -134,10 +134,10 @@ fun <T : FylFormItemTextArea> T.maxLines(maxLines: Int) = apply {
     this.maxLines = maxLines
 }
 
-open class FylFormItemSection() : FylFormItem("section") {
+open class FylFormItemSection : FylFormItem("section") {
 }
 
-open class FylFormItemAction() : FylFormItem("action") {
+open class FylFormItemAction : FylFormItem("action") {
     var alignment: Int = Gravity.CENTER
 }
 
@@ -167,13 +167,13 @@ fun <T : FylFormItemToggleCustomDraw> T.iconOff(iconOff: Drawable?) = apply {
 }
 
 
-open class FylFormItemSwitchNative() : FylFormItemToggle("switch_native") {
+open class FylFormItemSwitchNative : FylFormItemToggle("switch_native") {
 }
 
-open class FylFormItemSwitch() : FylFormItemToggleCustomDraw("switch") {
+open class FylFormItemSwitch : FylFormItemToggleCustomDraw("switch") {
 }
 
-open class FylFormItemRadioNative() : FylFormItemToggle("radio_native") {
+open class FylFormItemRadioNative : FylFormItemToggle("radio_native") {
     var group: String = ""
 }
 
@@ -181,7 +181,7 @@ fun <T : FylFormItemRadioNative> T.group(group: String) = apply {
     this.group = group
 }
 
-open class FylFormItemRadio() : FylFormItemToggleCustomDraw("radio") {
+open class FylFormItemRadio : FylFormItemToggleCustomDraw("radio") {
     var group: String = ""
 }
 
@@ -189,7 +189,7 @@ fun <T : FylFormItemRadio> T.group(group: String) = apply {
     this.group = group
 }
 
-open class FylFormItemNav() : FylFormItem("nav") {
+open class FylFormItemNav : FylFormItem("nav") {
     var badge: String? = null
 }
 
@@ -197,7 +197,7 @@ fun <T : FylFormItemNav> T.badge(badge: String?) = apply {
     this.badge = badge
 }
 
-open class FylFormItemDate() : FylFormItem("date") {
+open class FylFormItemDate : FylFormItem("date") {
     var date: Date = Date()
     var dateOnly: Boolean = false
     var timeOnly: Boolean = false
@@ -212,7 +212,7 @@ open class FylFormItemDate() : FylFormItem("date") {
             calendar.time = date
             return calendar[Calendar.YEAR]
         }
-        set(value: Int) {
+        set(value) {
             val calendar: Calendar = Calendar.getInstance()
             calendar.time = date
             calendar.set(Calendar.YEAR, value)
@@ -225,7 +225,7 @@ open class FylFormItemDate() : FylFormItem("date") {
             calendar.time = date
             return calendar[Calendar.MONTH]
         }
-        set(value: Int) {
+        set(value) {
             val calendar: Calendar = Calendar.getInstance()
             calendar.time = date
             calendar.set(Calendar.MONTH, value)
@@ -238,7 +238,7 @@ open class FylFormItemDate() : FylFormItem("date") {
             calendar.time = date
             return calendar[Calendar.DAY_OF_MONTH]
         }
-        set(value: Int) {
+        set(value) {
             val calendar: Calendar = Calendar.getInstance()
             calendar.time = date
             calendar.set(Calendar.DAY_OF_MONTH, value)
@@ -251,7 +251,7 @@ open class FylFormItemDate() : FylFormItem("date") {
             calendar.time = date
             return calendar[Calendar.HOUR_OF_DAY]
         }
-        set(value: Int) {
+        set(value) {
             val calendar: Calendar = Calendar.getInstance()
             calendar.time = date
             calendar.set(Calendar.HOUR_OF_DAY, value)
@@ -264,7 +264,7 @@ open class FylFormItemDate() : FylFormItem("date") {
             calendar.time = date
             return calendar[Calendar.MINUTE]
         }
-        set(value: Int) {
+        set(value) {
             val calendar: Calendar = Calendar.getInstance()
             calendar.time = date
             calendar.set(Calendar.MINUTE, value)
