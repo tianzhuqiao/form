@@ -15,6 +15,7 @@ open class FylFormItem {
     var dragable: Boolean = false
     var tag: String = ""
     var originalValue: String = ""
+    var required: Boolean = false
 }
 
 fun <T : FylFormItem> T.title(title: String) = apply {
@@ -47,6 +48,10 @@ fun <T : FylFormItem> T.tag(tag: String) = apply {
 
 fun <T : FylFormItem> T.dragable(dragable: Boolean) = apply {
     this.dragable = dragable
+}
+
+fun <T : FylFormItem> T.required(required: Boolean=true) = apply {
+    this.required = required
 }
 
 open class FylFormItemLabel : FylFormItem() {

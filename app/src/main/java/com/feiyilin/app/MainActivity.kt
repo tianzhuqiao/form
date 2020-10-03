@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
 
         settings = mutableListOf(
             FylFormItemSection().title("Text"),
-            FylFormItemText().title("Text").tag("text"),
+            FylFormItemText().title("Text").tag("text").required(true),
             FylFormItemText().title("Text").subTitle("here is subtitle").tag("text_subtitle"),
             FylFormItemText().title("Text").subTitle("dragable").dragable(true)
                 .tag("text_dragable"),

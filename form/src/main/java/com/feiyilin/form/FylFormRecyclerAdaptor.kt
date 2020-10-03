@@ -7,7 +7,9 @@ import android.content.res.Resources
 import android.graphics.*
 import android.os.Handler
 import android.text.Editable
+import android.text.SpannableString
 import android.text.TextWatcher
+import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.*
 import android.view.View.OnTouchListener
@@ -290,6 +292,17 @@ open class FylFormViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
         } else {
             titleView?.visibility = View.GONE
         }
+        if (s.required) {
+            val styledString = SpannableString(s.title + "*")
+            styledString.setSpan(
+                ForegroundColorSpan(Color.RED),
+                styledString.length - 1,
+                styledString.length,
+                0
+            )
+            titleView?.text = styledString
+        }
+
         s.titleColor?.let {
             titleView?.setTextColor(it)
         } ?: run {
@@ -501,7 +514,7 @@ open class FylFormTextViewHolder(inflater: LayoutInflater, resource: Int, parent
     FylFormBaseTextViewHolder(inflater, resource, parent) {
 }
 
-class FylFormTextGroupViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+open class FylFormTextGroupViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormBaseTextViewHolder(inflater, resource, parent) {
 
     override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
@@ -513,7 +526,7 @@ class FylFormTextGroupViewHolder(inflater: LayoutInflater, resource: Int, parent
     }
 }
 
-class FylFormTextAreaViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+open class FylFormTextAreaViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormBaseTextViewHolder(inflater, resource, parent) {
 
     init {
@@ -529,7 +542,7 @@ class FylFormTextAreaViewHolder(inflater: LayoutInflater, resource: Int, parent:
     }
 }
 
-class FylFormSectionViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+open class FylFormSectionViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormViewHolder(inflater, resource, parent) {
 
     override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
@@ -539,7 +552,7 @@ class FylFormSectionViewHolder(inflater: LayoutInflater, resource: Int, parent: 
     }
 }
 
-class FylFormActionViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+open class FylFormActionViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormViewHolder(inflater, resource, parent) {
     private var leftSpace: Space? = null
     private var rightSpace: Space? = null
@@ -570,7 +583,7 @@ class FylFormActionViewHolder(inflater: LayoutInflater, resource: Int, parent: V
     }
 }
 
-class FylFormSwitchNativeViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+open class FylFormSwitchNativeViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormViewHolder(inflater, resource, parent) {
     private var switchView: Switch? = null
 
@@ -596,7 +609,7 @@ class FylFormSwitchNativeViewHolder(inflater: LayoutInflater, resource: Int, par
     }
 }
 
-class FylFormSwitchViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+open class FylFormSwitchViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormViewHolder(inflater, resource, parent) {
     private var switchView: ImageView? = null
     private var item: FylFormItemRadio? = null
@@ -635,7 +648,7 @@ class FylFormSwitchViewHolder(inflater: LayoutInflater, resource: Int, parent: V
     }
 }
 
-class FylFormRadioViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+open class FylFormRadioViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormViewHolder(inflater, resource, parent) {
     private var radioView: ImageView? = null
     private var item: FylFormItemRadio? = null
@@ -679,7 +692,7 @@ class FylFormRadioViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
     }
 }
 
-class FylFormRadioNativeViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+open class FylFormRadioNativeViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormViewHolder(inflater, resource, parent) {
     private var radioView: RadioButton? = null
 
@@ -708,7 +721,7 @@ class FylFormRadioNativeViewHolder(inflater: LayoutInflater, resource: Int, pare
     }
 }
 
-class FylFormNavViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+open class FylFormNavViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormViewHolder(inflater, resource, parent) {
     var badgeView: ConstraintLayout? = null
     var badgeViewTitle: TextView? = null
@@ -748,11 +761,11 @@ class FylFormNavViewHolder(inflater: LayoutInflater, resource: Int, parent: View
     }
 }
 
-class FylFormLabelViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+open class FylFormLabelViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormViewHolder(inflater, resource, parent) {
 }
 
-class FylFormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+open class FylFormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FylFormViewHolder(inflater, resource, parent) {
 
     var dateView: TextView? = null
