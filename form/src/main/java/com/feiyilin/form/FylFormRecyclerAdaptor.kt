@@ -406,6 +406,7 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
         if (s is FylFormItemText) {
             this.item = s
             itemView.setOnClickListener {
+                listener?.onItemClicked(s, this)
                 valueView?.requestFocus()
                 if (!s.readOnly) {
                     val imm =
@@ -595,6 +596,7 @@ open class FylFormSwitchNativeViewHolder(inflater: LayoutInflater, resource: Int
         super.bind(s, listener)
         if (s is FylFormItemSwitchNative) {
             itemView.setOnClickListener {
+                listener?.onItemClicked(s, this)
                 s.isOn = !s.isOn
                 switchView?.isChecked = s.isOn
                 listener?.onValueChanged(s)
@@ -623,6 +625,7 @@ open class FylFormSwitchViewHolder(inflater: LayoutInflater, resource: Int, pare
 
         if (s is FylFormItemSwitch) {
             itemView.setOnClickListener {
+                listener?.onItemClicked(s, this)
                 s.isOn = !s.isOn
                 setSwitchImage(s.isOn)
                 listener?.onValueChanged(s)
@@ -661,11 +664,11 @@ open class FylFormRadioViewHolder(inflater: LayoutInflater, resource: Int, paren
         super.bind(s, listener)
         itemView.setOnClickListener {
             if (s is FylFormItemRadio) {
+                listener?.onItemClicked(s, this)
                 if (s.isOn) {
                     return@setOnClickListener
                 }
                 s.isOn = !s.isOn
-                //setRadioImage(s.isOn)
                 listener?.onValueChanged(s)
             }
         }
@@ -704,6 +707,7 @@ open class FylFormRadioNativeViewHolder(inflater: LayoutInflater, resource: Int,
         super.bind(s, listener)
         itemView.setOnClickListener {
             if (s is FylFormItemRadioNative) {
+                listener?.onItemClicked(s, this)
                 if (s.isOn) {
                     return@setOnClickListener
                 }
