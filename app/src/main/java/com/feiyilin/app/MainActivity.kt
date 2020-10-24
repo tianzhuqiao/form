@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.feiyilin.form.FylFormRecyclerAdaptor
 import com.feiyilin.form.*
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -101,6 +102,21 @@ class MainActivity : AppCompatActivity() {
     private var onSettingProfileItemClickListener = object : FlyFormItemCallback {
         override fun onValueChanged(item: FylFormItem) {
             Log.i("onValueChanged", item.toString())
+            if (item.tag == "switch_native") {
+                if (item is FylFormItemSwitchNative) {
+                    (setting_profile_recyclerView?.adapter as? FylFormRecyclerAdaptor)?.let { adapter ->
+                        val action = adapter.itemByTag(
+                                "action"
+                            )
+                        action?.let {
+                            it.hidden = !item.isOn
+                            runOnUiThread {
+                                adapter.evaluateHidden(it)
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         override fun onItemClicked(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) {

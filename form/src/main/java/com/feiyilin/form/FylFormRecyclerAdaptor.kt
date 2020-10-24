@@ -43,6 +43,7 @@ open class FylFormRecyclerAdaptor(
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var itemTouchHelper: ItemTouchHelper? = null
     private var recyclerView: RecyclerView? = null
+    private var settingsVisible = mutableListOf<FylFormItem>()
 
     class ViewHolderItem(
         var type: Class<out FylFormItem>,
@@ -53,6 +54,7 @@ open class FylFormRecyclerAdaptor(
     private var viewHolders: MutableList<ViewHolderItem> = mutableListOf()
 
     init {
+        setSettings(settings)
         viewHolders = mutableListOf(
             ViewHolderItem(
                 FylFormItemSection::class.java,
@@ -158,7 +160,7 @@ open class FylFormRecyclerAdaptor(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
-        val s = settings[position]
+        val s = settingsVisible[position]
         if (holder is FylFormViewHolder) {
             holder.bind(s, onFormItemCallback)
             listener?.onSetup(s, holder)
@@ -166,16 +168,17 @@ open class FylFormRecyclerAdaptor(
     }
 
     override fun getItemCount(): Int {
-        return settings.size
+        return settingsVisible.size
     }
 
     fun setSettings(settings: List<FylFormItem>) {
         this.settings = settings.toMutableList()
+        this.settingsVisible = this.settings.filter { !it.hidden }.toMutableList()
         notifyDataSetChanged()
     }
 
     override fun getItemViewType(position: Int): Int {
-        val m = settings[position]
+        val m = settingsVisible[position]
         return viewHolders.indexOfFirst { it.type == m::class.java }
     }
 
@@ -189,8 +192,8 @@ open class FylFormRecyclerAdaptor(
     }
 
     fun updateItem(item: FylFormItem) {
-        val index = settings.indexOf(item)
-        if (index >= 0 && index < settings.size) {
+        val index = settingsVisible.indexOf(item)
+        if (index >= 0 && index < settingsVisible.size) {
             val activity = recyclerView?.context as? Activity
             activity?.let {
                 it.runOnUiThread {
@@ -201,8 +204,8 @@ open class FylFormRecyclerAdaptor(
     }
 
     fun updateRadioGroup(group: String, selected: String) {
-        for (i in 0 until settings.size) {
-            val item = settings[i]
+        for (i in 0 until settingsVisible.size) {
+            val item = settingsVisible[i]
             if (item is FylFormItemRadio && item.group == group) {
                 item.isOn = (item.tag == selected)
                 updateItem(item)
@@ -225,7 +228,7 @@ open class FylFormRecyclerAdaptor(
         }
 
         override fun onItemClicked(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) {
-            val index = settings.indexOf(item)
+            val index = settingsVisible.indexOf(item)
 
             Handler().postDelayed({
                 val act = recyclerView?.context as? Activity
@@ -255,8 +258,14 @@ open class FylFormRecyclerAdaptor(
             super.onMoveItem(src, dest)
             if (listener?.onMoveItem(src, dest) == true)
                 return true
-            val item = settings.removeAt(src)
-            settings.add(dest, item)
+
+            val orgSrc = settings.indexOf(settingsVisible[src])
+            val orgDest = settings.indexOf(settingsVisible[dest])
+            var item = settings.removeAt(orgSrc)
+            settings.add(orgDest, item)
+            item = settingsVisible.removeAt(src)
+            settingsVisible.add(dest, item)
+
             notifyItemMoved(src, dest)
             return true
         }
@@ -264,6 +273,41 @@ open class FylFormRecyclerAdaptor(
         override fun onTitleImageClicked(item: FylFormItem) {
             listener?.onTitleImageClicked(item)
         }
+    }
+
+    fun itemByTag(tag: String) : FylFormItem? {
+        return settings.firstOrNull { it.tag == tag }
+    }
+
+    fun evaluateHidden(item: FylFormItem) : Boolean {
+        val orgIdx = settings.indexOf(item)
+        if (orgIdx == -1) {
+            return false
+        }
+
+        var idx = settingsVisible.indexOf(item)
+        if (item.hidden) {
+
+            if (idx != -1) {
+                settingsVisible.removeAt(idx)
+                notifyItemRemoved(idx)
+            }
+        } else {
+            if (idx == -1) {
+                idx = 0
+                for (tmp in settings) {
+                    if (item == tmp) {
+                        break
+                    }
+                    if (!tmp.hidden) {
+                        idx += 1
+                    }
+                }
+                settingsVisible.add(idx, item)
+                notifyItemInserted(idx)
+            }
+        }
+        return true
     }
 }
 
