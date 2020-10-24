@@ -375,8 +375,8 @@ open class FylFormViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
             )
         }
 
-        titleImageView?.layoutParams?.height = dpToPx(s.iconSize)
-        titleImageView?.layoutParams?.width = dpToPx(s.iconSize)
+        titleImageView?.layoutParams?.height = dpToPx(s.iconSize.height)
+        titleImageView?.layoutParams?.width = dpToPx(s.iconSize.width)
         titleImageView?.setImageDrawable(s.iconTitle)
         if (s.iconTitle != null) {
             titleImageView?.visibility = View.VISIBLE
@@ -674,6 +674,8 @@ open class FylFormSwitchViewHolder(inflater: LayoutInflater, resource: Int, pare
                 setSwitchImage(s.isOn)
                 listener?.onValueChanged(s)
             }
+            switchView?.layoutParams?.height = dpToPx(s.iconSize.height)
+            switchView?.layoutParams?.width = dpToPx(s.iconSize.width)
             setSwitchImage(s.isOn)
         }
     }
@@ -718,6 +720,8 @@ open class FylFormRadioViewHolder(inflater: LayoutInflater, resource: Int, paren
         }
         if (s is FylFormItemRadio) {
             item = s
+            radioView?.layoutParams?.height = dpToPx(s.iconSize.height)
+            radioView?.layoutParams?.width = dpToPx(s.iconSize.width)
             setRadioImage(s.isOn)
         }
     }

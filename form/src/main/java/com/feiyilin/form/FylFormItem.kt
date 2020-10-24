@@ -1,6 +1,7 @@
 package com.feiyilin.form
 
 import android.graphics.drawable.Drawable
+import android.util.Size
 import android.view.Gravity
 import android.view.inputmethod.EditorInfo
 import java.util.*
@@ -11,7 +12,7 @@ open class FylFormItem {
     var subTitle: String = ""
     var subTitleColor: Int? = null
     var iconTitle: Drawable? = null
-    var iconSize: Int = 24
+    var iconSize: Size = Size(24, 24)
     var dragable: Boolean = false
     var tag: String = ""
     var originalValue: String = ""
@@ -39,8 +40,12 @@ fun <T : FylFormItem> T.iconTitle(iconTitle: Drawable?) = apply {
     this.iconTitle = iconTitle
 }
 
-fun <T : FylFormItem> T.iconSize(iconSize: Int) = apply {
+fun <T : FylFormItem> T.iconSize(iconSize: Size) = apply {
     this.iconSize = iconSize
+}
+
+fun <T : FylFormItem> T.iconSize(weight: Int, height: Int) = apply {
+    this.iconSize = Size(weight, height)
 }
 
 fun <T : FylFormItem> T.tag(tag: String) = apply {
@@ -174,6 +179,9 @@ open class FylFormItemSwitchNative : FylFormItemToggle() {
 }
 
 open class FylFormItemSwitch : FylFormItemToggleCustomDraw() {
+    init {
+        this.iconSize(Size(48, 24))
+    }
 }
 
 open class FylFormItemRadioNative : FylFormItemToggle() {
@@ -186,6 +194,9 @@ fun <T : FylFormItemRadioNative> T.group(group: String) = apply {
 
 open class FylFormItemRadio : FylFormItemToggleCustomDraw() {
     var group: String = ""
+    init {
+        this.iconSize(Size(24, 24))
+    }
 }
 
 fun <T : FylFormItemRadio> T.group(group: String) = apply {

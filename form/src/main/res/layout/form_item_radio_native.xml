@@ -18,7 +18,7 @@
             android:id="@+id/formElementRadio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingEnd="8dp"
+            android:layout_marginEnd="2dp"
             android:text="" />
 
         <include layout="@layout/form_title"/>
