@@ -48,6 +48,10 @@ fun <T : FylFormItem> T.iconSize(weight: Int, height: Int) = apply {
     this.iconSize = Size(weight, height)
 }
 
+fun <T : FylFormItem> T.iconSize(iconSize: Int) = apply {
+    this.iconSize = Size(iconSize, iconSize)
+}
+
 fun <T : FylFormItem> T.tag(tag: String) = apply {
     this.tag = tag
 }
