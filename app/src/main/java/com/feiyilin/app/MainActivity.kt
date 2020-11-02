@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         cal.set(2020, 6, 19)
 
         settings = mutableListOf(
-            FylFormItemSection().title("Text"),
+            FylFormItemSection().title("Text").tag("sec_text"),
             FylFormItemText().title("Text").tag("text").required(true),
             FylFormItemText().title("Text").subTitle("here is subtitle").tag("text_subtitle"),
             FylFormItemText().title("Text").subTitle("dragable").dragable(true)
@@ -75,10 +75,14 @@ class MainActivity : AppCompatActivity() {
             FylFormItemSection().title("Switch"),
             FylFormItemSwitch().isOn(true).title("Switch").tag("switch"),
             FylFormItemSwitchNative().isOn(true).title("Switch native").tag("switch_native"),
+
+            FylFormItemSwitchNative().isOn(true).title("Show action item").tag("switch_show_action"),
             FylFormItemAction().title("Action").tag("action").subTitle("description")
                 .iconTitle(ContextCompat.getDrawable(this, R.drawable.ic_form_info)),
 
-            FylFormItemSection().title("Date / Time"),
+            FylFormItemSwitchNative().isOn(true).title("Show date/time section").tag("switch_show_date"),
+
+            FylFormItemSection().title("Date / Time").tag("sec_date"),
             FylFormItemDate().tag("date").title("Date").date(cal.time),
             FylFormItemDate().tag("date_only").title("Date only").date(cal.time).dateOnly(true),
             FylFormItemDate().tag("time_only").title("Time only").date(cal.time).timeOnly(true),
@@ -103,12 +107,26 @@ class MainActivity : AppCompatActivity() {
     private var onSettingProfileItemClickListener = object : FlyFormItemCallback {
         override fun onValueChanged(item: FylFormItem) {
             Log.i("onValueChanged", item.toString())
-            if (item.tag == "switch_native") {
+            if (item.tag == "switch_show_date") {
                 if (item is FylFormItemSwitchNative) {
                     (setting_profile_recyclerView?.adapter as? FylFormRecyclerAdaptor)?.let { adapter ->
                         val action = adapter.itemByTag(
-                                "action"
+                                "sec_date"
                             )
+                        action?.let {
+                            it.hidden = !item.isOn
+                            runOnUiThread {
+                                adapter.evaluateHidden(it)
+                            }
+                        }
+                    }
+                }
+            } else if (item.tag == "switch_show_action") {
+                if (item is FylFormItemSwitchNative) {
+                    (setting_profile_recyclerView?.adapter as? FylFormRecyclerAdaptor)?.let { adapter ->
+                        val action = adapter.itemByTag(
+                            "action"
+                        )
                         action?.let {
                             it.hidden = !item.isOn
                             runOnUiThread {

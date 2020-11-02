@@ -287,13 +287,26 @@ open class FylFormRecyclerAdaptor(
 
         var idx = settingsVisible.indexOf(item)
         if (item.hidden) {
-
             if (idx != -1) {
                 settingsVisible.removeAt(idx)
                 notifyItemRemoved(idx)
+                if (item is FylFormItemSection) {
+                    // if it is sectionm, hide all its items
+                    while (settingsVisible.size > idx) {
+                        val child = settingsVisible[idx]
+                        if (child is FylFormItemSection) {
+                            // start the next section
+                            break
+                        }
+                        // hide the child
+                        settingsVisible.removeAt(idx)
+                        notifyItemRemoved(idx)
+                    }
+                }
             }
         } else {
             if (idx == -1) {
+                // find the corresponding index in settingVisible
                 idx = 0
                 for (tmp in settings) {
                     if (item == tmp) {
@@ -305,6 +318,26 @@ open class FylFormRecyclerAdaptor(
                 }
                 settingsVisible.add(idx, item)
                 notifyItemInserted(idx)
+
+                if (item is FylFormItemSection) {
+                    // if item is section, show all its children
+                    var orgChildIdx = orgIdx + 1
+                    while (orgChildIdx < settingsVisible.size) {
+                        val child = settings[orgChildIdx]
+                        orgChildIdx += 1
+                        if (child is FylFormItemSection) {
+                            // start the next section
+                            break
+                        }
+                        if (child.hidden) {
+                            continue
+                        }
+                        // show the child
+                        idx += 1
+                        settingsVisible.add(idx, child)
+                        notifyItemInserted(idx)
+                    }
+                }
             }
         }
         return true
@@ -615,11 +648,11 @@ open class FylFormActionViewHolder(inflater: LayoutInflater, resource: Int, pare
                     leftSpace?.visibility = View.VISIBLE
                     rightSpace?.visibility = View.VISIBLE
                 }
-                Gravity.LEFT -> {
+                Gravity.START, Gravity.LEFT -> {
                     leftSpace?.visibility = View.GONE
                     rightSpace?.visibility = View.VISIBLE
                 }
-                Gravity.RIGHT -> {
+                Gravity.END, Gravity.RIGHT -> {
                     leftSpace?.visibility = View.VISIBLE
                     rightSpace?.visibility = View.GONE
                 }
