@@ -52,7 +52,8 @@ class MainActivity : AppCompatActivity() {
             FylFormItemNav().title("Nav item").tag("nav_item"),
             FylFormItemNav().title("Nav item with subtitle").subTitle("www.abc.com")
                 .tag("nav_item_subtitle"),
-            FylFormItemNav().title("Nav item with badge").tag("nav_item_badge").badge("")
+            FylFormItemNav().title("Nav item with badge").tag("nav_item_badge").badge(""),
+            FylFormItemNav().title("Nav item with badge and icon").tag("nav_item_badge_icon").badge("")
                 .iconTitle(ContextCompat.getDrawable(this, R.drawable.ic_form_info)),
             FylFormItemNav().title("Nav item with number badge").tag("nav_item_badge_num").badge("99").iconSize(32, 32)
                 .iconTitle(ContextCompat.getDrawable(this, R.drawable.ic_form_info)),

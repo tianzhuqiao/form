@@ -17,43 +17,41 @@
             android:layout_marginBottom = "0dp">
 
         <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                app:srcCompat="@drawable/ic_form_info"
-                android:id="@+id/formElementTitleImage"
-                android:visibility="gone"/>
+            android:id="@+id/formElementTitleImage"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="10dp"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_form_info" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/formElementBadge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:layout_marginTop="3dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/ic_form_badge_background"
-            android:minWidth="10dp"
-            android:minHeight="10dp"
-            android:translationZ="3dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/formElementBadgeTitle"
+                android:id="@+id/formElementBadge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
-                android:text="1"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
+                android:layout_gravity="top"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/ic_form_badge_background"
+                android:minWidth="10dp"
+                android:minHeight="10dp"
+                android:translationZ="3dp">
+            <TextView
+                    android:id="@+id/formElementBadgeTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:text="1"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
         <include layout="@layout/form_title"
             android:layout_marginTop = "10dp"
             android:layout_marginBottom = "10dp"

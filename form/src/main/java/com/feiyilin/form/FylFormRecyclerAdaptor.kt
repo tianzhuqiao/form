@@ -802,12 +802,11 @@ open class FylFormNavViewHolder(inflater: LayoutInflater, resource: Int, parent:
                 badgeView?.minHeight = dpToPx(20)
                 badgeView?.minWidth = dpToPx(20)
             }
+            val param = badgeView?.layoutParams as? ViewGroup.MarginLayoutParams
             if (titleImageView?.visibility == View.VISIBLE) {
-                titleImageView?.let {
-                    badgeView?.x = it.x + it.width - dpToPx(5)
-                }
+                param?.leftMargin = dpToPx(-10)
             } else {
-                badgeView?.x = 0F
+                param?.leftMargin = dpToPx(0)
             }
         }
     }
