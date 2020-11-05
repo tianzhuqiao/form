@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -87,6 +88,20 @@ class MainActivity : AppCompatActivity() {
             FylFormItemDate().tag("date_only").title("Date only").date(cal.time).dateOnly(true),
             FylFormItemDate().tag("time_only").title("Time only").date(cal.time).timeOnly(true),
 
+            FylFormItemSection().title("Swipe Action").tag("sec_swipe"),
+            FylFormItemNav().title("Swipe left").trailingSwipe(listOf(FylFormSwipeAction().title("Delete").width(400f).icon(ContextCompat.getDrawable(this, R.drawable.ic_delete_white)))),
+            FylFormItemNav().title("Swipe right").leadingSwipe(listOf(FylFormSwipeAction().title("Delete").width(400f).icon(ContextCompat.getDrawable(this, R.drawable.ic_delete_white)))),
+            FylFormItemNav().title("Swipe left with multiple actions").trailingSwipe(listOf(
+                FylFormSwipeAction().title("Delete").backgroundColor(ContextCompat.getColor(this, android.R.color.holo_red_light)),
+                FylFormSwipeAction().title("Archive").backgroundColor(ContextCompat.getColor(this, android.R.color.holo_blue_light)),
+                FylFormSwipeAction().title("Mark as unread").backgroundColor(ContextCompat.getColor(this, android.R.color.holo_green_light))
+            )),
+            FylFormItemNav().title("Swipe right with multiple actions").leadingSwipe(listOf(
+                FylFormSwipeAction().title("Delete").backgroundColor(ContextCompat.getColor(this, android.R.color.holo_red_light)),
+                FylFormSwipeAction().title("Archive").backgroundColor(ContextCompat.getColor(this, android.R.color.holo_blue_light)),
+                FylFormSwipeAction().title("Mark as unread").backgroundColor(ContextCompat.getColor(this, android.R.color.holo_green_light))
+            )),
+
             FylFormItemSection().title("Custom item"),
             FylFormItemImage().tag("image").image(R.drawable.image1)
         )
@@ -140,6 +155,15 @@ class MainActivity : AppCompatActivity() {
 
         override fun onItemClicked(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) {
             Log.i("onItemClicked", item.toString())
+        }
+
+        override fun onSwipeAction(
+            item: FylFormItem,
+            action: FylFormSwipeAction,
+            viewHolder: RecyclerView.ViewHolder
+        ) {
+            super.onSwipeAction(item, action, viewHolder)
+            Toast.makeText(this@MainActivity, "${item.title}: ${action.title}", Toast.LENGTH_SHORT).show()
         }
     }
 }

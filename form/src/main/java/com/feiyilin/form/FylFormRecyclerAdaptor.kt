@@ -6,9 +6,7 @@ import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.graphics.*
 import android.os.Handler
-import android.text.Editable
-import android.text.SpannableString
-import android.text.TextWatcher
+import android.text.*
 import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.*
@@ -23,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputLayout
 import java.text.SimpleDateFormat
 
+
 interface FlyFormItemCallback {
     fun onSetup(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) {}
     fun onValueChanged(item: FylFormItem) {}
@@ -35,6 +34,8 @@ interface FlyFormItemCallback {
     fun onMoveItem(src: Int, dest: Int): Boolean {
         return false
     }
+
+    fun onSwipeAction(item: FylFormItem, action: FylFormSwipeAction, viewHolder: RecyclerView.ViewHolder) {}
 }
 
 open class FylFormRecyclerAdaptor(
@@ -128,12 +129,14 @@ open class FylFormRecyclerAdaptor(
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
         val touchHelper =
-            object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.DOWN or ItemTouchHelper.UP, 0) {
-                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            object : FylFormSwipeHelper() {
+
+                override fun getFlyFormItem(pos: Int): FylFormItem {
+                    return settingsVisible[pos]
                 }
 
-                override fun isLongPressDragEnabled(): Boolean {
-                    return false
+                override fun updateItem(pos: Int) {
+                    recyclerView.adapter?.notifyItemChanged(pos)
                 }
 
                 override fun onMove(
@@ -145,10 +148,18 @@ open class FylFormRecyclerAdaptor(
                     val des = target.adapterPosition
                     return onFormItemCallback.onMoveItem(src, des)
                 }
+
+                override fun onActionClicked(pos: Int, action: FylFormSwipeAction) {
+                    val item = settingsVisible[pos]
+                    recyclerView.findViewHolderForAdapterPosition(pos)?.let {
+                        return onFormItemCallback.onSwipeAction(item, action, it)
+                    }
+                }
             }
 
         itemTouchHelper = ItemTouchHelper(touchHelper)
         itemTouchHelper?.attachToRecyclerView(recyclerView)
+        touchHelper.attachToRecyclerView(recyclerView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -272,6 +283,15 @@ open class FylFormRecyclerAdaptor(
 
         override fun onTitleImageClicked(item: FylFormItem) {
             listener?.onTitleImageClicked(item)
+        }
+
+        override fun onSwipeAction(
+            item: FylFormItem,
+            action: FylFormSwipeAction,
+            viewHolder: RecyclerView.ViewHolder
+        ) {
+            super.onSwipeAction(item, action, viewHolder)
+            listener?.onSwipeAction(item, action, viewHolder)
         }
     }
 
@@ -569,21 +589,6 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
                     }
                 }, 200)
             }
-        }
-    }
-
-    private val valueWatcher = object : TextWatcher {
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            item?.value = s.toString()
-            item?.let {
-                listener?.onValueChanged(it)
-            }
-        }
-
-        override fun afterTextChanged(s: Editable?) {
-        }
-
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
         }
     }
 }

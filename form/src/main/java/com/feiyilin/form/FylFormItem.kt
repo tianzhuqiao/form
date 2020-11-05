@@ -1,10 +1,50 @@
 package com.feiyilin.form
 
+import android.graphics.Color
+import android.graphics.Rect
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.util.Size
 import android.view.Gravity
 import android.view.inputmethod.EditorInfo
 import java.util.*
+
+open class FylFormSwipeAction {
+    enum class Style {
+        destructive,
+        normal
+    }
+    var title: String = ""
+    var icon: Drawable? = null
+    var textSize: Float = 12.0f
+    var backgroundColor: Int = Color.RED
+    var width: Float = 0F
+    var style: Style = Style.normal
+    var rect = RectF()
+}
+fun <T : FylFormSwipeAction> T.title(title: String) = apply {
+    this.title = title
+}
+
+fun <T : FylFormSwipeAction> T.icon(icon: Drawable?) = apply {
+    this.icon = icon
+}
+
+fun <T : FylFormSwipeAction> T.textSize(textSize: Float) = apply {
+    this.textSize = textSize
+}
+
+fun <T : FylFormSwipeAction> T.backgroundColor(backgroundColor: Int) = apply {
+    this.backgroundColor = backgroundColor
+}
+
+fun <T : FylFormSwipeAction> T.width(width: Float) = apply {
+    this.width = width
+}
+
+fun <T : FylFormSwipeAction> T.style(style: FylFormSwipeAction.Style) = apply {
+    this.style = style
+}
 
 open class FylFormItem {
     var title: String = ""
@@ -18,6 +58,8 @@ open class FylFormItem {
     var originalValue: String = ""
     var required: Boolean = false
     var hidden: Boolean = false
+    var leadingSwipe = listOf<FylFormSwipeAction>()
+    var trailingSwipe = listOf<FylFormSwipeAction>()
 }
 
 fun <T : FylFormItem> T.title(title: String) = apply {
@@ -66,6 +108,14 @@ fun <T : FylFormItem> T.required(required: Boolean=true) = apply {
 
 fun <T : FylFormItem> T.hidden(hidden: Boolean=true) = apply {
     this.hidden = hidden
+}
+
+fun <T : FylFormItem> T.leadingSwipe(actions: List<FylFormSwipeAction>) = apply {
+    this.leadingSwipe = actions
+}
+
+fun <T : FylFormItem> T.trailingSwipe(actions: List<FylFormSwipeAction>) = apply {
+    this.trailingSwipe = actions
 }
 
 open class FylFormItemLabel : FylFormItem() {
