@@ -157,12 +157,12 @@ class MainActivity : AppCompatActivity() {
             Log.i("onItemClicked", item.toString())
         }
 
-        override fun onSwipeAction(
+        override fun onSwipedAction(
             item: FylFormItem,
             action: FylFormSwipeAction,
             viewHolder: RecyclerView.ViewHolder
         ) {
-            super.onSwipeAction(item, action, viewHolder)
+            super.onSwipedAction(item, action, viewHolder)
             Toast.makeText(this@MainActivity, "${item.title}: ${action.title}", Toast.LENGTH_SHORT).show()
         }
 

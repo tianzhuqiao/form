@@ -35,7 +35,7 @@ interface FlyFormItemCallback {
         return false
     }
 
-    fun onSwipeAction(item: FylFormItem, action: FylFormSwipeAction, viewHolder: RecyclerView.ViewHolder) {}
+    fun onSwipedAction(item: FylFormItem, action: FylFormSwipeAction, viewHolder: RecyclerView.ViewHolder) {}
     fun getMinItemHeight(item: FylFormItem) : Int { return 0 }
 }
 
@@ -153,7 +153,7 @@ open class FylFormRecyclerAdaptor(
                 override fun onActionClicked(pos: Int, action: FylFormSwipeAction) {
                     val item = settingsVisible[pos]
                     recyclerView.findViewHolderForAdapterPosition(pos)?.let {
-                        onFormItemCallback.onSwipeAction(item, action, it)
+                        onFormItemCallback.onSwipedAction(item, action, it)
                     }
                     if (settingsVisible.indexOf(item) >= 0) {
                         updateItem(pos)
@@ -289,13 +289,13 @@ open class FylFormRecyclerAdaptor(
             listener?.onTitleImageClicked(item)
         }
 
-        override fun onSwipeAction(
+        override fun onSwipedAction(
             item: FylFormItem,
             action: FylFormSwipeAction,
             viewHolder: RecyclerView.ViewHolder
         ) {
-            super.onSwipeAction(item, action, viewHolder)
-            listener?.onSwipeAction(item, action, viewHolder)
+            super.onSwipedAction(item, action, viewHolder)
+            listener?.onSwipedAction(item, action, viewHolder)
         }
 
         override fun getMinItemHeight(item: FylFormItem): Int {
