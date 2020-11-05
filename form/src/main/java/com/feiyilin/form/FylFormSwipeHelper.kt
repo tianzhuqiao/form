@@ -32,6 +32,22 @@ abstract class FylFormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelpe
         super.onSelectedChanged(viewHolder, direction)
         swipedPosition = viewHolder.adapterPosition
         swipedDirection = direction
+
+        if (swipedPosition >= 0) {
+            val item = getFlyFormItem(swipedPosition)
+            val actions = if (swipedDirection == ItemTouchHelper.LEFT) {
+                item.trailingSwipe
+            } else {
+                item.leadingSwipe
+            }
+            if (isDestructive(actions)) {
+                onActionClicked(swipedPosition, actions[0])
+            }
+        }
+    }
+
+    fun isDestructive(actions: List<FylFormSwipeAction>): Boolean {
+        return actions.size == 1 && actions[0].style == FylFormSwipeAction.Style.Destructive
     }
 
     override fun getMovementFlags(
@@ -181,24 +197,27 @@ abstract class FylFormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelpe
                              dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
         var maxDX = dX
         val position = viewHolder.adapterPosition
+        val item = getFlyFormItem(position)
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE && position == swipeingPosition) {
             val itemView = viewHolder.itemView
             if (dX < 0) {
                 // swipe to left
-                val minSwipedOffset = -recyclerView.width.toFloat()
                 val actions = getFlyFormItem(position).trailingSwipe
-                val actionsWidth = getActionsWidth(actions, recyclerView.context)
                 if (actions.isNotEmpty()) {
-                    maxDX = max(-actionsWidth, dX)
-                    if (swipedPosition == swipeingPosition) {
-                        // the current item is swiped, the user is trying to close it
-                        maxDX = max(maxDX, -actionsWidth - (minSwipedOffset - dX))
-                        maxDX = min(0f, maxDX)
-                        endSwipedOffset = maxDX
-                    }
-                    if (closedSwipe) {
-                        // we have un-swiped to the original pos, keep it there to avoid flashing
-                        maxDX = 0f
+                    if (!isDestructive(actions)) {
+                        val minSwipedOffset = -recyclerView.width.toFloat()
+                        val actionsWidth = getActionsWidth(actions, recyclerView.context)
+                        maxDX = max(-actionsWidth, dX)
+                        if (swipedPosition == swipeingPosition) {
+                            // the current item is swiped, the user is trying to close it
+                            maxDX = max(maxDX, -actionsWidth - (minSwipedOffset - dX))
+                            maxDX = min(0f, maxDX)
+                            endSwipedOffset = maxDX
+                        }
+                        if (closedSwipe) {
+                            // we have un-swiped to the original pos, keep it there to avoid flashing
+                            maxDX = 0f
+                        }
                     }
                     drawActions(actions, c, itemView, maxDX)
                 }
@@ -207,18 +226,20 @@ abstract class FylFormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelpe
                 // swipe to right
                 val actions = getFlyFormItem(position).leadingSwipe
                 if (actions.isNotEmpty()) {
-                    val maxSwipedOffset = recyclerView.width.toFloat()
-                    val actionsWidth = getActionsWidth(actions, recyclerView.context)
-                    maxDX = min(actionsWidth, dX)
-                    if (swipedPosition == swipeingPosition) {
-                        // the current item is swiped, the user is trying to close it
-                        maxDX = min(maxDX, actionsWidth - (maxSwipedOffset - dX))
-                        maxDX = max(0f, maxDX)
-                        endSwipedOffset = maxDX
-                    }
-                    if (closedSwipe) {
-                        // we have un-swiped to the original pos, keep it there to avoid flashing
-                        maxDX = 0f
+                    if (!isDestructive(actions)) {
+                        val maxSwipedOffset = recyclerView.width.toFloat()
+                        val actionsWidth = getActionsWidth(actions, recyclerView.context)
+                        maxDX = min(actionsWidth, dX)
+                        if (swipedPosition == swipeingPosition) {
+                            // the current item is swiped, the user is trying to close it
+                            maxDX = min(maxDX, actionsWidth - (maxSwipedOffset - dX))
+                            maxDX = max(0f, maxDX)
+                            endSwipedOffset = maxDX
+                        }
+                        if (closedSwipe) {
+                            // we have un-swiped to the original pos, keep it there to avoid flashing
+                            maxDX = 0f
+                        }
                     }
                     drawActions(actions, c, itemView, maxDX, false)
                 }

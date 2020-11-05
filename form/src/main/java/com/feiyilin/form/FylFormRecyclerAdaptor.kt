@@ -152,7 +152,10 @@ open class FylFormRecyclerAdaptor(
                 override fun onActionClicked(pos: Int, action: FylFormSwipeAction) {
                     val item = settingsVisible[pos]
                     recyclerView.findViewHolderForAdapterPosition(pos)?.let {
-                        return onFormItemCallback.onSwipeAction(item, action, it)
+                        onFormItemCallback.onSwipeAction(item, action, it)
+                    }
+                    if (settingsVisible.indexOf(item) >= 0) {
+                        updateItem(pos)
                     }
                 }
             }

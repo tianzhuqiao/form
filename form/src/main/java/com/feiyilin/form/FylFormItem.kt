@@ -1,7 +1,6 @@
 package com.feiyilin.form
 
 import android.graphics.Color
-import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.util.Size
@@ -11,15 +10,15 @@ import java.util.*
 
 open class FylFormSwipeAction {
     enum class Style {
-        destructive,
-        normal
+        Destructive,
+        Normal
     }
     var title: String = ""
     var icon: Drawable? = null
     var textSize: Float = 12.0f
-    var backgroundColor: Int = Color.RED
+    var backgroundColor: Int = Color.parseColor("#ffff4444")
     var width: Float = 0F
-    var style: Style = Style.normal
+    var style: Style = Style.Normal
     var rect = RectF()
 }
 fun <T : FylFormSwipeAction> T.title(title: String) = apply {
