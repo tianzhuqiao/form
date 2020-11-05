@@ -18,7 +18,7 @@ Add **form** to dependencies in your app's build.gradle:
 ```gradle
 dependencies {
     ...
-    implementation 'com.feiyilin:form:0.1'
+    implementation 'com.feiyilin:form:0.2'
 }
 ```
 ## 2. Update Activity
@@ -88,6 +88,40 @@ class MainActivity : AppCompatActivity() {
     }
 }
 ```
+# Using the callbacks
+**FlyFormItemCallback** can be used to change the appearance and behavior of an item
+
+* **onSetup**
+
+    Called when the item is configured.
+    
+* **onValueChanged**
+
+    Called when the value of an item changes.
+    
+* **onItemClicked**
+
+    Called when an item is clicked.
+    
+* **onTitleImageClicked**
+
+    Called when the title icon is clicked
+    
+* **onStartReorder**
+
+    Called before moving/reordering an item. Return **true** from the callback to disable the default action.
+
+* **onMoveItem**
+
+    Called before finishing moving an item. Return **true** from the callback to disable the default action.
+
+* **onSwipedAction**
+
+    Called when a swipe action is triggered.
+
+* **getMinItemHeight**
+
+    Called when configure/bind an item. Can be used to update the minimum height for all (or a group of) items.
 
 # Custom item
 Design the layout of your item, e.g., **form_item_image.xml**
