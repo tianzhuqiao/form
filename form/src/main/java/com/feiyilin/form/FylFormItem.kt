@@ -57,6 +57,7 @@ open class FylFormItem {
     var originalValue: String = ""
     var required: Boolean = false
     var hidden: Boolean = false
+    var minHeight: Int = 0
     var leadingSwipe = listOf<FylFormSwipeAction>()
     var trailingSwipe = listOf<FylFormSwipeAction>()
 }
@@ -107,6 +108,10 @@ fun <T : FylFormItem> T.required(required: Boolean=true) = apply {
 
 fun <T : FylFormItem> T.hidden(hidden: Boolean=true) = apply {
     this.hidden = hidden
+}
+
+fun <T : FylFormItem> T.minHeight(height: Int) = apply {
+    this.minHeight = height
 }
 
 fun <T : FylFormItem> T.leadingSwipe(actions: List<FylFormSwipeAction>) = apply {

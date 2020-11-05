@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
             FylFormItemDate().tag("time_only").title("Time only").date(cal.time).timeOnly(true),
 
             FylFormItemSection().title("Swipe Action").tag("sec_swipe"),
-            FylFormItemNav().title("Swipe left").trailingSwipe(listOf(FylFormSwipeAction().title("Delete").style(FylFormSwipeAction.Style.Destructive).width(400f).icon(ContextCompat.getDrawable(this, R.drawable.ic_delete_white)))),
+            FylFormItemNav().title("Swipe left").minHeight(44).trailingSwipe(listOf(FylFormSwipeAction().title("Delete").style(FylFormSwipeAction.Style.Destructive).width(400f).icon(ContextCompat.getDrawable(this, R.drawable.ic_delete_white)))),
             FylFormItemNav().title("Swipe right").leadingSwipe(listOf(FylFormSwipeAction().title("Delete").style(FylFormSwipeAction.Style.Destructive).width(400f).icon(ContextCompat.getDrawable(this, R.drawable.ic_delete_white)))),
             FylFormItemNav().title("Swipe left with multiple actions").trailingSwipe(listOf(
                 FylFormSwipeAction().title("Delete").backgroundColor(ContextCompat.getColor(this, android.R.color.holo_red_light)),
@@ -164,6 +164,13 @@ class MainActivity : AppCompatActivity() {
         ) {
             super.onSwipeAction(item, action, viewHolder)
             Toast.makeText(this@MainActivity, "${item.title}: ${action.title}", Toast.LENGTH_SHORT).show()
+        }
+
+        override fun getMinItemHeight(item: FylFormItem): Int {
+            if (item is FylFormItemSection) {
+                return 0
+            }
+            return 44
         }
     }
 }

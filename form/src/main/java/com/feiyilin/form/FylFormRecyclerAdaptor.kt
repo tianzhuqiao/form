@@ -36,6 +36,7 @@ interface FlyFormItemCallback {
     }
 
     fun onSwipeAction(item: FylFormItem, action: FylFormSwipeAction, viewHolder: RecyclerView.ViewHolder) {}
+    fun getMinItemHeight(item: FylFormItem) : Int { return 0 }
 }
 
 open class FylFormRecyclerAdaptor(
@@ -296,6 +297,10 @@ open class FylFormRecyclerAdaptor(
             super.onSwipeAction(item, action, viewHolder)
             listener?.onSwipeAction(item, action, viewHolder)
         }
+
+        override fun getMinItemHeight(item: FylFormItem): Int {
+            return listener?.getMinItemHeight(item) ?: 0
+        }
     }
 
     fun itemByTag(tag: String) : FylFormItem? {
@@ -374,15 +379,24 @@ open class FylFormViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
     var subtitleView: TextView? = null
     var titleImageView: ImageView? = null
     var reorderView: ImageView? = null
+    var mainView: View? = null
 
     init {
         titleView = itemView.findViewById(R.id.formElementTitle)
         subtitleView = itemView.findViewById(R.id.formElementSubTitle)
         titleImageView = itemView.findViewById(R.id.formElementTitleImage)
         reorderView = itemView.findViewById(R.id.formElementReorder)
+        mainView = itemView.findViewById(R.id.formElementMainLayout)
     }
 
     open fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+        var minHeight = s.minHeight
+         if (minHeight == 0) {
+             minHeight = listener?.getMinItemHeight(s) ?: 0
+         }
+        if (minHeight > 0) {
+            mainView?.minimumHeight = dpToPx(minHeight)
+        }
         itemView.setOnClickListener {
             listener?.onItemClicked(s, this)
         }
