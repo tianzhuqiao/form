@@ -1,4 +1,4 @@
-# Form in Kotlin for Android
+# Form: form builder in Kotlin for Android
 
 <img src="./images/image1.png" width="22%"> <img src="./images/image4.png" width="22%"> <img src="./images/image3.png" width="22%"> <img src="./images/image2.png" width="22%">
 
@@ -122,6 +122,32 @@ class MainActivity : AppCompatActivity() {
 * **getMinItemHeight**
 
     Called when configure/bind an item. Can be used to update the minimum height for all (or a group of) items.
+
+# Swipe actions
+For each item, we can define the leading/left or trailing/right swipe actions (following the idea [here](https://stackoverflow.com/questions/44965278/recyclerview-itemtouchhelper-buttons-on-swipe/45062745#45062745)).
+ For example
+```kotlin
+ FylFormItemNav().title("Swipe left with multiple actions").trailingSwipe(listOf(
+                FylFormSwipeAction().title("Delete")
+                                    .backgroundColor(ContextCompat.getColor(this, android.R.color.holo_red_light)),
+                FylFormSwipeAction().title("Archive")
+                                    .backgroundColor(ContextCompat.getColor(this, android.R.color.holo_blue_light)),
+                FylFormSwipeAction().title("Mark as unread")
+                                    .backgroundColor(ContextCompat.getColor(this, android.R.color.holo_green_light))
+            )),
+```
+Once an action is triggered, **onSwipedAction** callback will be called
+```kotlin
+    override fun onSwipedAction(
+            item: FylFormItem,
+            action: FylFormSwipeAction,
+            viewHolder: RecyclerView.ViewHolder
+        ) {
+            super.onSwipedAction(item, action, viewHolder)
+            Toast.makeText(this@MainActivity, "${item.title}: ${action.title}", Toast.LENGTH_SHORT).show()
+        }
+```
+<img src="./images/swipe.gif" width="36%">
 
 # Custom item
 Design the layout of your item, e.g., **form_item_image.xml**
