@@ -9,11 +9,13 @@
 
     <LinearLayout
         android:id="@+id/formElementMainLayout"
-        style="@style/formMainLayout"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="4dp">
+        style="@style/formMainLayout">
 
-        <include layout="@layout/form_title" />
+        <include layout="@layout/form_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="8dp"/>
     </LinearLayout>
 
     <include layout="@layout/form_divider" />

@@ -9,15 +9,10 @@
 
     <LinearLayout
         android:id="@+id/formElementMainLayout"
-        style="@style/formMainLayout"
-        android:layout_marginTop = "0dp"
-        android:layout_marginBottom = "0dp">
+        style="@style/formMainLayout">
 
-        <include layout="@layout/form_title"
-            android:layout_marginTop = "10dp"
-            android:layout_marginBottom = "10dp"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content" />
+        <include
+            layout="@layout/form_title" />
 
         <TextView
             android:id="@+id/formElementDate"
