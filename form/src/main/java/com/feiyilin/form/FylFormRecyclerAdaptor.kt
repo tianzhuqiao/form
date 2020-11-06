@@ -860,10 +860,12 @@ open class FylFormNavViewHolder(inflater: LayoutInflater, resource: Int, parent:
     FylFormViewHolder(inflater, resource, parent) {
     var badgeView: ConstraintLayout? = null
     var badgeViewTitle: TextView? = null
+    var titleImageWrap: View? = null
 
     init {
         badgeView = itemView.findViewById(R.id.formElementBadge)
         badgeViewTitle = itemView.findViewById(R.id.formElementBadgeTitle)
+        titleImageWrap = itemView.findViewById(R.id.formElementTitleImageWrap)
     }
 
     override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
@@ -890,6 +892,11 @@ open class FylFormNavViewHolder(inflater: LayoutInflater, resource: Int, parent:
                 param?.leftMargin = dpToPx(-10)
             } else {
                 param?.leftMargin = dpToPx(2)
+            }
+            if (titleImageView?.visibility == View.GONE && badgeView?.visibility == View.GONE) {
+                titleImageWrap?.visibility = View.GONE
+            } else {
+                titleImageWrap?.visibility = View.VISIBLE
             }
         }
     }

@@ -197,7 +197,6 @@ abstract class FylFormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelpe
                              dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
         var maxDX = dX
         val position = viewHolder.adapterPosition
-        val item = getFlyFormItem(position)
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE && position == swipeingPosition) {
             val itemView = viewHolder.itemView
             if (dX < 0) {

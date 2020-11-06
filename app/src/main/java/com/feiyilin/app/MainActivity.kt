@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
             FylFormItemSection().title("Navigation item"),
             //FylFormItemLabel().title("Label").tag("label"),
-            FylFormItemNav().title("Nav item").tag("nav_item"),
+            FylFormItemNav().title("Nav item").tag("nav_item").iconTitle(ContextCompat.getDrawable(this, R.drawable.ic_form_info)),
             FylFormItemNav().title("Nav item with subtitle").subTitle("www.abc.com")
                 .tag("nav_item_subtitle"),
             FylFormItemNav().title("Nav item with badge").tag("nav_item_badge").badge(""),
@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
             FylFormItemDate().tag("time_only").title("Time only").date(cal.time).timeOnly(true),
 
             FylFormItemSection().title("Swipe Action").tag("sec_swipe"),
-            FylFormItemNav().title("Swipe left").minHeight(44).trailingSwipe(listOf(FylFormSwipeAction().title("Delete").style(FylFormSwipeAction.Style.Destructive).width(400f).icon(ContextCompat.getDrawable(this, R.drawable.ic_delete_white)))),
+            FylFormItemNav().title("Swipe left").trailingSwipe(listOf(FylFormSwipeAction().title("Delete").style(FylFormSwipeAction.Style.Destructive).width(400f).icon(ContextCompat.getDrawable(this, R.drawable.ic_delete_white)))),
             FylFormItemNav().title("Swipe right").leadingSwipe(listOf(FylFormSwipeAction().title("Delete").style(FylFormSwipeAction.Style.Destructive).width(400f).icon(ContextCompat.getDrawable(this, R.drawable.ic_delete_white)))),
             FylFormItemNav().title("Swipe left with multiple actions").trailingSwipe(listOf(
                 FylFormSwipeAction().title("Delete").backgroundColor(ContextCompat.getColor(this, android.R.color.holo_red_light)),

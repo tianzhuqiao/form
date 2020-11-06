@@ -18,6 +18,7 @@
                 android:id="@+id/formElementTitleImageWrap"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
                 android:minHeight="0dp"
                 android:minWidth="0dp">
 
@@ -39,7 +40,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="3dp"
                     android:layout_marginTop="-15dp"
-                    android:layout_marginEnd="10dp"
+
                     android:layout_marginBottom="3dp"
                     android:background="@drawable/ic_form_badge_background"
                     android:minWidth="10dp"
