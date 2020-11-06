@@ -123,6 +123,25 @@ class MainActivity : AppCompatActivity() {
 
     Called when configure/bind an item. Can be used to update the minimum height for all (or a group of) items.
 
+# Hide/show items
+You can dynamically show or hide items by 
+1. setting the **hidden** option;
+2. call **adapter.evaluateHidden()** to update the **RecyclerView**.
+
+For example
+```kotlin
+adapter.itemByTag("action")?.let {
+    it.hidden = !item.isOn
+    runOnUiThread {
+       adapter.evaluateHidden(it)
+    }
+}
+```
+
+If the item is a section, it will show/hide the item itself and all its visible children.
+
+<img src="./images/hide.gif" width="36%">
+
 # Swipe actions
 For each item, we can define the leading/left or trailing/right swipe actions (following the idea [here](https://stackoverflow.com/questions/44965278/recyclerview-itemtouchhelper-buttons-on-swipe/45062745#45062745)).
  For example
@@ -147,6 +166,7 @@ Once an action is triggered, **onSwipedAction** callback will be called
             Toast.makeText(this@MainActivity, "${item.title}: ${action.title}", Toast.LENGTH_SHORT).show()
         }
 ```
+
 <img src="./images/swipe.gif" width="36%">
 
 # Custom item
