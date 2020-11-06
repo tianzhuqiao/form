@@ -188,7 +188,17 @@ open class FylFormRecyclerAdaptor(
 
     fun setSettings(settings: List<FylFormItem>) {
         this.settings = settings.toMutableList()
-        this.settingsVisible = this.settings.filter { !it.hidden }.toMutableList()
+        this.settingsVisible.clear()
+        var hideSection = false
+        for (item in this.settings) {
+            if (item is FylFormItemSection) {
+                hideSection = item.hidden
+            }
+            if (item.hidden || hideSection) {
+                continue
+            }
+            settingsVisible.add(item)
+        }
         notifyDataSetChanged()
     }
 
@@ -307,6 +317,48 @@ open class FylFormRecyclerAdaptor(
         return settings.firstOrNull { it.tag == tag }
     }
 
+    fun hideSection(item: FylFormItemSection, hide: Boolean) {
+        // show/hide all visible children of a section (not the section item itself)
+        var idx = settingsVisible.indexOf(item)
+        if (idx == -1) {
+            return
+        }
+        val orgIdx = settings.indexOf(item)
+        if (orgIdx == -1) {
+            return
+        }
+        if (hide) {
+            idx += 1
+            while (settingsVisible.size > idx) {
+                val child = settingsVisible[idx]
+                if (child is FylFormItemSection) {
+                    // start the next section
+                    break
+                }
+                // hide the child
+                settingsVisible.removeAt(idx)
+                notifyItemRemoved(idx)
+            }
+        } else {
+            var orgChildIdx = orgIdx + 1
+            while (orgChildIdx < settings.size) {
+                val child = settings[orgChildIdx]
+                orgChildIdx += 1
+                if (child is FylFormItemSection) {
+                    // start the next section
+                    break
+                }
+                if (child.hidden) {
+                    continue
+                }
+                // show the child
+                idx += 1
+                settingsVisible.add(idx, child)
+                notifyItemInserted(idx)
+            }
+        }
+    }
+
     fun evaluateHidden(item: FylFormItem) : Boolean {
         val orgIdx = settings.indexOf(item)
         if (orgIdx == -1) {
@@ -316,21 +368,12 @@ open class FylFormRecyclerAdaptor(
         var idx = settingsVisible.indexOf(item)
         if (item.hidden) {
             if (idx != -1) {
+                if (item is FylFormItemSection) {
+                    // if item is section, hide all its children
+                    hideSection(item, true)
+                }
                 settingsVisible.removeAt(idx)
                 notifyItemRemoved(idx)
-                if (item is FylFormItemSection) {
-                    // if it is sectionm, hide all its items
-                    while (settingsVisible.size > idx) {
-                        val child = settingsVisible[idx]
-                        if (child is FylFormItemSection) {
-                            // start the next section
-                            break
-                        }
-                        // hide the child
-                        settingsVisible.removeAt(idx)
-                        notifyItemRemoved(idx)
-                    }
-                }
             }
         } else {
             if (idx == -1) {
@@ -349,22 +392,7 @@ open class FylFormRecyclerAdaptor(
 
                 if (item is FylFormItemSection) {
                     // if item is section, show all its children
-                    var orgChildIdx = orgIdx + 1
-                    while (orgChildIdx < settingsVisible.size) {
-                        val child = settings[orgChildIdx]
-                        orgChildIdx += 1
-                        if (child is FylFormItemSection) {
-                            // start the next section
-                            break
-                        }
-                        if (child.hidden) {
-                            continue
-                        }
-                        // show the child
-                        idx += 1
-                        settingsVisible.add(idx, child)
-                        notifyItemInserted(idx)
-                    }
+                    hideSection(item, false)
                 }
             }
         }
@@ -861,7 +889,7 @@ open class FylFormNavViewHolder(inflater: LayoutInflater, resource: Int, parent:
             if (titleImageView?.visibility == View.VISIBLE) {
                 param?.leftMargin = dpToPx(-10)
             } else {
-                param?.leftMargin = dpToPx(0)
+                param?.leftMargin = dpToPx(2)
             }
         }
     }
