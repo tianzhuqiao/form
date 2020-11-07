@@ -14,7 +14,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-abstract class FylFormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelper.DOWN or ItemTouchHelper.UP, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+abstract class FormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelper.DOWN or ItemTouchHelper.UP, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
 
     // the current item under swiping
     var swipeingPosition = -1
@@ -24,7 +24,7 @@ abstract class FylFormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelpe
     var endSwipedOffset : Float = -1.0f
     var closedSwipe = false
 
-    abstract fun getFlyFormItem(pos: Int) : FylFormItem
+    abstract fun getFormItem(pos: Int) : FormItem
 
     abstract fun updateItem(pos: Int)
 
@@ -34,7 +34,7 @@ abstract class FylFormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelpe
         swipedDirection = direction
 
         if (swipedPosition >= 0) {
-            val item = getFlyFormItem(swipedPosition)
+            val item = getFormItem(swipedPosition)
             val actions = if (swipedDirection == ItemTouchHelper.LEFT) {
                 item.trailingSwipe
             } else {
@@ -46,8 +46,8 @@ abstract class FylFormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelpe
         }
     }
 
-    fun isDestructive(actions: List<FylFormSwipeAction>): Boolean {
-        return actions.size == 1 && actions[0].style == FylFormSwipeAction.Style.Destructive
+    fun isDestructive(actions: List<FormSwipeAction>): Boolean {
+        return actions.size == 1 && actions[0].style == FormSwipeAction.Style.Destructive
     }
 
     override fun getMovementFlags(
@@ -56,7 +56,7 @@ abstract class FylFormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelpe
     ): Int {
         var flag = super.getMovementFlags(recyclerView, viewHolder)
         val position = viewHolder.adapterPosition
-        val item = getFlyFormItem(position)
+        val item = getFormItem(position)
         if (item.leadingSwipe.isEmpty()) {
             flag = flag xor ItemTouchHelper.Callback.makeFlag(
                 ItemTouchHelper.ACTION_STATE_SWIPE,
@@ -106,7 +106,7 @@ abstract class FylFormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelpe
         }
     }
 
-    fun getActionsWidth(actions: List<FylFormSwipeAction>, context: Context) : Float {
+    fun getActionsWidth(actions: List<FormSwipeAction>, context: Context) : Float {
         var width = 0.0f
         for (action in actions) {
             if (action.width == 0f) {
@@ -128,7 +128,7 @@ abstract class FylFormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelpe
         return width
     }
 
-    fun drawAction(action: FylFormSwipeAction, canvas: Canvas, rect: RectF, context: Context) {
+    fun drawAction(action: FormSwipeAction, canvas: Canvas, rect: RectF, context: Context) {
         val paint = TextPaint()
 
         // Draw background
@@ -170,7 +170,7 @@ abstract class FylFormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelpe
         action.rect = rect
     }
     
-    fun drawActions(actions: List<FylFormSwipeAction>, canvas: Canvas, itemView: View, dX: Float, rightEnd: Boolean=true) {
+    fun drawActions(actions: List<FormSwipeAction>, canvas: Canvas, itemView: View, dX: Float, rightEnd: Boolean=true) {
         val intrinsicWidth = getActionsWidth(actions, itemView.context)
         if (intrinsicWidth == 0f || dX == 0f) {
             return
@@ -201,7 +201,7 @@ abstract class FylFormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelpe
             val itemView = viewHolder.itemView
             if (dX < 0) {
                 // swipe to left
-                val actions = getFlyFormItem(position).trailingSwipe
+                val actions = getFormItem(position).trailingSwipe
                 if (actions.isNotEmpty()) {
                     if (!isDestructive(actions)) {
                         val minSwipedOffset = -recyclerView.width.toFloat()
@@ -223,7 +223,7 @@ abstract class FylFormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelpe
             }
             if (dX > 0) {
                 // swipe to right
-                val actions = getFlyFormItem(position).leadingSwipe
+                val actions = getFormItem(position).leadingSwipe
                 if (actions.isNotEmpty()) {
                     if (!isDestructive(actions)) {
                         val maxSwipedOffset = recyclerView.width.toFloat()
@@ -247,7 +247,7 @@ abstract class FylFormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelpe
         super.onChildDraw(c, recyclerView, viewHolder, maxDX, dY, actionState, isCurrentlyActive)
     }
 
-    open fun onActionClicked(pos: Int, action: FylFormSwipeAction) {
+    open fun onActionClicked(pos: Int, action: FormSwipeAction) {
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -255,7 +255,7 @@ abstract class FylFormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelpe
         recyclerView.setOnTouchListener {_, event ->
             if (event.action == MotionEvent.ACTION_UP) {
                 if (swipedPosition >= 0) {
-                    val item = getFlyFormItem(swipedPosition)
+                    val item = getFormItem(swipedPosition)
                     val actions = if (swipedDirection == ItemTouchHelper.LEFT) {
                         item.trailingSwipe
                     } else {

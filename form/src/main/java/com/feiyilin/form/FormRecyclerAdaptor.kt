@@ -24,12 +24,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputLayout
 import java.text.SimpleDateFormat
 
-interface FlyFormItemCallback {
-    fun onSetup(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) {}
-    fun onValueChanged(item: FylFormItem) {}
-    fun onItemClicked(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) {}
-    fun onTitleImageClicked(item: FylFormItem) {}
-    fun onStartReorder(item: FylFormItem, viewHolder: RecyclerView.ViewHolder): Boolean {
+interface FormItemCallback {
+    fun onSetup(item: FormItem, viewHolder: RecyclerView.ViewHolder) {}
+    fun onValueChanged(item: FormItem) {}
+    fun onItemClicked(item: FormItem, viewHolder: RecyclerView.ViewHolder) {}
+    fun onTitleImageClicked(item: FormItem) {}
+    fun onStartReorder(item: FormItem, viewHolder: RecyclerView.ViewHolder): Boolean {
         return false
     }
 
@@ -37,22 +37,22 @@ interface FlyFormItemCallback {
         return false
     }
 
-    fun onSwipedAction(item: FylFormItem, action: FylFormSwipeAction, viewHolder: RecyclerView.ViewHolder) {}
-    fun getMinItemHeight(item: FylFormItem) : Int { return 0 }
+    fun onSwipedAction(item: FormItem, action: FormSwipeAction, viewHolder: RecyclerView.ViewHolder) {}
+    fun getMinItemHeight(item: FormItem) : Int { return 0 }
 }
 
-open class FylFormRecyclerAdaptor(
-    private var settings: MutableList<FylFormItem>,
-    private var listener: FlyFormItemCallback? = null
+open class FormRecyclerAdaptor(
+    private var settings: MutableList<FormItem>,
+    private var listener: FormItemCallback? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var itemTouchHelper: ItemTouchHelper? = null
     private var recyclerView: RecyclerView? = null
-    private var settingsVisible = mutableListOf<FylFormItem>()
+    private var settingsVisible = mutableListOf<FormItem>()
 
     class ViewHolderItem(
-        var type: Class<out FylFormItem>,
+        var type: Class<out FormItem>,
         var layoutId: Int,
-        var viewHolderClass: Class<out FylFormViewHolder>
+        var viewHolderClass: Class<out FormViewHolder>
     )
 
     private var viewHolders: MutableList<ViewHolderItem> = mutableListOf()
@@ -61,89 +61,89 @@ open class FylFormRecyclerAdaptor(
         setSettings(settings)
         viewHolders = mutableListOf(
             ViewHolderItem(
-                FylFormItemSection::class.java,
+                FormItemSection::class.java,
                 R.layout.form_item_section,
-                FylFormSectionViewHolder::class.java
+                FormSectionViewHolder::class.java
             ),
             ViewHolderItem(
-                FylFormItemText::class.java,
+                FormItemText::class.java,
                 R.layout.form_item_text,
-                FylFormTextViewHolder::class.java
+                FormTextViewHolder::class.java
             ),
             ViewHolderItem(
-                FylFormItemTextFloatingHint::class.java,
+                FormItemTextFloatingHint::class.java,
                 R.layout.form_item_text_floating_hint,
-                FylFormTextViewHolder::class.java
+                FormTextViewHolder::class.java
             ),
             ViewHolderItem(
-                FylFormItemTextArea::class.java,
+                FormItemTextArea::class.java,
                 R.layout.form_item_text,
-                FylFormTextAreaViewHolder::class.java
+                FormTextAreaViewHolder::class.java
             ),
             ViewHolderItem(
-                FylFormItemTextAreaFloatingHint::class.java,
+                FormItemTextAreaFloatingHint::class.java,
                 R.layout.form_item_text_floating_hint,
-                FylFormTextAreaViewHolder::class.java
+                FormTextAreaViewHolder::class.java
             ),
             ViewHolderItem(
-                FylFormItemAction::class.java,
+                FormItemAction::class.java,
                 R.layout.form_item_action,
-                FylFormActionViewHolder::class.java
+                FormActionViewHolder::class.java
             ),
             ViewHolderItem(
-                FylFormItemSwitch::class.java,
+                FormItemSwitch::class.java,
                 R.layout.from_item_switch,
-                FylFormSwitchViewHolder::class.java
+                FormSwitchViewHolder::class.java
             ),
             ViewHolderItem(
-                FylFormItemSwitchNative::class.java,
+                FormItemSwitchNative::class.java,
                 R.layout.from_item_switch_native,
-                FylFormSwitchNativeViewHolder::class.java
+                FormSwitchNativeViewHolder::class.java
             ),
             ViewHolderItem(
-                FylFormItemRadio::class.java,
+                FormItemRadio::class.java,
                 R.layout.form_item_radio,
-                FylFormRadioViewHolder::class.java
+                FormRadioViewHolder::class.java
             ),
             ViewHolderItem(
-                FylFormItemRadioNative::class.java,
+                FormItemRadioNative::class.java,
                 R.layout.form_item_radio_native,
-                FylFormRadioNativeViewHolder::class.java
+                FormRadioNativeViewHolder::class.java
             ),
             ViewHolderItem(
-                FylFormItemNav::class.java,
+                FormItemNav::class.java,
                 R.layout.form_item_nav,
-                FylFormNavViewHolder::class.java
+                FormNavViewHolder::class.java
             ),
             ViewHolderItem(
-                FylFormItemLabel::class.java,
+                FormItemLabel::class.java,
                 R.layout.form_item_label,
-                FylFormLabelViewHolder::class.java
+                FormLabelViewHolder::class.java
             ),
             ViewHolderItem(
-                FylFormItemDate::class.java,
+                FormItemDate::class.java,
                 R.layout.form_item_date,
-                FylFormDateViewHolder::class.java
+                FormDateViewHolder::class.java
             ),
             ViewHolderItem(
-                FylFormItemSelect::class.java,
+                FormItemSelect::class.java,
                 R.layout.form_item_choice,
-                FylFormSelectViewHolder::class.java
+                FormSelectViewHolder::class.java
             ),
             ViewHolderItem(
-                FylFormItemChoice::class.java,
+                FormItemChoice::class.java,
                 R.layout.form_item_choice,
-                FylFormChoiceViewHolder::class.java
+                FormChoiceViewHolder::class.java
             ),
             ViewHolderItem(
-                FylFormItemPicker::class.java,
+                FormItemPicker::class.java,
                 R.layout.form_item_choice,
-                FylFormPickerViewHolder::class.java
+                FormPickerViewHolder::class.java
             ),
             ViewHolderItem(
-                FylFormItemPickerInline::class.java,
+                FormItemPickerInline::class.java,
                 R.layout.form_item_picker,
-                FylFormPickerInlineViewHolder::class.java
+                FormPickerInlineViewHolder::class.java
             )
         )
     }
@@ -152,9 +152,9 @@ open class FylFormRecyclerAdaptor(
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
         val touchHelper =
-            object : FylFormSwipeHelper() {
+            object : FormSwipeHelper() {
 
-                override fun getFlyFormItem(pos: Int): FylFormItem {
+                override fun getFormItem(pos: Int): FormItem {
                     return settingsVisible[pos]
                 }
 
@@ -172,7 +172,7 @@ open class FylFormRecyclerAdaptor(
                     return onFormItemCallback.onMoveItem(src, des)
                 }
 
-                override fun onActionClicked(pos: Int, action: FylFormSwipeAction) {
+                override fun onActionClicked(pos: Int, action: FormSwipeAction) {
                     val item = settingsVisible[pos]
                     recyclerView.findViewHolderForAdapterPosition(pos)?.let {
                         onFormItemCallback.onSwipedAction(item, action, it)
@@ -198,7 +198,7 @@ open class FylFormRecyclerAdaptor(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         val s = settingsVisible[position]
-        if (holder is FylFormViewHolder) {
+        if (holder is FormViewHolder) {
             holder.bind(s, onFormItemCallback)
             listener?.onSetup(s, holder)
         }
@@ -208,12 +208,12 @@ open class FylFormRecyclerAdaptor(
         return settingsVisible.size
     }
 
-    fun setSettings(settings: List<FylFormItem>) {
+    fun setSettings(settings: List<FormItem>) {
         this.settings = settings.toMutableList()
         this.settingsVisible.clear()
         var hideSection = false
         for (item in this.settings) {
-            if (item is FylFormItemSection) {
+            if (item is FormItemSection) {
                 hideSection = item.hidden
             }
             if (item.hidden || hideSection) {
@@ -230,15 +230,15 @@ open class FylFormRecyclerAdaptor(
     }
 
     fun registerViewHolder(
-        type: Class<out FylFormItem>,
+        type: Class<out FormItem>,
         layoutId: Int,
-        viewHolderClass: Class<out FylFormViewHolder>
+        viewHolderClass: Class<out FormViewHolder>
     ): Boolean {
         viewHolders.add(ViewHolderItem(type, layoutId, viewHolderClass))
         return true
     }
 
-    fun updateItem(item: FylFormItem) {
+    fun updateItem(item: FormItem) {
         val index = settingsVisible.indexOf(item)
         if (index >= 0 && index < settingsVisible.size) {
             val activity = recyclerView?.context as? Activity
@@ -253,31 +253,31 @@ open class FylFormRecyclerAdaptor(
     fun updateRadioGroup(group: String, selected: String) {
         for (i in 0 until settingsVisible.size) {
             val item = settingsVisible[i]
-            if (item is FylFormItemRadio && item.group == group) {
+            if (item is FormItemRadio && item.group == group) {
                 item.isOn = (item.tag == selected)
                 updateItem(item)
-            } else if (item is FylFormItemRadioNative && item.group == group) {
+            } else if (item is FormItemRadioNative && item.group == group) {
                 item.isOn = (item.tag == selected)
                 updateItem(item)
             }
         }
     }
 
-    private var onFormItemCallback = object : FlyFormItemCallback {
-        override fun onValueChanged(item: FylFormItem) {
-            if (item is FylFormItemRadio) {
+    private var onFormItemCallback = object : FormItemCallback {
+        override fun onValueChanged(item: FormItem) {
+            if (item is FormItemRadio) {
                 updateRadioGroup(item.group, item.tag)
             }
-            if (item is FylFormItemRadioNative) {
+            if (item is FormItemRadioNative) {
                 updateRadioGroup(item.group, item.tag)
             }
-            if (item is FylFormItemSelect) {
+            if (item is FormItemSelect) {
                 //updateItem(item)
             }
             listener?.onValueChanged(item)
         }
 
-        override fun onItemClicked(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) {
+        override fun onItemClicked(item: FormItem, viewHolder: RecyclerView.ViewHolder) {
             val index = settingsVisible.indexOf(item)
 
             Handler().postDelayed({
@@ -290,12 +290,12 @@ open class FylFormRecyclerAdaptor(
             listener?.onItemClicked(item, viewHolder)
         }
 
-        override fun onSetup(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) {
+        override fun onSetup(item: FormItem, viewHolder: RecyclerView.ViewHolder) {
             listener?.onSetup(item, viewHolder)
         }
 
         override fun onStartReorder(
-            item: FylFormItem,
+            item: FormItem,
             viewHolder: RecyclerView.ViewHolder
         ): Boolean {
             if (listener?.onStartReorder(item, viewHolder) == true)
@@ -320,29 +320,29 @@ open class FylFormRecyclerAdaptor(
             return true
         }
 
-        override fun onTitleImageClicked(item: FylFormItem) {
+        override fun onTitleImageClicked(item: FormItem) {
             listener?.onTitleImageClicked(item)
         }
 
         override fun onSwipedAction(
-            item: FylFormItem,
-            action: FylFormSwipeAction,
+            item: FormItem,
+            action: FormSwipeAction,
             viewHolder: RecyclerView.ViewHolder
         ) {
             super.onSwipedAction(item, action, viewHolder)
             listener?.onSwipedAction(item, action, viewHolder)
         }
 
-        override fun getMinItemHeight(item: FylFormItem): Int {
+        override fun getMinItemHeight(item: FormItem): Int {
             return listener?.getMinItemHeight(item) ?: 0
         }
     }
 
-    fun itemByTag(tag: String) : FylFormItem? {
+    fun itemByTag(tag: String) : FormItem? {
         return settings.firstOrNull { it.tag == tag }
     }
 
-    fun hideSection(item: FylFormItemSection, hide: Boolean) {
+    fun hideSection(item: FormItemSection, hide: Boolean) {
         // show/hide all visible children of a section (not the section item itself)
         var idx = settingsVisible.indexOf(item)
         if (idx == -1) {
@@ -356,7 +356,7 @@ open class FylFormRecyclerAdaptor(
             idx += 1
             while (settingsVisible.size > idx) {
                 val child = settingsVisible[idx]
-                if (child is FylFormItemSection) {
+                if (child is FormItemSection) {
                     // start the next section
                     break
                 }
@@ -369,7 +369,7 @@ open class FylFormRecyclerAdaptor(
             while (orgChildIdx < settings.size) {
                 val child = settings[orgChildIdx]
                 orgChildIdx += 1
-                if (child is FylFormItemSection) {
+                if (child is FormItemSection) {
                     // start the next section
                     break
                 }
@@ -384,7 +384,7 @@ open class FylFormRecyclerAdaptor(
         }
     }
 
-    fun evaluateHidden(item: FylFormItem) : Boolean {
+    fun evaluateHidden(item: FormItem) : Boolean {
         val orgIdx = settings.indexOf(item)
         if (orgIdx == -1) {
             return false
@@ -393,7 +393,7 @@ open class FylFormRecyclerAdaptor(
         var idx = settingsVisible.indexOf(item)
         if (item.hidden) {
             if (idx != -1) {
-                if (item is FylFormItemSection) {
+                if (item is FormItemSection) {
                     // if item is section, hide all its children
                     hideSection(item, true)
                 }
@@ -415,7 +415,7 @@ open class FylFormRecyclerAdaptor(
                 settingsVisible.add(idx, item)
                 notifyItemInserted(idx)
 
-                if (item is FylFormItemSection) {
+                if (item is FormItemSection) {
                     // if item is section, show all its children
                     hideSection(item, false)
                 }
@@ -425,7 +425,7 @@ open class FylFormRecyclerAdaptor(
     }
 }
 
-open class FylFormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     RecyclerView.ViewHolder(inflater.inflate(resource, parent, false)) {
 
     var titleView: TextView? = null
@@ -442,7 +442,7 @@ open class FylFormViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
         mainView = itemView.findViewById(R.id.formElementMainLayout)
     }
 
-    open fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+    open fun bind(s: FormItem, listener: FormItemCallback?) {
         var minHeight = s.minHeight
          if (minHeight == 0) {
              minHeight = listener?.getMinItemHeight(s) ?: 0
@@ -527,11 +527,11 @@ open class FylFormViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
     }
 }
 
-open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormViewHolder(inflater, resource, parent) {
+open class FormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormViewHolder(inflater, resource, parent) {
     var valueView: EditText? = null
-    var listener: FlyFormItemCallback? = null
-    var item: FylFormItemText? = null
+    var listener: FormItemCallback? = null
+    var item: FormItemText? = null
     var hintView: TextInputLayout? = null
 
     init {
@@ -566,11 +566,11 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
         }
     }
 
-    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
 
         this.listener = listener
-        if (s is FylFormItemText) {
+        if (s is FormItemText) {
             this.item = s
             itemView.setOnClickListener {
                 listener?.onItemClicked(s, this)
@@ -663,14 +663,14 @@ open class FylFormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, pa
     }
 }
 
-open class FylFormTextViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormBaseTextViewHolder(inflater, resource, parent) {
+open class FormTextViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormBaseTextViewHolder(inflater, resource, parent) {
 }
 
-open class FylFormTextGroupViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormBaseTextViewHolder(inflater, resource, parent) {
+open class FormTextGroupViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormBaseTextViewHolder(inflater, resource, parent) {
 
-    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
 
         valueView?.gravity = Gravity.START
@@ -679,34 +679,34 @@ open class FylFormTextGroupViewHolder(inflater: LayoutInflater, resource: Int, p
     }
 }
 
-open class FylFormTextAreaViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormBaseTextViewHolder(inflater, resource, parent) {
+open class FormTextAreaViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormBaseTextViewHolder(inflater, resource, parent) {
 
     init {
         valueView?.gravity = Gravity.START
     }
 
-    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
-        if (s is FylFormItemTextArea) {
+        if (s is FormItemTextArea) {
             valueView?.minLines = s.minLines
             valueView?.maxLines = s.maxLines
         }
     }
 }
 
-open class FylFormSectionViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormViewHolder(inflater, resource, parent) {
+open class FormSectionViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormViewHolder(inflater, resource, parent) {
 
-    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
 
         titleView?.text = s.title.toUpperCase()
     }
 }
 
-open class FylFormActionViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormViewHolder(inflater, resource, parent) {
+open class FormActionViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormViewHolder(inflater, resource, parent) {
     private var leftSpace: Space? = null
     private var rightSpace: Space? = null
 
@@ -715,9 +715,9 @@ open class FylFormActionViewHolder(inflater: LayoutInflater, resource: Int, pare
         rightSpace = itemView.findViewById(R.id.formSapceRight)
     }
 
-    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
-        if (s is FylFormItemAction) {
+        if (s is FormItemAction) {
             when (s.alignment) {
                 Gravity.CENTER -> {
                     leftSpace?.visibility = View.VISIBLE
@@ -736,17 +736,17 @@ open class FylFormActionViewHolder(inflater: LayoutInflater, resource: Int, pare
     }
 }
 
-open class FylFormSwitchNativeViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormViewHolder(inflater, resource, parent) {
+open class FormSwitchNativeViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormViewHolder(inflater, resource, parent) {
     private var switchView: Switch? = null
 
     init {
         switchView = itemView.findViewById(R.id.formElementSwitch)
     }
 
-    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
-        if (s is FylFormItemSwitchNative) {
+        if (s is FormItemSwitchNative) {
             itemView.setOnClickListener {
                 listener?.onItemClicked(s, this)
                 s.isOn = !s.isOn
@@ -763,19 +763,19 @@ open class FylFormSwitchNativeViewHolder(inflater: LayoutInflater, resource: Int
     }
 }
 
-open class FylFormSwitchViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormViewHolder(inflater, resource, parent) {
+open class FormSwitchViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormViewHolder(inflater, resource, parent) {
     private var switchView: ImageView? = null
-    private var item: FylFormItemRadio? = null
+    private var item: FormItemRadio? = null
 
     init {
         switchView = itemView.findViewById(R.id.formElementSwitch)
     }
 
-    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
 
-        if (s is FylFormItemSwitch) {
+        if (s is FormItemSwitch) {
             itemView.setOnClickListener {
                 listener?.onItemClicked(s, this)
                 s.isOn = !s.isOn
@@ -805,19 +805,19 @@ open class FylFormSwitchViewHolder(inflater: LayoutInflater, resource: Int, pare
     }
 }
 
-open class FylFormRadioViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormViewHolder(inflater, resource, parent) {
+open class FormRadioViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormViewHolder(inflater, resource, parent) {
     private var radioView: ImageView? = null
-    private var item: FylFormItemRadio? = null
+    private var item: FormItemRadio? = null
 
     init {
         radioView = itemView.findViewById(R.id.formElementRadio)
     }
 
-    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
         itemView.setOnClickListener {
-            if (s is FylFormItemRadio) {
+            if (s is FormItemRadio) {
                 listener?.onItemClicked(s, this)
                 if (s.isOn) {
                     return@setOnClickListener
@@ -826,7 +826,7 @@ open class FylFormRadioViewHolder(inflater: LayoutInflater, resource: Int, paren
                 listener?.onValueChanged(s)
             }
         }
-        if (s is FylFormItemRadio) {
+        if (s is FormItemRadio) {
             item = s
             radioView?.layoutParams?.height = dpToPx(s.iconSize.height)
             radioView?.layoutParams?.width = dpToPx(s.iconSize.width)
@@ -851,18 +851,18 @@ open class FylFormRadioViewHolder(inflater: LayoutInflater, resource: Int, paren
     }
 }
 
-open class FylFormRadioNativeViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormViewHolder(inflater, resource, parent) {
+open class FormRadioNativeViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormViewHolder(inflater, resource, parent) {
     private var radioView: RadioButton? = null
 
     init {
         radioView = itemView.findViewById(R.id.formElementRadio)
     }
 
-    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
         itemView.setOnClickListener {
-            if (s is FylFormItemRadioNative) {
+            if (s is FormItemRadioNative) {
                 listener?.onItemClicked(s, this)
                 if (s.isOn) {
                     return@setOnClickListener
@@ -871,7 +871,7 @@ open class FylFormRadioNativeViewHolder(inflater: LayoutInflater, resource: Int,
                 listener?.onValueChanged(s)
             }
         }
-        if (s is FylFormItemRadioNative) {
+        if (s is FormItemRadioNative) {
             radioView?.isChecked = s.isOn
             radioView?.setOnCheckedChangeListener { _, checked ->
                 s.isOn = checked
@@ -881,8 +881,8 @@ open class FylFormRadioNativeViewHolder(inflater: LayoutInflater, resource: Int,
     }
 }
 
-open class FylFormNavViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormViewHolder(inflater, resource, parent) {
+open class FormNavViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormViewHolder(inflater, resource, parent) {
     var badgeView: ConstraintLayout? = null
     var badgeViewTitle: TextView? = null
     var titleImageWrap: View? = null
@@ -893,9 +893,9 @@ open class FylFormNavViewHolder(inflater: LayoutInflater, resource: Int, parent:
         titleImageWrap = itemView.findViewById(R.id.formElementTitleImageWrap)
     }
 
-    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
-        if (s is FylFormItemNav) {
+        if (s is FormItemNav) {
             if (s.badge == null) {
                 badgeView?.visibility = View.GONE
             } else if (s.badge?.isEmpty() ?: true) {
@@ -927,12 +927,12 @@ open class FylFormNavViewHolder(inflater: LayoutInflater, resource: Int, parent:
     }
 }
 
-open class FylFormLabelViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormViewHolder(inflater, resource, parent) {
+open class FormLabelViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormViewHolder(inflater, resource, parent) {
 }
 
-open class FylFormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormViewHolder(inflater, resource, parent) {
+open class FormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormViewHolder(inflater, resource, parent) {
 
     var dateView: TextView? = null
     var datePickerView: DatePicker? = null
@@ -946,9 +946,9 @@ open class FylFormDateViewHolder(inflater: LayoutInflater, resource: Int, parent
         timePickerView = itemView.findViewById(R.id.formElementTimePicker)
     }
 
-    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
-        if (s is FylFormItemDate) {
+        if (s is FormItemDate) {
             dateView?.setOnClickListener {
                 if (datePickerView?.visibility == View.GONE)
                     datePickerView?.visibility = View.VISIBLE
@@ -1024,24 +1024,24 @@ open class FylFormDateViewHolder(inflater: LayoutInflater, resource: Int, parent
 }
 
 
-open class FylFormSelectViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormViewHolder(inflater, resource, parent) {
+open class FormSelectViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormViewHolder(inflater, resource, parent) {
 
     var valueView: TextView? = null
-    var item: FylFormItemSelect? = null
-    var listener: FlyFormItemCallback? = null
+    var item: FormItemSelect? = null
+    var listener: FormItemCallback? = null
     init {
         valueView = itemView.findViewById(R.id.formElementValue)
     }
 
-    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
         this.listener = listener
         itemView.setOnClickListener {
             showAlertWithChoice()
             listener?.onItemClicked(s, this)
         }
-        if (s is FylFormItemSelect) {
+        if (s is FormItemSelect) {
             valueView?.text = s.value
             item = s
         }
@@ -1063,12 +1063,12 @@ open class FylFormSelectViewHolder(inflater: LayoutInflater, resource: Int, pare
     }
 }
 
-open class FylFormChoiceViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormSelectViewHolder(inflater, resource, parent) {
+open class FormChoiceViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormSelectViewHolder(inflater, resource, parent) {
 
     override fun showAlertWithChoice() {
         // setup the alert builder
-        (item as? FylFormItemChoice)?.let {
+        (item as? FormItemChoice)?.let {
             val checkedItem = it.options.indexOf(it.value)
             val builder = AlertDialog.Builder(itemView.context)
                 .setTitle(it.selectorTitle)
@@ -1089,12 +1089,12 @@ open class FylFormChoiceViewHolder(inflater: LayoutInflater, resource: Int, pare
     }
 }
 
-open class FylFormPickerViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormChoiceViewHolder(inflater, resource, parent) {
+open class FormPickerViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormChoiceViewHolder(inflater, resource, parent) {
 
     override fun showAlertWithChoice() {
         // setup the alert builder
-        (item as? FylFormItemChoice)?.let {
+        (item as? FormItemChoice)?.let {
             val checkedItem = it.options.indexOf(it.value)
             val view = LayoutInflater.from(itemView.context).inflate(R.layout.form_picker, null)
             val picker = view?.findViewById<NumberPicker>(R.id.formElementNumberPicker)
@@ -1123,8 +1123,8 @@ open class FylFormPickerViewHolder(inflater: LayoutInflater, resource: Int, pare
 }
 
 
-open class FylFormPickerInlineViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormViewHolder(inflater, resource, parent) {
+open class FormPickerInlineViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormViewHolder(inflater, resource, parent) {
 
     var valueView: TextView? = null
     var pickerView: NumberPicker? = null
@@ -1134,9 +1134,9 @@ open class FylFormPickerInlineViewHolder(inflater: LayoutInflater, resource: Int
         pickerView = itemView.findViewById(R.id.formElementNumberPicker)
     }
 
-    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
-        if (s is FylFormItemPickerInline) {
+        if (s is FormItemPickerInline) {
             itemView.setOnClickListener {
                 if (pickerView?.visibility == View.GONE)
                     pickerView?.visibility = View.VISIBLE

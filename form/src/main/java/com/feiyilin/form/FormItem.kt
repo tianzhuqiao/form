@@ -8,7 +8,7 @@ import android.view.Gravity
 import android.view.inputmethod.EditorInfo
 import java.util.*
 
-open class FylFormSwipeAction {
+open class FormSwipeAction {
     enum class Style {
         Destructive,
         Normal
@@ -21,31 +21,31 @@ open class FylFormSwipeAction {
     var style: Style = Style.Normal
     var rect = RectF()
 }
-fun <T : FylFormSwipeAction> T.title(title: String) = apply {
+fun <T : FormSwipeAction> T.title(title: String) = apply {
     this.title = title
 }
 
-fun <T : FylFormSwipeAction> T.icon(icon: Drawable?) = apply {
+fun <T : FormSwipeAction> T.icon(icon: Drawable?) = apply {
     this.icon = icon
 }
 
-fun <T : FylFormSwipeAction> T.textSize(textSize: Float) = apply {
+fun <T : FormSwipeAction> T.textSize(textSize: Float) = apply {
     this.textSize = textSize
 }
 
-fun <T : FylFormSwipeAction> T.backgroundColor(backgroundColor: Int) = apply {
+fun <T : FormSwipeAction> T.backgroundColor(backgroundColor: Int) = apply {
     this.backgroundColor = backgroundColor
 }
 
-fun <T : FylFormSwipeAction> T.width(width: Float) = apply {
+fun <T : FormSwipeAction> T.width(width: Float) = apply {
     this.width = width
 }
 
-fun <T : FylFormSwipeAction> T.style(style: FylFormSwipeAction.Style) = apply {
+fun <T : FormSwipeAction> T.style(style: FormSwipeAction.Style) = apply {
     this.style = style
 }
 
-open class FylFormItem {
+open class FormItem {
     var title: String = ""
     var titleColor: Int? = null
     var subTitle: String = ""
@@ -58,74 +58,74 @@ open class FylFormItem {
     var required: Boolean = false
     var hidden: Boolean = false
     var minHeight: Int = 0
-    var leadingSwipe = listOf<FylFormSwipeAction>()
-    var trailingSwipe = listOf<FylFormSwipeAction>()
+    var leadingSwipe = listOf<FormSwipeAction>()
+    var trailingSwipe = listOf<FormSwipeAction>()
 }
 
-fun <T : FylFormItem> T.title(title: String) = apply {
+fun <T : FormItem> T.title(title: String) = apply {
     this.title = title
 }
 
-fun <T : FylFormItem> T.titleColor(titleColor: Int?) = apply {
+fun <T : FormItem> T.titleColor(titleColor: Int?) = apply {
     this.titleColor = titleColor
 }
 
-fun <T : FylFormItem> T.subTitle(subTitle: String) = apply {
+fun <T : FormItem> T.subTitle(subTitle: String) = apply {
     this.subTitle = subTitle
 }
 
-fun <T : FylFormItem> T.subTitleColor(subTitleColor: Int) = apply {
+fun <T : FormItem> T.subTitleColor(subTitleColor: Int) = apply {
     this.subTitleColor = subTitleColor
 }
 
-fun <T : FylFormItem> T.iconTitle(iconTitle: Drawable?) = apply {
+fun <T : FormItem> T.iconTitle(iconTitle: Drawable?) = apply {
     this.iconTitle = iconTitle
 }
 
-fun <T : FylFormItem> T.iconSize(iconSize: Size) = apply {
+fun <T : FormItem> T.iconSize(iconSize: Size) = apply {
     this.iconSize = iconSize
 }
 
-fun <T : FylFormItem> T.iconSize(weight: Int, height: Int) = apply {
+fun <T : FormItem> T.iconSize(weight: Int, height: Int) = apply {
     this.iconSize = Size(weight, height)
 }
 
-fun <T : FylFormItem> T.iconSize(iconSize: Int) = apply {
+fun <T : FormItem> T.iconSize(iconSize: Int) = apply {
     this.iconSize = Size(iconSize, iconSize)
 }
 
-fun <T : FylFormItem> T.tag(tag: String) = apply {
+fun <T : FormItem> T.tag(tag: String) = apply {
     this.tag = tag
 }
 
-fun <T : FylFormItem> T.dragable(dragable: Boolean) = apply {
+fun <T : FormItem> T.dragable(dragable: Boolean) = apply {
     this.dragable = dragable
 }
 
-fun <T : FylFormItem> T.required(required: Boolean=true) = apply {
+fun <T : FormItem> T.required(required: Boolean=true) = apply {
     this.required = required
 }
 
-fun <T : FylFormItem> T.hidden(hidden: Boolean=true) = apply {
+fun <T : FormItem> T.hidden(hidden: Boolean=true) = apply {
     this.hidden = hidden
 }
 
-fun <T : FylFormItem> T.minHeight(height: Int) = apply {
+fun <T : FormItem> T.minHeight(height: Int) = apply {
     this.minHeight = height
 }
 
-fun <T : FylFormItem> T.leadingSwipe(actions: List<FylFormSwipeAction>) = apply {
+fun <T : FormItem> T.leadingSwipe(actions: List<FormSwipeAction>) = apply {
     this.leadingSwipe = actions
 }
 
-fun <T : FylFormItem> T.trailingSwipe(actions: List<FylFormSwipeAction>) = apply {
+fun <T : FormItem> T.trailingSwipe(actions: List<FormSwipeAction>) = apply {
     this.trailingSwipe = actions
 }
 
-open class FylFormItemLabel : FylFormItem() {
+open class FormItemLabel : FormItem() {
 }
 
-open class FylFormItemText : FylFormItem() {
+open class FormItemText : FormItem() {
     var value: String = ""
     var valueColor: Int? = null
     var hint: String = ""
@@ -137,46 +137,46 @@ open class FylFormItemText : FylFormItem() {
     var focused: Boolean = false
 }
 
-open class FylFormItemTextFloatingHint : FylFormItemText() {
+open class FormItemTextFloatingHint : FormItemText() {
 }
 
-fun <T : FylFormItemText> T.value(value: String) = apply {
+fun <T : FormItemText> T.value(value: String) = apply {
     this.value = value
 }
 
-fun <T : FylFormItemText> T.valueColor(valueColor: Int) = apply {
+fun <T : FormItemText> T.valueColor(valueColor: Int) = apply {
     this.valueColor = valueColor
 }
 
-fun <T : FylFormItemText> T.hint(hint: String) = apply {
+fun <T : FormItemText> T.hint(hint: String) = apply {
     this.hint = hint
 }
 
-fun <T : FylFormItemText> T.hintColor(hintColor: Int) = apply {
+fun <T : FormItemText> T.hintColor(hintColor: Int) = apply {
     this.hintColor = hintColor
 }
 
-fun <T : FylFormItemText> T.gravity(gravity: Int) = apply {
+fun <T : FormItemText> T.gravity(gravity: Int) = apply {
     this.gravity = gravity
 }
 
-fun <T : FylFormItemText> T.readOnly(readOnly: Boolean) = apply {
+fun <T : FormItemText> T.readOnly(readOnly: Boolean) = apply {
     this.readOnly = readOnly
 }
 
-fun <T : FylFormItemText> T.imeOptions(imeOptions: Int) = apply {
+fun <T : FormItemText> T.imeOptions(imeOptions: Int) = apply {
     this.imeOptions = imeOptions
 }
 
-fun <T : FylFormItemText> T.inputType(inputType: Int) = apply {
+fun <T : FormItemText> T.inputType(inputType: Int) = apply {
     this.inputType = inputType
 }
 
-fun <T : FylFormItemText> T.focused(focused: Boolean) = apply {
+fun <T : FormItemText> T.focused(focused: Boolean) = apply {
     this.focused = focused
 }
 
-open class FylFormItemTextArea : FylFormItemText() {
+open class FormItemTextArea : FormItemText() {
     var minLines: Int = 3
     var maxLines: Int = 6
 
@@ -189,87 +189,87 @@ open class FylFormItemTextArea : FylFormItemText() {
     }
 }
 
-open class FylFormItemTextAreaFloatingHint : FylFormItemTextArea() {
+open class FormItemTextAreaFloatingHint : FormItemTextArea() {
 }
 
-fun <T : FylFormItemTextArea> T.minLines(minLines: Int) = apply {
+fun <T : FormItemTextArea> T.minLines(minLines: Int) = apply {
     this.minLines = minLines
 }
 
-fun <T : FylFormItemTextArea> T.maxLines(maxLines: Int) = apply {
+fun <T : FormItemTextArea> T.maxLines(maxLines: Int) = apply {
     this.maxLines = maxLines
 }
 
-open class FylFormItemSection : FylFormItem() {
+open class FormItemSection : FormItem() {
 }
 
-open class FylFormItemAction : FylFormItem() {
+open class FormItemAction : FormItem() {
     var alignment: Int = Gravity.CENTER
 }
 
-fun <T : FylFormItemAction> T.alignment(alignment: Int) = apply {
+fun <T : FormItemAction> T.alignment(alignment: Int) = apply {
     this.alignment = alignment
 }
 
-abstract class FylFormItemToggle : FylFormItem() {
+abstract class FormItemToggle : FormItem() {
     var isOn: Boolean = false
 }
 
-fun <T : FylFormItemToggle> T.isOn(isOn: Boolean) = apply {
+fun <T : FormItemToggle> T.isOn(isOn: Boolean) = apply {
     this.isOn = isOn
 }
 
-abstract class FylFormItemToggleCustomDraw : FylFormItemToggle() {
+abstract class FormItemToggleCustomDraw : FormItemToggle() {
     var iconOff: Drawable? = null
     var iconOn: Drawable? = null
 }
 
-fun <T : FylFormItemToggleCustomDraw> T.iconOn(iconOn: Drawable?) = apply {
+fun <T : FormItemToggleCustomDraw> T.iconOn(iconOn: Drawable?) = apply {
     this.iconOn = iconOn
 }
 
-fun <T : FylFormItemToggleCustomDraw> T.iconOff(iconOff: Drawable?) = apply {
+fun <T : FormItemToggleCustomDraw> T.iconOff(iconOff: Drawable?) = apply {
     this.iconOff = iconOff
 }
 
 
-open class FylFormItemSwitchNative : FylFormItemToggle() {
+open class FormItemSwitchNative : FormItemToggle() {
 }
 
-open class FylFormItemSwitch : FylFormItemToggleCustomDraw() {
+open class FormItemSwitch : FormItemToggleCustomDraw() {
     init {
         this.iconSize(Size(48, 24))
     }
 }
 
-open class FylFormItemRadioNative : FylFormItemToggle() {
+open class FormItemRadioNative : FormItemToggle() {
     var group: String = ""
 }
 
-fun <T : FylFormItemRadioNative> T.group(group: String) = apply {
+fun <T : FormItemRadioNative> T.group(group: String) = apply {
     this.group = group
 }
 
-open class FylFormItemRadio : FylFormItemToggleCustomDraw() {
+open class FormItemRadio : FormItemToggleCustomDraw() {
     var group: String = ""
     init {
         this.iconSize(Size(24, 24))
     }
 }
 
-fun <T : FylFormItemRadio> T.group(group: String) = apply {
+fun <T : FormItemRadio> T.group(group: String) = apply {
     this.group = group
 }
 
-open class FylFormItemNav : FylFormItem() {
+open class FormItemNav : FormItem() {
     var badge: String? = null
 }
 
-fun <T : FylFormItemNav> T.badge(badge: String?) = apply {
+fun <T : FormItemNav> T.badge(badge: String?) = apply {
     this.badge = badge
 }
 
-open class FylFormItemDate : FylFormItem() {
+open class FormItemDate : FormItem() {
     var date: Date = Date()
     var dateOnly: Boolean = false
     var timeOnly: Boolean = false
@@ -344,65 +344,65 @@ open class FylFormItemDate : FylFormItem() {
         }
 }
 
-fun <T : FylFormItemDate> T.date(date: Date) = apply {
+fun <T : FormItemDate> T.date(date: Date) = apply {
     this.date = date
 }
 
-fun <T : FylFormItemDate> T.dateOnly(dateOnly: Boolean) = apply {
+fun <T : FormItemDate> T.dateOnly(dateOnly: Boolean) = apply {
     this.dateOnly = dateOnly
 }
-fun <T : FylFormItemDate> T.timeOnly(timeOnly: Boolean) = apply {
+fun <T : FormItemDate> T.timeOnly(timeOnly: Boolean) = apply {
     this.timeOnly = timeOnly
 }
 
-fun <T : FylFormItemDate> T.dateFormat(dateFormat: String) = apply {
+fun <T : FormItemDate> T.dateFormat(dateFormat: String) = apply {
     this.dateFormat = dateFormat
 }
-fun <T : FylFormItemDate> T.timeFormat(timeFormat: String) = apply {
+fun <T : FormItemDate> T.timeFormat(timeFormat: String) = apply {
     this.timeFormat = timeFormat
 }
 
-fun <T : FylFormItemDate> T.dateColor(dateColor: Int?) = apply {
+fun <T : FormItemDate> T.dateColor(dateColor: Int?) = apply {
     this.dateColor = dateColor
 }
 
-fun <T : FylFormItemDate> T.timeColor(timeColor: Int?) = apply {
+fun <T : FormItemDate> T.timeColor(timeColor: Int?) = apply {
     this.timeColor = timeColor
 }
 
-open class FylFormItemSelect : FylFormItem() {
+open class FormItemSelect : FormItem() {
     var value: String = ""
     var selectorTitle = ""
     var options: List<String> = listOf()
 }
 
-fun <T : FylFormItemSelect> T.value(value: String) = apply {
+fun <T : FormItemSelect> T.value(value: String) = apply {
     this.value = value
 }
 
-fun <T : FylFormItemSelect> T.selectorTitle(title:String) = apply {
+fun <T : FormItemSelect> T.selectorTitle(title:String) = apply {
     this.selectorTitle = title
 }
 
-fun <T : FylFormItemSelect> T.options(options: List<String>) = apply {
+fun <T : FormItemSelect> T.options(options: List<String>) = apply {
     this.options = options
 }
 
-open class FylFormItemChoice : FylFormItemSelect() {
+open class FormItemChoice : FormItemSelect() {
     var yesButtonTitle = "Ok"
     var noButtonTitle = "Cancel"
 }
 
-fun <T : FylFormItemChoice> T.yesButtonTitle(title: String) = apply {
+fun <T : FormItemChoice> T.yesButtonTitle(title: String) = apply {
     this.yesButtonTitle = title
 }
 
-fun <T : FylFormItemChoice> T.noButtonTitle(title: String) = apply {
+fun <T : FormItemChoice> T.noButtonTitle(title: String) = apply {
     this.noButtonTitle = title
 }
 
-open class FylFormItemPicker :FylFormItemChoice() {
+open class FormItemPicker :FormItemChoice() {
 }
 
-open class FylFormItemPickerInline :FylFormItemPicker() {
+open class FormItemPickerInline :FormItemPicker() {
 }

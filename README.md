@@ -42,10 +42,10 @@ Add a **RecyclerView** to the activity's layout
     </androidx.recyclerview.widget.RecyclerView>
 </androidx.constraintlayout.widget.ConstraintLayout>
 ```
-Add **FylFormItem** list to hold all **FylFormItem**
+Add **FormItem** list to hold all **FormItem**
 ```kotlin
 class MainActivity : AppCompatActivity() {
-    private var settings = mutableListOf<FylFormItem>()
+    private var settings = mutableListOf<FormItem>()
     
     ...
 }
@@ -59,19 +59,19 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         
         settings = mutableListOf(
-            FylFormItemSection().title("Text"),
-            FylFormItemText().title("Text").tag("text"),
-            FylFormItemText().title("Text").subTitle("here is subtitle").tag("text_subtitle"),
-            FylFormItemText().title("Text").subTitle("dragable").dragable(true)
+            FormItemSection().title("Text"),
+            FormItemText().title("Text").tag("text"),
+            FormItemText().title("Text").subTitle("here is subtitle").tag("text_subtitle"),
+            FormItemText().title("Text").subTitle("dragable").dragable(true)
                 .tag("text_dragable"),
-            FylFormItemText().title("With icon")
+            FormItemText().title("With icon")
             ...
             )
      }
  ...
  }
  ```
- Initialize **RecyclerView** with **FylFormRecyclerAdaptor**
+ Initialize **RecyclerView** with **FormRecyclerAdaptor**
 ```kotlin
 class MainActivity : AppCompatActivity() {
     ...
@@ -82,14 +82,14 @@ class MainActivity : AppCompatActivity() {
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
 
-            adapter = FylFormRecyclerAdaptor(settings, onSettingProfileItemClickListener).apply {
+            adapter = FormRecyclerAdaptor(settings, onSettingProfileItemClickListener).apply {
             }
         }
     }
 }
 ```
 # Using the callbacks
-**FlyFormItemCallback** can be used to change the appearance and behavior of an item
+**FormItemCallback** can be used to change the appearance and behavior of an item
 
 * **onSetup**
 
@@ -146,20 +146,20 @@ If the item is a section, it will show/hide the item itself and all its visible 
 For each item, we can define the leading/left or trailing/right swipe actions (following the idea [here](https://stackoverflow.com/questions/44965278/recyclerview-itemtouchhelper-buttons-on-swipe/45062745#45062745)).
  For example
 ```kotlin
- FylFormItemNav().title("Swipe left with multiple actions").trailingSwipe(listOf(
-                FylFormSwipeAction().title("Delete")
+ FormItemNav().title("Swipe left with multiple actions").trailingSwipe(listOf(
+                FormSwipeAction().title("Delete")
                                     .backgroundColor(ContextCompat.getColor(this, android.R.color.holo_red_light)),
-                FylFormSwipeAction().title("Archive")
+                FormSwipeAction().title("Archive")
                                     .backgroundColor(ContextCompat.getColor(this, android.R.color.holo_blue_light)),
-                FylFormSwipeAction().title("Mark as unread")
+                FormSwipeAction().title("Mark as unread")
                                     .backgroundColor(ContextCompat.getColor(this, android.R.color.holo_green_light))
             )),
 ```
 Once an action is triggered, **onSwipedAction** callback will be called
 ```kotlin
     override fun onSwipedAction(
-            item: FylFormItem,
-            action: FylFormSwipeAction,
+            item: FormItem,
+            action: FormSwipeAction,
             viewHolder: RecyclerView.ViewHolder
         ) {
             super.onSwipedAction(item, action, viewHolder)
@@ -212,29 +212,29 @@ Design the layout of your item, e.g., **form_item_image.xml**
 </androidx.constraintlayout.widget.ConstraintLayout>
 ```
 
-Derive an item from **FylFormItem**,
+Derive an item from **FormItem**,
 ```kotlin
-open class FylFormItemImage : FylFormItem() {
+open class FormItemImage : FormItem() {
     var image: Int = 0
 }
 
-fun <T : FylFormItemImage> T.image(image: Int) = apply {
+fun <T : FormItemImage> T.image(image: Int) = apply {
     this.image = image
 }
 ```
-Derive a view holder class from **FylFormViewHolder**, and override **bind**
+Derive a view holder class from **FormViewHolder**, and override **bind**
 ```kotlin
-class FylFormImageViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FylFormViewHolder(inflater, resource, parent) {
+class FormImageViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormViewHolder(inflater, resource, parent) {
     private var imgView: ImageView? = null
 
     init {
         imgView = itemView.findViewById(R.id.formELementImage)
     }
 
-    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
 
-        if (s is FylFormItemImage) {
+        if (s is FormItemImage) {
             Picasso.get().load(s.image).fit().centerInside().into(imgView)
 
             imgView?.setOnClickListener {
@@ -256,11 +256,11 @@ class MainActivity : AppCompatActivity() {
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
 
-            adapter = FylFormRecyclerAdaptor(settings, onSettingProfileItemClickListener).apply {
+            adapter = FormRecyclerAdaptor(settings, onSettingProfileItemClickListener).apply {
                 this.registerViewHolder(
-                    FylFormItemImage::class.java,
+                    FormItemImage::class.java,
                     R.layout.form_item_image,
-                    FylFormImageViewHolder::class.java
+                    FormImageViewHolder::class.java
                 )
             }
         }
