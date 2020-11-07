@@ -29,12 +29,13 @@
     </LinearLayout>
 
     <NumberPicker
-        android:id="@+id/formElementNumberPicker"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:visibility="gone" />
+            android:id="@+id/formElementNumberPicker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="42dp"
+            android:layout_marginEnd="42dp"
+            android:visibility="gone" />
 
     <include layout="@layout/form_divider" />
 </LinearLayout>
