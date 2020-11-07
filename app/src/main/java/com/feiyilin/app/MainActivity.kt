@@ -102,6 +102,12 @@ class MainActivity : AppCompatActivity() {
                 FylFormSwipeAction().title("Mark as unread").backgroundColor(ContextCompat.getColor(this, android.R.color.holo_green_light))
             )),
 
+            FylFormItemSection().title("Choice"),
+            FylFormItemSelect().tag("select").title("Select").value("Monday").selectorTitle("Select day of week").options(listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")),
+            FylFormItemChoice().tag("choice").title("Choice").value("Tuesday").selectorTitle("Select day of week").options(listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")),
+            FylFormItemPicker().tag("picker").title("Picker").value("Wednesday").selectorTitle("Select day of week").options(listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")),
+            FylFormItemPickerInline().tag("picker_inline").title("Picker Inline").value("Thursday").selectorTitle("Select day of week").options(listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")),
+
             FylFormItemSection().title("Custom item"),
             FylFormItemImage().tag("image").image(R.drawable.image1)
         )

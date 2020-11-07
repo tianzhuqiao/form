@@ -4,9 +4,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Resources
-import android.graphics.*
+import android.graphics.Color
 import android.os.Handler
-import android.text.*
+import android.text.Editable
+import android.text.SpannableString
+import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.*
@@ -14,13 +16,13 @@ import android.view.View.OnTouchListener
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputLayout
 import java.text.SimpleDateFormat
-
 
 interface FlyFormItemCallback {
     fun onSetup(item: FylFormItem, viewHolder: RecyclerView.ViewHolder) {}
@@ -122,6 +124,26 @@ open class FylFormRecyclerAdaptor(
                 FylFormItemDate::class.java,
                 R.layout.form_item_date,
                 FylFormDateViewHolder::class.java
+            ),
+            ViewHolderItem(
+                FylFormItemSelect::class.java,
+                R.layout.form_item_choice,
+                FylFormSelectViewHolder::class.java
+            ),
+            ViewHolderItem(
+                FylFormItemChoice::class.java,
+                R.layout.form_item_choice,
+                FylFormChoiceViewHolder::class.java
+            ),
+            ViewHolderItem(
+                FylFormItemPicker::class.java,
+                R.layout.form_item_choice,
+                FylFormPickerViewHolder::class.java
+            ),
+            ViewHolderItem(
+                FylFormItemPickerInline::class.java,
+                R.layout.form_item_picker,
+                FylFormPickerInlineViewHolder::class.java
             )
         )
     }
@@ -248,6 +270,9 @@ open class FylFormRecyclerAdaptor(
             }
             if (item is FylFormItemRadioNative) {
                 updateRadioGroup(item.group, item.tag)
+            }
+            if (item is FylFormItemSelect) {
+                //updateItem(item)
             }
             listener?.onValueChanged(item)
         }
@@ -991,6 +1016,143 @@ open class FylFormDateViewHolder(inflater: LayoutInflater, resource: Int, parent
                     s.month = month
                     s.day = dayOfMonth
                     dateView?.text = SimpleDateFormat(s.dateFormat).format(s.date)
+                    listener?.onValueChanged(s)
+                }
+            }
+        }
+    }
+}
+
+
+open class FylFormSelectViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FylFormViewHolder(inflater, resource, parent) {
+
+    var valueView: TextView? = null
+    var item: FylFormItemSelect? = null
+    var listener: FlyFormItemCallback? = null
+    init {
+        valueView = itemView.findViewById(R.id.formElementValue)
+    }
+
+    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+        super.bind(s, listener)
+        this.listener = listener
+        itemView.setOnClickListener {
+            showAlertWithChoice()
+            listener?.onItemClicked(s, this)
+        }
+        if (s is FylFormItemSelect) {
+            valueView?.text = s.value
+            item = s
+        }
+    }
+
+    open fun showAlertWithChoice() {
+        // setup the alert builder
+        item?.let {
+            val builder = AlertDialog.Builder(itemView.context)
+            builder.setTitle(it.selectorTitle)
+            builder.setItems(it.options.toTypedArray(), { dialog, item ->
+                it.value = it.options[item]
+                valueView?.text = it.value
+                this.listener?.onValueChanged(it)
+            })
+            val dialog = builder.create()
+            dialog.show()
+        }
+    }
+}
+
+open class FylFormChoiceViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FylFormSelectViewHolder(inflater, resource, parent) {
+
+    override fun showAlertWithChoice() {
+        // setup the alert builder
+        (item as? FylFormItemChoice)?.let {
+            val checkedItem = it.options.indexOf(it.value)
+            val builder = AlertDialog.Builder(itemView.context)
+                .setTitle(it.selectorTitle)
+                .setSingleChoiceItems(it.options.toTypedArray(), checkedItem, null)
+                .setPositiveButton(it.yesButtonTitle) { dialog, _ ->
+                    (dialog as? AlertDialog)?.listView?.let { lw ->
+                        it.value = it.options[lw.getCheckedItemPosition()]
+                        valueView?.text = it.value
+                        this.listener?.onValueChanged(it)
+                    }
+                }
+                .setNegativeButton(it.noButtonTitle) { _, _ ->
+                }
+
+            val dialog = builder.create()
+            dialog.show()
+        }
+    }
+}
+
+open class FylFormPickerViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FylFormChoiceViewHolder(inflater, resource, parent) {
+
+    override fun showAlertWithChoice() {
+        // setup the alert builder
+        (item as? FylFormItemChoice)?.let {
+            val checkedItem = it.options.indexOf(it.value)
+            val view = LayoutInflater.from(itemView.context).inflate(R.layout.form_picker, null)
+            val picker = view?.findViewById<NumberPicker>(R.id.formElementNumberPicker)
+            picker?.minValue = 0
+            picker?.maxValue = it.options.size - 1
+            picker?.displayedValues = it.options.toTypedArray()
+            picker?.value = checkedItem
+
+            val builder = AlertDialog.Builder(itemView.context)
+                .setTitle(it.selectorTitle)
+                .setView(view)
+                .setPositiveButton(it.yesButtonTitle) { dialog, _ ->
+                    picker?.value?.let { item ->
+                        it.value = it.options[item]
+                        valueView?.text = it.value
+                        this.listener?.onValueChanged(it)
+                    }
+                }
+                .setNegativeButton(it.noButtonTitle) { _, _ ->
+                }
+
+            val dialog = builder.create()
+            dialog.show()
+        }
+    }
+}
+
+
+open class FylFormPickerInlineViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FylFormViewHolder(inflater, resource, parent) {
+
+    var valueView: TextView? = null
+    var pickerView: NumberPicker? = null
+
+    init {
+        valueView = itemView.findViewById(R.id.formElementValue)
+        pickerView = itemView.findViewById(R.id.formElementNumberPicker)
+    }
+
+    override fun bind(s: FylFormItem, listener: FlyFormItemCallback?) {
+        super.bind(s, listener)
+        if (s is FylFormItemPickerInline) {
+            itemView.setOnClickListener {
+                if (pickerView?.visibility == View.GONE)
+                    pickerView?.visibility = View.VISIBLE
+                else
+                    pickerView?.visibility = View.GONE
+                listener?.onItemClicked(s, this)
+            }
+            valueView?.text = s.value
+            pickerView?.minValue = 0
+            pickerView?.maxValue = s.options.size - 1
+            pickerView?.displayedValues = s.options.toTypedArray()
+            pickerView?.value = s.options.indexOf(s.value)
+            pickerView?.setOnValueChangedListener { _, _, new ->
+                if (s.value != s.options[new]) {
+                    s.value = s.options[new]
+                    valueView?.text = s.value
                     listener?.onValueChanged(s)
                 }
             }

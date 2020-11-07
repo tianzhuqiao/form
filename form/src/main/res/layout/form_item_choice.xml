@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:background="#ffffff"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/formElementMainLayout"
+        style="@style/formMainLayout">
+
+        <include layout="@layout/form_title" />
+
+        <TextView
+            android:id="@+id/formElementValue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="end"
+            android:maxLines="1"
+            android:text=""
+            android:textColor="@color/colorFormText"
+            android:textSize="18sp"
+            tools:text="Value" />
+
+        <ImageView
+            android:id="@+id/formElementChevron"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginEnd="8dp"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_form_chevron"
+            app:tint="#CDCDCD" />
+        <include layout="@layout/form_reorder" />
+    </LinearLayout>
+
+    <include layout="@layout/form_divider" />
+</LinearLayout>

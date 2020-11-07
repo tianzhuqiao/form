@@ -369,3 +369,40 @@ fun <T : FylFormItemDate> T.dateColor(dateColor: Int?) = apply {
 fun <T : FylFormItemDate> T.timeColor(timeColor: Int?) = apply {
     this.timeColor = timeColor
 }
+
+open class FylFormItemSelect : FylFormItem() {
+    var value: String = ""
+    var selectorTitle = ""
+    var options: List<String> = listOf()
+}
+
+fun <T : FylFormItemSelect> T.value(value: String) = apply {
+    this.value = value
+}
+
+fun <T : FylFormItemSelect> T.selectorTitle(title:String) = apply {
+    this.selectorTitle = title
+}
+
+fun <T : FylFormItemSelect> T.options(options: List<String>) = apply {
+    this.options = options
+}
+
+open class FylFormItemChoice : FylFormItemSelect() {
+    var yesButtonTitle = "Ok"
+    var noButtonTitle = "Cancel"
+}
+
+fun <T : FylFormItemChoice> T.yesButtonTitle(title: String) = apply {
+    this.yesButtonTitle = title
+}
+
+fun <T : FylFormItemChoice> T.noButtonTitle(title: String) = apply {
+    this.noButtonTitle = title
+}
+
+open class FylFormItemPicker :FylFormItemChoice() {
+}
+
+open class FylFormItemPickerInline :FylFormItemPicker() {
+}
