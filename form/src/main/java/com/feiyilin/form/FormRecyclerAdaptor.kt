@@ -1052,7 +1052,7 @@ open class FormSelectViewHolder(inflater: LayoutInflater, resource: Int, parent:
         item?.let {
             val builder = AlertDialog.Builder(itemView.context)
             builder.setTitle(it.selectorTitle)
-            builder.setItems(it.options.toTypedArray(), { dialog, item ->
+            builder.setItems(it.options, { dialog, item ->
                 it.value = it.options[item]
                 valueView?.text = it.value
                 this.listener?.onValueChanged(it)
@@ -1072,7 +1072,7 @@ open class FormChoiceViewHolder(inflater: LayoutInflater, resource: Int, parent:
             val checkedItem = it.options.indexOf(it.value)
             val builder = AlertDialog.Builder(itemView.context)
                 .setTitle(it.selectorTitle)
-                .setSingleChoiceItems(it.options.toTypedArray(), checkedItem, null)
+                .setSingleChoiceItems(it.options, checkedItem, null)
                 .setPositiveButton(it.yesButtonTitle) { dialog, _ ->
                     (dialog as? AlertDialog)?.listView?.let { lw ->
                         it.value = it.options[lw.getCheckedItemPosition()]
@@ -1100,7 +1100,7 @@ open class FormPickerViewHolder(inflater: LayoutInflater, resource: Int, parent:
             val picker = view?.findViewById<NumberPicker>(R.id.formElementNumberPicker)
             picker?.minValue = 0
             picker?.maxValue = it.options.size - 1
-            picker?.displayedValues = it.options.toTypedArray()
+            picker?.displayedValues = it.options
             picker?.value = checkedItem
 
             val builder = AlertDialog.Builder(itemView.context)
@@ -1147,7 +1147,7 @@ open class FormPickerInlineViewHolder(inflater: LayoutInflater, resource: Int, p
             valueView?.text = s.value
             pickerView?.minValue = 0
             pickerView?.maxValue = s.options.size - 1
-            pickerView?.displayedValues = s.options.toTypedArray()
+            pickerView?.displayedValues = s.options
             pickerView?.value = s.options.indexOf(s.value)
             pickerView?.setOnValueChangedListener { _, _, new ->
                 if (s.value != s.options[new]) {

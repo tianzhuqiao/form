@@ -103,10 +103,10 @@ class MainActivity : AppCompatActivity() {
             )),
 
             FormItemSection().title("Choice"),
-            FormItemSelect().tag("select").title("Select").value("Monday").selectorTitle("Select day of week").options(listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")),
-            FormItemChoice().tag("choice").title("Choice").value("Tuesday").selectorTitle("Select day of week").options(listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")),
-            FormItemPicker().tag("picker").title("Picker").value("Wednesday").selectorTitle("Select day of week").options(listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")),
-            FormItemPickerInline().tag("picker_inline").title("Picker Inline").value("Thursday").selectorTitle("Select day of week").options(listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")),
+            FormItemSelect().tag("select").title("Select").value("Monday").selectorTitle("Select day of week").options(arrayOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")),
+            FormItemChoice().tag("choice").title("Choice").value("Tuesday").selectorTitle("Select day of week").options(arrayOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")),
+            FormItemPicker().tag("picker").title("Picker").value("Wednesday").selectorTitle("Select day of week").options(arrayOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")),
+            FormItemPickerInline().tag("picker_inline").title("Picker Inline").value("Thursday").selectorTitle("Select day of week").options(arrayOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")),
 
             FormItemSection().title("Custom item"),
             FormItemImage().tag("image").image(R.drawable.image1)

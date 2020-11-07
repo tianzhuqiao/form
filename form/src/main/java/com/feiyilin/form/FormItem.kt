@@ -373,7 +373,7 @@ fun <T : FormItemDate> T.timeColor(timeColor: Int?) = apply {
 open class FormItemSelect : FormItem() {
     var value: String = ""
     var selectorTitle = ""
-    var options: List<String> = listOf()
+    var options: Array<String> = arrayOf()
 }
 
 fun <T : FormItemSelect> T.value(value: String) = apply {
@@ -384,7 +384,7 @@ fun <T : FormItemSelect> T.selectorTitle(title:String) = apply {
     this.selectorTitle = title
 }
 
-fun <T : FormItemSelect> T.options(options: List<String>) = apply {
+fun <T : FormItemSelect> T.options(options: Array<String>) = apply {
     this.options = options
 }
 
