@@ -755,3 +755,33 @@ open class FormPickerInlineViewHolder(inflater: LayoutInflater, resource: Int, p
         }
     }
 }
+
+open class FormMultipleChoiceViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormChoiceViewHolder(inflater, resource, parent) {
+
+    override fun showAlertWithChoice() {
+        // setup the alert builder
+        (item as? FormItemMultipleChoice)?.let {
+            if (it.checked.size == 0) {
+                it.checked = Array(it.options.size) { false }
+            }
+            val checked = it.checked.clone()
+            val builder = AlertDialog.Builder(itemView.context)
+                .setTitle(it.selectorTitle)
+                .setMultiChoiceItems(it.options, checked.toBooleanArray()) { _, item, isChecked ->
+                    checked[item] = isChecked
+                }
+                .setPositiveButton(it.yesButtonTitle) { _, _ ->
+                    it.checked = checked
+                    it.value = it.options.filterIndexed { index, value -> checked[index] == true }.joinToString(", ")
+                    valueView?.text = it.value
+                    this.listener?.onValueChanged(it)
+                }
+                .setNegativeButton(it.noButtonTitle) { _, _ ->
+                }
+
+            val dialog = builder.create()
+            dialog.show()
+        }
+    }
+}

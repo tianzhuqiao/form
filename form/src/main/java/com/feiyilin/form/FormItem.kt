@@ -406,3 +406,36 @@ open class FormItemPicker :FormItemChoice() {
 
 open class FormItemPickerInline :FormItemPicker() {
 }
+
+open class FormItemMultipleChoice : FormItemChoice() {
+    var checked : Array<Boolean> = arrayOf()
+}
+
+fun <T : FormItemMultipleChoice> T.options(options: Array<String>, checked: Array<Boolean> = arrayOf()) = apply {
+    this.options = options
+    this.checked = checked
+    if (this.checked.size != this.options.size) {
+        this.checked = Array(this.options.size) { false }
+        for (v in this.value.split(",")) {
+            val index = this.options.indexOf(v)
+            if (index != -1) {
+                this.checked[index] = true
+            }
+        }
+    } else {
+        this.value = this.options.filterIndexed { index, value -> this.checked[index] == true }.joinToString(", ")
+    }
+}
+
+fun <T : FormItemMultipleChoice> T.value(value: String) = apply {
+    this.value = value
+    if (this.options.size > 0) {
+        this.checked = Array(this.options.size) { false }
+        for (v in this.value.split(',')) {
+            val index = this.options.indexOf(v.trim())
+            if (index != -1) {
+                this.checked[index] = true
+            }
+        }
+    }
+}

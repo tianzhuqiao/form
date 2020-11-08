@@ -126,6 +126,11 @@ open class FormRecyclerAdaptor(
                 FormItemPickerInline::class.java,
                 R.layout.form_item_picker,
                 FormPickerInlineViewHolder::class.java
+            ),
+            ViewHolderItem(
+                FormItemMultipleChoice::class.java,
+                R.layout.form_item_choice,
+                FormMultipleChoiceViewHolder::class.java
             )
         )
     }

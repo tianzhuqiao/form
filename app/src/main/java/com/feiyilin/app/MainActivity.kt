@@ -107,6 +107,7 @@ class MainActivity : AppCompatActivity() {
             FormItemChoice().tag("choice").title("Choice").value("Tuesday").selectorTitle("Select day of week").options(arrayOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")),
             FormItemPicker().tag("picker").title("Picker").value("Wednesday").selectorTitle("Select day of week").options(arrayOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")),
             FormItemPickerInline().tag("picker_inline").title("Picker Inline").value("Thursday").selectorTitle("Select day of week").options(arrayOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")),
+            FormItemMultipleChoice().tag("multiple_choice").title("Multiple Choice").value("Thursday").selectorTitle("Select day of week").options(arrayOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")),
 
             FormItemSection().title("Custom item"),
             FormItemImage().tag("image").image(R.drawable.image1)
