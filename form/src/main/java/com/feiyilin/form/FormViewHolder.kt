@@ -15,9 +15,12 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputLayout
 import java.text.SimpleDateFormat
 
@@ -782,6 +785,114 @@ open class FormMultipleChoiceViewHolder(inflater: LayoutInflater, resource: Int,
 
             val dialog = builder.create()
             dialog.show()
+        }
+    }
+}
+
+open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormViewHolder(inflater, resource, parent) {
+
+    var valueView: CardView? = null
+    var collectionView: RecyclerView? = null
+    var colors = mutableListOf<FormItem>()
+    var item: FormItemColor? = null
+    var listener: FormItemCallback? = null
+    init {
+        valueView = itemView.findViewById(R.id.formElementValue)
+        collectionView = itemView.findViewById(R.id.formElementCollection)
+    }
+
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
+        super.bind(s, listener)
+        this.listener = listener
+        itemView.setOnClickListener {
+            if (collectionView?.visibility == View.GONE)
+                collectionView?.visibility = View.VISIBLE
+            else
+                collectionView?.visibility = View.GONE
+            listener?.onItemClicked(s, this)
+        }
+        if (s is FormItemColor) {
+            valueView?.setCardBackgroundColor(Color.parseColor(s.value))
+            valueView?.radius = dpToPx(s.cornerRadius).toFloat()
+            item = s
+            colors.clear()
+            for (clr in s.colors) {
+                colors.add(FormItemSingleColor().tag(clr).color(clr).selected(clr == s.value).cornerRadius(s.cornerRadius))
+            }
+
+            collectionView?.apply {
+                layoutManager =
+                    GridLayoutManager(itemView.context, s.rows, GridLayoutManager.HORIZONTAL, false)
+
+                adapter = FormRecyclerAdaptor(colors, onItemClickListener).apply {
+                    this.registerViewHolder(
+                        FormItemSingleColor::class.java,
+                        R.layout.form_color,
+                        FormSingleColorViewHolder::class.java
+                    )
+                }
+            }
+        }
+    }
+
+    private var onItemClickListener = object : FormItemCallback {
+        override fun onItemClicked(item: FormItem, viewHolder: RecyclerView.ViewHolder) {
+            super.onItemClicked(item, viewHolder)
+            if (item is FormItemSingleColor) {
+                this@FormColorViewHolder.item?.let {
+                    (collectionView?.adapter as? FormRecyclerAdaptor)?.let { adapter ->
+                        (adapter.itemByTag(it.value) as? FormItemSingleColor)?.let { old ->
+                            old.selected(false)
+                            adapter.updateItem(old)
+                        }
+                        (adapter.itemByTag(item.color) as? FormItemSingleColor)?.let { new ->
+                            new.selected(true)
+                            adapter.updateItem(new)
+                        }
+                    }
+                    it.value = item.color
+                    valueView?.setCardBackgroundColor(Color.parseColor(item.color))
+                    listener?.onValueChanged(it)
+                }
+            }
+        }
+    }
+
+    class FormItemSingleColor: FormItem() {
+        var color: String = ""
+        var selected: Boolean = false
+        var cornerRadius: Int = 20
+    }
+
+    fun FormItemSingleColor.color(color: String) = apply {
+        this.color = color
+    }
+
+    fun FormItemSingleColor.selected(selected: Boolean) = apply {
+        this.selected = selected
+    }
+
+    fun FormItemSingleColor.cornerRadius(cornerRadius: Int) = apply {
+        this.cornerRadius = cornerRadius
+    }
+    class FormSingleColorViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+        FormViewHolder(inflater, resource, parent) {
+        var valueView: MaterialCardView? = null
+        init {
+            valueView = itemView.findViewById(R.id.formElementValue)
+        }
+        override fun bind(s: FormItem, listener: FormItemCallback?) {
+            super.bind(s, listener)
+            if (s is FormItemSingleColor) {
+                valueView?.setCardBackgroundColor(Color.parseColor(s.color))
+                valueView?.radius = dpToPx(s.cornerRadius).toFloat()
+                if (s.selected) {
+                    valueView?.strokeWidth = 3
+                } else {
+                    valueView?.strokeWidth = 0
+                }
+            }
         }
     }
 }

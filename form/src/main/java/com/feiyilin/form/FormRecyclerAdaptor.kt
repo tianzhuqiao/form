@@ -131,6 +131,11 @@ open class FormRecyclerAdaptor(
                 FormItemMultipleChoice::class.java,
                 R.layout.form_item_choice,
                 FormMultipleChoiceViewHolder::class.java
+            ),
+            ViewHolderItem(
+                FormItemColor::class.java,
+                R.layout.form_item_color,
+                FormColorViewHolder::class.java
             )
         )
     }
