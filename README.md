@@ -169,8 +169,21 @@ Once an action is triggered, **onSwipedAction** callback will be called
 
 <img src="./images/swipe.gif" width="36%">
 
+# Built-in items
+|      |      |
+|------|------|
+|Text|<img src="./images/item_text.png" width="36%">|
+|Text area|<img src="./images/item_textarea.png" width="36%">|
+|Switch|<img src="./images/item_switch.png" width="36%">|
+|Radio|<img src="./images/item_radio.png" width="36%">|
+|Nav|<img src="./images/item_nav.png" width="36%">|
+|Action|<img src="./images/item_action.png" width="36%">|
+|Date|<img src="./images/item_date.png" width="36%">|
+|Select|<img src="./images/item_select.png" width="22%"> <img src="./images/item_choice.png" width="22%"> <img src="./images/item_picker.png" width="22%">|
+|Picker inline|<img src="./images/item_picker_inline.png" width="36%">|
+|Color|<img src="./images/item_color.png" width="36%">|
 # Custom item
-Design the layout of your item, e.g., **form_item_image.xml**
+1. Design the layout of your item, e.g., **form_item_image.xml**
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 
@@ -212,7 +225,7 @@ Design the layout of your item, e.g., **form_item_image.xml**
 </androidx.constraintlayout.widget.ConstraintLayout>
 ```
 
-Derive an item from **FormItem**,
+2. Derive an item from **FormItem**,
 ```kotlin
 open class FormItemImage : FormItem() {
     var image: Int = 0
@@ -222,7 +235,8 @@ fun <T : FormItemImage> T.image(image: Int) = apply {
     this.image = image
 }
 ```
-Derive a view holder class from **FormViewHolder**, and override **bind**
+
+3. Derive a view holder class from **FormViewHolder**, and override **bind**
 ```kotlin
 class FormImageViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FormViewHolder(inflater, resource, parent) {
@@ -245,7 +259,7 @@ class FormImageViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
 }
 ```
 
-Register the item with **registerViewHolder**
+4. Register the item with **registerViewHolder**
 ```kotlin
 class MainActivity : AppCompatActivity() {
     ...
