@@ -423,7 +423,7 @@ fun <T : FormItemMultipleChoice> T.options(options: Array<String>, checked: Arra
             }
         }
     } else {
-        this.value = this.options.filterIndexed { index, value -> this.checked[index] == true }.joinToString(", ")
+        this.value = this.options.filterIndexed { index, _ -> this.checked[index] == true }.joinToString(", ")
     }
 }
 

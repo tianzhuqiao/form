@@ -651,11 +651,11 @@ open class FormSelectViewHolder(inflater: LayoutInflater, resource: Int, parent:
         item?.let {
             val builder = AlertDialog.Builder(itemView.context)
             builder.setTitle(it.selectorTitle)
-            builder.setItems(it.options, { dialog, item ->
+            builder.setItems(it.options) { _, item ->
                 it.value = it.options[item]
                 valueView?.text = it.value
                 this.listener?.onValueChanged(it)
-            })
+            }
             val dialog = builder.create()
             dialog.show()
         }
@@ -705,7 +705,7 @@ open class FormPickerViewHolder(inflater: LayoutInflater, resource: Int, parent:
             val builder = AlertDialog.Builder(itemView.context)
                 .setTitle(it.selectorTitle)
                 .setView(view)
-                .setPositiveButton(it.yesButtonTitle) { dialog, _ ->
+                .setPositiveButton(it.yesButtonTitle) { _, _ ->
                     picker?.value?.let { item ->
                         it.value = it.options[item]
                         valueView?.text = it.value
@@ -776,7 +776,7 @@ open class FormMultipleChoiceViewHolder(inflater: LayoutInflater, resource: Int,
                 }
                 .setPositiveButton(it.yesButtonTitle) { _, _ ->
                     it.checked = checked
-                    it.value = it.options.filterIndexed { index, value -> checked[index] == true }.joinToString(", ")
+                    it.value = it.options.filterIndexed { index, _ -> checked[index] == true }.joinToString(", ")
                     valueView?.text = it.value
                     this.listener?.onValueChanged(it)
                 }
