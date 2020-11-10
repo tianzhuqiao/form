@@ -46,6 +46,12 @@ fun <T : FormSwipeAction> T.style(style: FormSwipeAction.Style) = apply {
 }
 
 open class FormItem {
+    enum class Separator {
+        DEFAULT,
+        NONE,
+        IGNORE_ICON;
+    }
+
     var title: String = ""
     var titleColor: Int? = null
     var subTitle: String = ""
@@ -54,10 +60,11 @@ open class FormItem {
     var iconSize: Size = Size(24, 24)
     var dragable: Boolean = false
     var tag: String = ""
-    var originalValue: String = ""
     var required: Boolean = false
     var hidden: Boolean = false
     var minHeight: Int = 0
+    var separator: Separator? = null
+    var badge: String? = null
     var leadingSwipe = listOf<FormSwipeAction>()
     var trailingSwipe = listOf<FormSwipeAction>()
 }
@@ -112,6 +119,14 @@ fun <T : FormItem> T.hidden(hidden: Boolean=true) = apply {
 
 fun <T : FormItem> T.minHeight(height: Int) = apply {
     this.minHeight = height
+}
+
+fun <T : FormItem> T.separator(separator: FormItem.Separator?) = apply {
+    this.separator = separator
+}
+
+fun <T : FormItem> T.badge(badge: String?) = apply {
+    this.badge = badge
 }
 
 fun <T : FormItem> T.leadingSwipe(actions: List<FormSwipeAction>) = apply {
@@ -262,11 +277,6 @@ fun <T : FormItemRadio> T.group(group: String) = apply {
 }
 
 open class FormItemNav : FormItem() {
-    var badge: String? = null
-}
-
-fun <T : FormItemNav> T.badge(badge: String?) = apply {
-    this.badge = badge
 }
 
 open class FormItemDate : FormItem() {

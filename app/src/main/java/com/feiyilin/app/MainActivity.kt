@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
@@ -56,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             FormItemNav().title("Nav item with badge").tag("nav_item_badge").badge(""),
             FormItemNav().title("Nav item with badge and icon").tag("nav_item_badge_icon").badge("")
                 .iconTitle(ContextCompat.getDrawable(this, R.drawable.ic_form_info)),
-            FormItemNav().title("Nav item with number badge").tag("nav_item_badge_num").badge("99").iconSize(32, 32)
+            FormItemNav().title("Nav item with number badge").tag("nav_item_badge_num").badge("99").iconSize(44, 44)
                 .iconTitle(ContextCompat.getDrawable(this, R.drawable.ic_form_info)),
 
             FormItemSection().title("Radio"),
@@ -111,6 +112,13 @@ class MainActivity : AppCompatActivity() {
             FormItemColor().tag("color_choice").title("Color").value("#03a9f4"),
             FormItemColor().tag("color_choice2").title("Color").value("#ff9800").cornerRadius(5),
 
+            FormItemSection().title("Separator"),
+            FormItemNav().title("No separator").separator(FormItem.Separator.NONE)
+                .iconTitle(ContextCompat.getDrawable(this, R.drawable.ic_form_info)),
+            FormItemNav().title("Ignore icon").separator(FormItem.Separator.IGNORE_ICON)
+                .iconTitle(ContextCompat.getDrawable(this, R.drawable.ic_form_info)),
+            FormItemNav().title("Default").separator(FormItem.Separator.DEFAULT)
+                .iconTitle(ContextCompat.getDrawable(this, R.drawable.ic_form_info)),
             FormItemSection().title("Custom item"),
             FormItemImage().tag("image").image(R.drawable.image1)
         )

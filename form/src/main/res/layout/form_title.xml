@@ -9,14 +9,6 @@
     android:layout_marginTop="10dp"
     android:layout_marginBottom="10dp">
 
-    <ImageView
-        android:id="@+id/formElementTitleImage"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="8dp"
-        android:visibility="gone"
-        app:srcCompat="@drawable/ic_form_info" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">

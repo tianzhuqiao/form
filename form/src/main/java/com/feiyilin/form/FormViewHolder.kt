@@ -30,18 +30,30 @@ open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
     var titleView: TextView? = null
     var subtitleView: TextView? = null
     var titleImageView: ImageView? = null
+    var badgeView: ConstraintLayout? = null
+    var badgeViewTitle: TextView? = null
+    var titleImageWrap: View? = null
     var reorderView: ImageView? = null
     var mainView: View? = null
+    var dividerView: View? = null
+    var item: FormItem? = null
+    var listener: FormItemCallback? = null
 
     init {
         titleView = itemView.findViewById(R.id.formElementTitle)
         subtitleView = itemView.findViewById(R.id.formElementSubTitle)
         titleImageView = itemView.findViewById(R.id.formElementTitleImage)
+        badgeView = itemView.findViewById(R.id.formElementBadge)
+        badgeViewTitle = itemView.findViewById(R.id.formElementBadgeTitle)
+        titleImageWrap = itemView.findViewById(R.id.formElementTitleImageWrap)
         reorderView = itemView.findViewById(R.id.formElementReorder)
         mainView = itemView.findViewById(R.id.formElementMainLayout)
+        dividerView = itemView.findViewById(R.id.formElementDivider)
     }
 
     open fun bind(s: FormItem, listener: FormItemCallback?) {
+        this.item = s
+        this.listener = listener
         var minHeight = s.minHeight
         if (minHeight == 0) {
             minHeight = listener?.getMinItemHeight(s) ?: 0
@@ -49,6 +61,7 @@ open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
         if (minHeight > 0) {
             mainView?.minimumHeight = dpToPx(minHeight)
         }
+
         itemView.setOnClickListener {
             listener?.onItemClicked(s, this)
         }
@@ -97,24 +110,15 @@ open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
             )
         }
 
-        titleImageView?.layoutParams?.height = dpToPx(s.iconSize.height)
-        titleImageView?.layoutParams?.width = dpToPx(s.iconSize.width)
-        titleImageView?.setImageDrawable(s.iconTitle)
-        if (s.iconTitle != null) {
-            titleImageView?.visibility = View.VISIBLE
-            titleImageView?.setOnClickListener {
-                listener?.onTitleImageClicked(s)
-            }
-        } else {
-            titleImageView?.visibility = View.GONE
-        }
-
+        updateIcon()
         reorderView?.visibility = if (s.dragable) View.VISIBLE else View.GONE
         reorderView?.setOnTouchListener { _, event ->
             if (event.actionMasked == MotionEvent.ACTION_DOWN)
                 listener?.onStartReorder(s, this)
             false
         }
+
+        updateSeparator()
     }
 
     fun dpToPx(dp: Int): Int {
@@ -124,13 +128,79 @@ open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
             Resources.getSystem().displayMetrics
         ).toInt()
     }
+
+    fun updateSeparator() {
+        item?.let {item ->
+            val separator = item.separator ?: listener?.getSeparator(item)
+            val param = dividerView?.layoutParams as? ViewGroup.MarginLayoutParams
+            param?.leftMargin = dpToPx(0)
+            when (separator) {
+                FormItem.Separator.NONE -> {
+                    dividerView?.visibility = View.GONE
+                }
+                FormItem.Separator.IGNORE_ICON -> {
+                    dividerView?.visibility = View.VISIBLE
+                    if (titleImageView?.visibility == View.VISIBLE)
+                        param?.leftMargin = dpToPx(16 + item.iconSize.width + 8)
+                }
+                else -> {
+                    dividerView?.visibility = View.VISIBLE
+                    param?.leftMargin = dpToPx(0)
+                }
+            }
+            dividerView?.requestLayout()
+        }
+    }
+
+    fun updateIcon() {
+        item?.let {
+            titleImageView?.layoutParams?.height = dpToPx(it.iconSize.height)
+            titleImageView?.layoutParams?.width = dpToPx(it.iconSize.width)
+            titleImageView?.setImageDrawable(it.iconTitle)
+            if (it.iconTitle != null) {
+                titleImageWrap?.visibility = View.VISIBLE
+                titleImageView?.visibility = View.VISIBLE
+                titleImageView?.setOnClickListener { _ ->
+                    listener?.onTitleImageClicked(it)
+                }
+            } else {
+                titleImageView?.visibility = View.GONE
+            }
+
+            if (it.badge == null) {
+                badgeView?.visibility = View.GONE
+            } else if (it.badge?.isEmpty() ?: true) {
+                // dot
+                badgeView?.visibility = View.VISIBLE
+                badgeViewTitle?.visibility = View.GONE
+                badgeViewTitle?.text = it.badge
+                badgeView?.minHeight = dpToPx(10)
+                badgeView?.minWidth = dpToPx(10)
+            } else {
+                badgeView?.visibility = View.VISIBLE
+                badgeViewTitle?.visibility = View.VISIBLE
+                badgeViewTitle?.text = it.badge
+                badgeView?.minHeight = dpToPx(20)
+                badgeView?.minWidth = dpToPx(20)
+            }
+            val param = badgeView?.layoutParams as? ViewGroup.MarginLayoutParams
+            if (titleImageView?.visibility == View.VISIBLE) {
+                param?.leftMargin = dpToPx(-10)
+            } else {
+                param?.leftMargin = dpToPx(2)
+            }
+            if (titleImageView?.visibility == View.GONE && badgeView?.visibility == View.GONE) {
+                titleImageWrap?.visibility = View.GONE
+            } else {
+                titleImageWrap?.visibility = View.VISIBLE
+            }
+        }
+    }
 }
 
 open class FormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FormViewHolder(inflater, resource, parent) {
     var valueView: EditText? = null
-    var listener: FormItemCallback? = null
-    var item: FormItemText? = null
     var hintView: TextInputLayout? = null
 
     init {
@@ -139,7 +209,7 @@ open class FormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, paren
         reorderView = itemView.findViewById(R.id.formElementReorder)
         valueView?.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                item?.let {
+                (item as? FormItemText)?.let {
                     if (it.value != s.toString()) {
                         it.value = s.toString()
                         listener?.onValueChanged(it)
@@ -168,9 +238,7 @@ open class FormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, paren
     override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
 
-        this.listener = listener
         if (s is FormItemText) {
-            this.item = s
             itemView.setOnClickListener {
                 listener?.onItemClicked(s, this)
                 valueView?.requestFocus()
@@ -365,7 +433,6 @@ open class FormSwitchNativeViewHolder(inflater: LayoutInflater, resource: Int, p
 open class FormSwitchViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FormViewHolder(inflater, resource, parent) {
     private var switchView: ImageView? = null
-    private var item: FormItemRadio? = null
 
     init {
         switchView = itemView.findViewById(R.id.formElementSwitch)
@@ -388,17 +455,19 @@ open class FormSwitchViewHolder(inflater: LayoutInflater, resource: Int, parent:
     }
 
     fun setSwitchImage(checked: Boolean) {
-        if (checked) {
-            if (item?.iconOn != null) {
-                switchView?.setImageDrawable(item?.iconOn)
+        (item as? FormItemSwitch)?.let { item ->
+            if (checked) {
+                if (item.iconOn != null) {
+                    switchView?.setImageDrawable(item.iconOn)
+                } else {
+                    switchView?.setImageResource(R.drawable.ic_form_toggle_on)
+                }
             } else {
-                switchView?.setImageResource(R.drawable.ic_form_toggle_on)
-            }
-        } else {
-            if (item?.iconOff != null) {
-                switchView?.setImageDrawable(item?.iconOff)
-            } else {
-                switchView?.setImageResource(R.drawable.ic_form_toggle_off)
+                if (item.iconOff != null) {
+                    switchView?.setImageDrawable(item.iconOff)
+                } else {
+                    switchView?.setImageResource(R.drawable.ic_form_toggle_off)
+                }
             }
         }
     }
@@ -407,7 +476,6 @@ open class FormSwitchViewHolder(inflater: LayoutInflater, resource: Int, parent:
 open class FormRadioViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FormViewHolder(inflater, resource, parent) {
     private var radioView: ImageView? = null
-    private var item: FormItemRadio? = null
 
     init {
         radioView = itemView.findViewById(R.id.formElementRadio)
@@ -426,7 +494,6 @@ open class FormRadioViewHolder(inflater: LayoutInflater, resource: Int, parent: 
             }
         }
         if (s is FormItemRadio) {
-            item = s
             radioView?.layoutParams?.height = dpToPx(s.iconSize.height)
             radioView?.layoutParams?.width = dpToPx(s.iconSize.width)
             setRadioImage(s.isOn)
@@ -434,17 +501,19 @@ open class FormRadioViewHolder(inflater: LayoutInflater, resource: Int, parent: 
     }
 
     fun setRadioImage(checked: Boolean) {
-        if (checked) {
-            if (item?.iconOn != null) {
-                radioView?.setImageDrawable(item?.iconOn)
+        (item as? FormItemRadio)?.let { item ->
+            if (checked) {
+                if (item.iconOn != null) {
+                    radioView?.setImageDrawable(item.iconOn)
+                } else {
+                    radioView?.setImageResource(R.drawable.ic_form_radio_on)
+                }
             } else {
-                radioView?.setImageResource(R.drawable.ic_form_radio_on)
-            }
-        } else {
-            if (item?.iconOff != null) {
-                radioView?.setImageDrawable(item?.iconOff)
-            } else {
-                radioView?.setImageResource(R.drawable.ic_form_radio_off)
+                if (item.iconOff != null) {
+                    radioView?.setImageDrawable(item.iconOff)
+                } else {
+                    radioView?.setImageResource(R.drawable.ic_form_radio_off)
+                }
             }
         }
     }
@@ -482,15 +551,6 @@ open class FormRadioNativeViewHolder(inflater: LayoutInflater, resource: Int, pa
 
 open class FormNavViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FormViewHolder(inflater, resource, parent) {
-    var badgeView: ConstraintLayout? = null
-    var badgeViewTitle: TextView? = null
-    var titleImageWrap: View? = null
-
-    init {
-        badgeView = itemView.findViewById(R.id.formElementBadge)
-        badgeViewTitle = itemView.findViewById(R.id.formElementBadgeTitle)
-        titleImageWrap = itemView.findViewById(R.id.formElementTitleImageWrap)
-    }
 
     override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
@@ -622,33 +682,28 @@ open class FormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: V
     }
 }
 
-
 open class FormSelectViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FormViewHolder(inflater, resource, parent) {
 
     var valueView: TextView? = null
-    var item: FormItemSelect? = null
-    var listener: FormItemCallback? = null
     init {
         valueView = itemView.findViewById(R.id.formElementValue)
     }
 
     override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
-        this.listener = listener
         itemView.setOnClickListener {
             showAlertWithChoice()
             listener?.onItemClicked(s, this)
         }
         if (s is FormItemSelect) {
             valueView?.text = s.value
-            item = s
         }
     }
 
     open fun showAlertWithChoice() {
         // setup the alert builder
-        item?.let {
+        (item as? FormItemSelect)?.let {
             val builder = AlertDialog.Builder(itemView.context)
             builder.setTitle(it.selectorTitle)
             builder.setItems(it.options) { _, item ->
@@ -795,8 +850,6 @@ open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: 
     var valueView: CardView? = null
     var collectionView: RecyclerView? = null
     var colors = mutableListOf<FormItem>()
-    var item: FormItemColor? = null
-    var listener: FormItemCallback? = null
     init {
         valueView = itemView.findViewById(R.id.formElementValue)
         collectionView = itemView.findViewById(R.id.formElementCollection)
@@ -804,7 +857,7 @@ open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: 
 
     override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
-        this.listener = listener
+
         itemView.setOnClickListener {
             if (collectionView?.visibility == View.GONE)
                 collectionView?.visibility = View.VISIBLE
@@ -815,7 +868,6 @@ open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: 
         if (s is FormItemColor) {
             valueView?.setCardBackgroundColor(Color.parseColor(s.value))
             valueView?.radius = dpToPx(s.cornerRadius).toFloat()
-            item = s
             colors.clear()
             for (clr in s.colors) {
                 colors.add(FormItemSingleColor().tag(clr).color(clr).selected(clr == s.value).cornerRadius(s.cornerRadius))
@@ -840,7 +892,7 @@ open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: 
         override fun onItemClicked(item: FormItem, viewHolder: RecyclerView.ViewHolder) {
             super.onItemClicked(item, viewHolder)
             if (item is FormItemSingleColor) {
-                this@FormColorViewHolder.item?.let {
+                (this@FormColorViewHolder.item as? FormItemColor)?.let {
                     (collectionView?.adapter as? FormRecyclerAdaptor)?.let { adapter ->
                         (adapter.itemByTag(it.value) as? FormItemSingleColor)?.let { old ->
                             old.selected(false)

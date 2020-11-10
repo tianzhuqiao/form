@@ -21,6 +21,7 @@ interface FormItemCallback {
 
     fun onSwipedAction(item: FormItem, action: FormSwipeAction, viewHolder: RecyclerView.ViewHolder) {}
     fun getMinItemHeight(item: FormItem) : Int { return 0 }
+    fun getSeparator(item: FormItem) : FormItem.Separator  { return FormItem.Separator.DEFAULT }
 }
 
 open class FormRecyclerAdaptor(
@@ -324,6 +325,10 @@ open class FormRecyclerAdaptor(
 
         override fun getMinItemHeight(item: FormItem): Int {
             return listener?.getMinItemHeight(item) ?: 0
+        }
+
+        override fun getSeparator(item: FormItem): FormItem.Separator {
+            return listener?.getSeparator(item) ?: super.getSeparator(item)
         }
     }
 

@@ -12,6 +12,7 @@
         android:id="@+id/formElementMainLayout"
         style="@style/formMainLayout">
 
+        <include layout="@layout/form_icon" />
         <include layout="@layout/form_title" />
 
         <Space

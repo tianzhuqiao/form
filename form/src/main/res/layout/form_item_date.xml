@@ -11,8 +11,8 @@
         android:id="@+id/formElementMainLayout"
         style="@style/formMainLayout">
 
-        <include
-            layout="@layout/form_title" />
+        <include layout="@layout/form_icon" />
+        <include layout="@layout/form_title" />
 
         <TextView
             android:id="@+id/formElementDate"
