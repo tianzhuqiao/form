@@ -421,11 +421,13 @@ open class FormSwitchNativeViewHolder(inflater: LayoutInflater, resource: Int, p
                 listener?.onValueChanged(s)
             }
 
+            switchView?.setOnClickListener(null)
+            switchView?.isChecked = s.isOn
             switchView?.setOnClickListener {
                 s.isOn = switchView?.isChecked ?: (!s.isOn)
                 listener?.onValueChanged(s)
             }
-            switchView?.isChecked = s.isOn
+
         }
     }
 }
@@ -540,6 +542,7 @@ open class FormRadioNativeViewHolder(inflater: LayoutInflater, resource: Int, pa
             }
         }
         if (s is FormItemRadioNative) {
+            radioView?.setOnCheckedChangeListener(null)
             radioView?.isChecked = s.isOn
             radioView?.setOnCheckedChangeListener { _, checked ->
                 s.isOn = checked
@@ -626,12 +629,7 @@ open class FormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: V
                 listener?.onItemClicked(s, this)
             }
 
-            timePickerView?.setOnTimeChangedListener { _, hour, minute ->
-                s.hour = hour
-                s.minute = minute
-                timeView?.text = SimpleDateFormat(s.timeFormat).format(s.date)
-                listener?.onValueChanged(s)
-            }
+
             dateView?.text = SimpleDateFormat(s.dateFormat).format(s.date)
             timeView?.text = SimpleDateFormat(s.timeFormat).format(s.date)
 
@@ -662,8 +660,15 @@ open class FormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: V
                 timePickerView?.visibility = View.GONE
             } else {
                 timeView?.visibility = View.VISIBLE
+                timePickerView?.setOnTimeChangedListener(null)
                 timePickerView?.hour = s.hour
                 timePickerView?.minute = s.minute
+                timePickerView?.setOnTimeChangedListener { _, hour, minute ->
+                    s.hour = hour
+                    s.minute = minute
+                    timeView?.text = SimpleDateFormat(s.timeFormat).format(s.date)
+                    listener?.onValueChanged(s)
+                }
             }
             if (s.timeOnly) {
                 dateView?.visibility = View.GONE

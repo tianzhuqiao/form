@@ -24,7 +24,10 @@ abstract class FormActivity : AppCompatActivity() {
             adapter = FormRecyclerAdaptor(settings, onFormItemListener).apply {
             }
         }
+        initForm()
     }
 
     abstract var onFormItemListener: FormItemCallback?
+
+    abstract fun initForm()
 }

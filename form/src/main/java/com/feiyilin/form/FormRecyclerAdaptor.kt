@@ -203,6 +203,10 @@ open class FormRecyclerAdaptor(
 
     fun setSettings(settings: List<FormItem>) {
         this.settings = settings.toMutableList()
+        update()
+    }
+
+    fun update() {
         this.settingsVisible.clear()
         var hideSection = false
         for (item in this.settings) {
@@ -416,5 +420,10 @@ open class FormRecyclerAdaptor(
             }
         }
         return true
+    }
+
+    operator fun plus(item: FormItem): FormRecyclerAdaptor {
+        settings.add(item)
+        return this
     }
 }
