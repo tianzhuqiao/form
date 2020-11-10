@@ -1,17 +1,14 @@
 package com.feiyilin.app
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.feiyilin.form.FormRecyclerAdaptor
 import com.feiyilin.form.*
@@ -19,14 +16,10 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
-    private var settings = mutableListOf<FormItem>()
+class MainActivity : FormActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        val recyclerView = findViewById<RecyclerView>(R.id.setting_profile_recyclerView)
 
         val cal = Calendar.getInstance()
         cal.set(2020, 6, 19)
@@ -123,20 +116,15 @@ class MainActivity : AppCompatActivity() {
             FormItemImage().tag("image").image(R.drawable.image1)
         )
 
-        recyclerView.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-
-            adapter = FormRecyclerAdaptor(settings, onSettingProfileItemClickListener).apply {
-                this.registerViewHolder(
-                    FormItemImage::class.java,
-                    R.layout.form_item_image,
-                    FormImageViewHolder::class.java
-                )
-            }
-        }
+        adapter?.registerViewHolder(
+            FormItemImage::class.java,
+            R.layout.form_item_image,
+            FormImageViewHolder::class.java
+        )
+        adapter?.setSettings(settings)
     }
 
-    private var onSettingProfileItemClickListener = object : FormItemCallback {
+    override var onFormItemListener: FormItemCallback? = object : FormItemCallback {
         override fun onValueChanged(item: FormItem) {
             Log.i("onValueChanged", item.toString())
             if (item.tag == "switch_show_date") {
