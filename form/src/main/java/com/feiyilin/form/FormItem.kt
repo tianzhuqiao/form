@@ -15,11 +15,13 @@ open class FormSwipeAction {
     }
     var title: String = ""
     var icon: Drawable? = null
+    var iconSize: Int = 24
     var textSize: Float = 12.0f
     var backgroundColor: Int = Color.parseColor("#ffff4444")
     var width: Float = 0F
     var style: Style = Style.Normal
     var rect = RectF()
+    var padding: Float = 50f
 }
 fun <T : FormSwipeAction> T.title(title: String) = apply {
     this.title = title
@@ -27,6 +29,10 @@ fun <T : FormSwipeAction> T.title(title: String) = apply {
 
 fun <T : FormSwipeAction> T.icon(icon: Drawable?) = apply {
     this.icon = icon
+}
+
+fun <T : FormSwipeAction> T.iconSize(iconSize: Int) = apply {
+    this.iconSize = iconSize
 }
 
 fun <T : FormSwipeAction> T.textSize(textSize: Float) = apply {
@@ -43,6 +49,10 @@ fun <T : FormSwipeAction> T.width(width: Float) = apply {
 
 fun <T : FormSwipeAction> T.style(style: FormSwipeAction.Style) = apply {
     this.style = style
+}
+
+fun <T : FormSwipeAction> T.padding(padding: Float) = apply {
+    this.padding = padding
 }
 
 open class FormItem {

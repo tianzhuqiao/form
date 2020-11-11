@@ -19,7 +19,7 @@ interface FormItemCallback {
         return false
     }
 
-    fun onSwipedAction(item: FormItem, action: FormSwipeAction, viewHolder: RecyclerView.ViewHolder) {}
+    fun onSwipedAction(item: FormItem, action: FormSwipeAction, viewHolder: RecyclerView.ViewHolder): Boolean { return false }
     fun getMinItemHeight(item: FormItem) : Int { return 0 }
     fun getSeparator(item: FormItem) : FormItem.Separator  { return FormItem.Separator.DEFAULT }
 }
@@ -167,10 +167,11 @@ open class FormRecyclerAdaptor(
 
                 override fun onActionClicked(pos: Int, action: FormSwipeAction) {
                     val item = settingsVisible[pos]
+                    var processed = false
                     recyclerView.findViewHolderForAdapterPosition(pos)?.let {
-                        onFormItemCallback.onSwipedAction(item, action, it)
+                        processed = onFormItemCallback.onSwipedAction(item, action, it)
                     }
-                    if (settingsVisible.indexOf(item) >= 0) {
+                    if (!processed && settingsVisible.indexOf(item) >= 0) {
                         updateItem(pos)
                     }
                 }
@@ -322,9 +323,9 @@ open class FormRecyclerAdaptor(
             item: FormItem,
             action: FormSwipeAction,
             viewHolder: RecyclerView.ViewHolder
-        ) {
+        ): Boolean {
             super.onSwipedAction(item, action, viewHolder)
-            listener?.onSwipedAction(item, action, viewHolder)
+            return listener?.onSwipedAction(item, action, viewHolder) ?: false
         }
 
         override fun getMinItemHeight(item: FormItem): Int {
@@ -336,7 +337,7 @@ open class FormRecyclerAdaptor(
         }
     }
 
-    fun itemByTag(tag: String) : FormItem? {
+    fun itemByTag(tag: String): FormItem? {
         return settings.firstOrNull { it.tag == tag }
     }
 
@@ -382,7 +383,7 @@ open class FormRecyclerAdaptor(
         }
     }
 
-    fun evaluateHidden(item: FormItem) : Boolean {
+    fun evaluateHidden(item: FormItem): Boolean {
         val orgIdx = settings.indexOf(item)
         if (orgIdx == -1) {
             return false
@@ -425,5 +426,9 @@ open class FormRecyclerAdaptor(
     operator fun plus(item: FormItem): FormRecyclerAdaptor {
         settings.add(item)
         return this
+    }
+
+    operator fun FormItem.unaryPlus() {
+        settings.add(this)
     }
 }

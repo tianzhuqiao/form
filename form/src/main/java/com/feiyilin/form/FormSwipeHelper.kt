@@ -2,9 +2,10 @@ package com.feiyilin.form
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.*
 import android.text.TextPaint
-import android.text.TextUtils
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -27,6 +28,14 @@ abstract class FormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelper.D
     abstract fun getFormItem(pos: Int) : FormItem
 
     abstract fun updateItem(pos: Int)
+
+    fun dpToPx(dp: Int): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp.toFloat(),
+            Resources.getSystem().displayMetrics
+        ).toInt()
+    }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         super.onSelectedChanged(viewHolder, direction)
@@ -118,19 +127,20 @@ abstract class FormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelper.D
                 paint.getTextBounds(action.title, 0, action.title.length, titleBounds)
                 var actionWidth = titleBounds.width()
                 action.icon?.let {
-                    val size = (context.resources.displayMetrics.density * 24).toInt()
+                    val size = dpToPx(action.iconSize)
                     actionWidth = max(size, actionWidth)
                 }
-                action.width = actionWidth + 2 * 50f
+                action.width = actionWidth + 2 * action.padding
             }
             width += action.width
         }
         return width
     }
 
-    fun drawAction(action: FormSwipeAction, canvas: Canvas, rect: RectF, context: Context) {
+    fun drawAction(action: FormSwipeAction, canvas: Canvas, context: Context, alignLeft: Boolean=true) {
         val paint = TextPaint()
 
+        val rect = action.rect
         // Draw background
         paint.color = action.backgroundColor
         canvas.drawRect(rect, paint)
@@ -142,32 +152,30 @@ abstract class FormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelper.D
         paint.textAlign = Paint.Align.LEFT
         paint.isAntiAlias = true
 
-        val text = TextUtils.ellipsize(action.title, paint, rect.width(), TextUtils.TruncateAt.END).toString()
+        val text = action.title
         val titleBounds = Rect()
         paint.getTextBounds(text, 0, text.length, titleBounds)
 
-        action.icon?.let {
-            val size = (context.resources.displayMetrics.density * 24).toInt()
-            val height = size + titleBounds.height() + 5
-            if (rect.width() > size) {
-                val left = (rect.left + rect.width() / 2 - size / 2).toInt()
-                val top = (rect.top + rect.height() / 2 - height / 2).toInt()
-                it.setBounds(left, top, left + size, top + size)
-                it.draw(canvas)
-            }
-            if (rect.width() >= titleBounds.width()) {
-                val left = (rect.left + rect.width() / 2 - titleBounds.width()/2)
-                val y = rect.height() / 2 + titleBounds.height() / 2 - titleBounds.bottom + size/2 + 5
-                canvas.drawText(text, left, rect.top + y, paint)
-            }
-        } ?: run {
-            if (rect.width() >= titleBounds.width()) {
-                val left = (rect.left + rect.width() / 2 - titleBounds.width()/2)
-                val y = rect.height() / 2 + titleBounds.height() / 2 - titleBounds.bottom
-                canvas.drawText(text, left, rect.top + y, paint)
-            }
+        var leftText = rect.left + action.padding
+        if (!alignLeft) {
+            leftText = rect.right - titleBounds.width() - action.padding
         }
-        action.rect = rect
+        action.icon?.let {
+            val size = dpToPx(action.iconSize)
+            val height = size + titleBounds.height() + 5
+
+            val bottomText = rect.height() / 2 + titleBounds.height() / 2 - titleBounds.bottom + size/2 + 5
+
+            canvas.drawText(text, leftText, rect.top + bottomText, paint)
+
+            val leftIcon = (leftText + titleBounds.width() / 2 - size / 2).toInt()
+            val topIcon = (rect.top + rect.height() / 2 - height / 2).toInt()
+            it.setBounds(leftIcon, topIcon, leftIcon + size, topIcon + size)
+            it.draw(canvas)
+        } ?: run {
+            val bottomText = rect.height() / 2 + titleBounds.height() / 2 - titleBounds.bottom
+            canvas.drawText(text, leftText, rect.top + bottomText, paint)
+        }
     }
     
     fun drawActions(actions: List<FormSwipeAction>, canvas: Canvas, itemView: View, dX: Float, rightEnd: Boolean=true) {
@@ -180,17 +188,22 @@ abstract class FormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelper.D
             actions.forEach { action ->
                 val width = action.width /intrinsicWidth * abs(dX)
                 val left = right - width
-                drawAction(action, canvas, RectF(left, itemView.top.toFloat(), right.toFloat(), itemView.bottom.toFloat()), itemView.context)
+                action.rect = RectF(left, itemView.top.toFloat(), right.toFloat(), itemView.bottom.toFloat())
                 right = left.toInt()
+            }
+            actions.reversed().forEach { action ->
+                drawAction(action, canvas, itemView.context, !isDestructive(actions))
             }
         } else {
             var left = 0f
             actions.forEach { action ->
                 val width = action.width / intrinsicWidth * abs(dX)
-                drawAction( action, canvas, RectF(left, itemView.top.toFloat(), left + width, itemView.bottom.toFloat()), itemView.context)
+                action.rect = RectF(left, itemView.top.toFloat(), left + width, itemView.bottom.toFloat())
+                drawAction( action, canvas, itemView.context)
                 left += width
             }
         }
+
     }
 
     override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float,

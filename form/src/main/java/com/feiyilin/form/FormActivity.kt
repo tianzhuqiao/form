@@ -1,7 +1,9 @@
 package com.feiyilin.form
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -30,4 +32,12 @@ abstract class FormActivity : AppCompatActivity() {
     abstract var onFormItemListener: FormItemCallback?
 
     abstract fun initForm()
+
+    fun drawable(res: Int): Drawable? {
+        return ContextCompat.getDrawable(this, res)
+    }
+
+    fun color(res: Int): Int {
+        return ContextCompat.getColor(this, res)
+    }
 }
