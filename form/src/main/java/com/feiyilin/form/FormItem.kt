@@ -287,6 +287,11 @@ fun <T : FormItemRadio> T.group(group: String) = apply {
 }
 
 open class FormItemNav : FormItem() {
+    var value: String = ""
+}
+
+fun <T : FormItemNav> T.value(value: String) = apply {
+    this.value = value
 }
 
 open class FormItemDate : FormItem() {

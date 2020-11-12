@@ -554,37 +554,16 @@ open class FormRadioNativeViewHolder(inflater: LayoutInflater, resource: Int, pa
 
 open class FormNavViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FormViewHolder(inflater, resource, parent) {
+    var valueView: TextView? = null
+
+    init {
+        valueView = itemView.findViewById(R.id.formElementValue)
+    }
 
     override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
         if (s is FormItemNav) {
-            if (s.badge == null) {
-                badgeView?.visibility = View.GONE
-            } else if (s.badge?.isEmpty() ?: true) {
-                // dot
-                badgeView?.visibility = View.VISIBLE
-                badgeViewTitle?.visibility = View.GONE
-                badgeViewTitle?.text = s.badge
-                badgeView?.minHeight = dpToPx(10)
-                badgeView?.minWidth = dpToPx(10)
-            } else {
-                badgeView?.visibility = View.VISIBLE
-                badgeViewTitle?.visibility = View.VISIBLE
-                badgeViewTitle?.text = s.badge
-                badgeView?.minHeight = dpToPx(20)
-                badgeView?.minWidth = dpToPx(20)
-            }
-            val param = badgeView?.layoutParams as? ViewGroup.MarginLayoutParams
-            if (titleImageView?.visibility == View.VISIBLE) {
-                param?.leftMargin = dpToPx(-10)
-            } else {
-                param?.leftMargin = dpToPx(2)
-            }
-            if (titleImageView?.visibility == View.GONE && badgeView?.visibility == View.GONE) {
-                titleImageWrap?.visibility = View.GONE
-            } else {
-                titleImageWrap?.visibility = View.VISIBLE
-            }
+            valueView?.text = s.value
         }
     }
 }

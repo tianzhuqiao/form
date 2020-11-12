@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:foreground="?android:attr/selectableItemBackground"
     android:background="#ffffff"
+    android:foreground="?android:attr/selectableItemBackground"
     android:orientation="vertical">
 
     <LinearLayout
@@ -13,6 +13,7 @@
         style="@style/formMainLayout">
 
         <include layout="@layout/form_icon" />
+
         <include layout="@layout/form_title" />
 
         <TextView
@@ -37,6 +38,7 @@
             android:visibility="visible"
             app:srcCompat="@drawable/ic_form_chevron"
             app:tint="#CDCDCD" />
+
         <include layout="@layout/form_reorder" />
     </LinearLayout>
 
