@@ -25,12 +25,12 @@ interface FormItemCallback {
 }
 
 open class FormRecyclerAdaptor(
-    private var settings: MutableList<FormItem>,
+    private var itemsAll: MutableList<FormItem>,
     private var listener: FormItemCallback? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var itemTouchHelper: ItemTouchHelper? = null
     private var recyclerView: RecyclerView? = null
-    private var settingsVisible = mutableListOf<FormItem>()
+    private var itemsVisible = mutableListOf<FormItem>()
 
     class ViewHolderItem(
         var type: Class<out FormItem>,
@@ -41,7 +41,7 @@ open class FormRecyclerAdaptor(
     private var viewHolders: MutableList<ViewHolderItem> = mutableListOf()
 
     init {
-        setSettings(settings)
+        setItems(itemsAll)
         viewHolders = mutableListOf(
             ViewHolderItem(
                 FormItemSection::class.java,
@@ -148,7 +148,7 @@ open class FormRecyclerAdaptor(
             object : FormSwipeHelper() {
 
                 override fun getFormItem(pos: Int): FormItem {
-                    return settingsVisible[pos]
+                    return itemsVisible[pos]
                 }
 
                 override fun updateItem(pos: Int) {
@@ -166,12 +166,12 @@ open class FormRecyclerAdaptor(
                 }
 
                 override fun onActionClicked(pos: Int, action: FormSwipeAction) {
-                    val item = settingsVisible[pos]
+                    val item = itemsVisible[pos]
                     var processed = false
                     recyclerView.findViewHolderForAdapterPosition(pos)?.let {
                         processed = onFormItemCallback.onSwipedAction(item, action, it)
                     }
-                    if (!processed && settingsVisible.indexOf(item) >= 0) {
+                    if (!processed && itemsVisible.indexOf(item) >= 0) {
                         updateItem(pos)
                     }
                 }
@@ -191,7 +191,7 @@ open class FormRecyclerAdaptor(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
-        val s = settingsVisible[position]
+        val s = itemsVisible[position]
         if (holder is FormViewHolder) {
             holder.bind(s, onFormItemCallback)
             listener?.onSetup(s, holder)
@@ -199,31 +199,31 @@ open class FormRecyclerAdaptor(
     }
 
     override fun getItemCount(): Int {
-        return settingsVisible.size
+        return itemsVisible.size
     }
 
-    fun setSettings(settings: List<FormItem>) {
-        this.settings = settings.toMutableList()
+    fun setItems(items: List<FormItem>) {
+        this.itemsAll = items.toMutableList()
         update()
     }
 
     fun update() {
-        this.settingsVisible.clear()
+        this.itemsVisible.clear()
         var hideSection = false
-        for (item in this.settings) {
+        for (item in this.itemsAll) {
             if (item is FormItemSection) {
                 hideSection = item.hidden
             }
             if (item.hidden || hideSection) {
                 continue
             }
-            settingsVisible.add(item)
+            itemsVisible.add(item)
         }
         notifyDataSetChanged()
     }
 
     override fun getItemViewType(position: Int): Int {
-        val m = settingsVisible[position]
+        val m = itemsVisible[position]
         return viewHolders.indexOfFirst { it.type == m::class.java }
     }
 
@@ -237,8 +237,8 @@ open class FormRecyclerAdaptor(
     }
 
     fun updateItem(item: FormItem) {
-        val index = settingsVisible.indexOf(item)
-        if (index >= 0 && index < settingsVisible.size) {
+        val index = itemsVisible.indexOf(item)
+        if (index >= 0 && index < itemsVisible.size) {
             val activity = recyclerView?.context as? Activity
             activity?.let {
                 it.runOnUiThread {
@@ -249,8 +249,8 @@ open class FormRecyclerAdaptor(
     }
 
     fun updateRadioGroup(group: String, selected: String) {
-        for (i in 0 until settingsVisible.size) {
-            val item = settingsVisible[i]
+        for (i in 0 until itemsVisible.size) {
+            val item = itemsVisible[i]
             if (item is FormItemRadio && item.group == group) {
                 item.isOn = (item.tag == selected)
                 updateItem(item)
@@ -273,7 +273,7 @@ open class FormRecyclerAdaptor(
         }
 
         override fun onItemClicked(item: FormItem, viewHolder: RecyclerView.ViewHolder) {
-            val index = settingsVisible.indexOf(item)
+            val index = itemsVisible.indexOf(item)
 
             Handler().postDelayed({
                 val act = recyclerView?.context as? Activity
@@ -304,12 +304,12 @@ open class FormRecyclerAdaptor(
             if (listener?.onMoveItem(src, dest) == true)
                 return true
 
-            val orgSrc = settings.indexOf(settingsVisible[src])
-            val orgDest = settings.indexOf(settingsVisible[dest])
-            var item = settings.removeAt(orgSrc)
-            settings.add(orgDest, item)
-            item = settingsVisible.removeAt(src)
-            settingsVisible.add(dest, item)
+            val orgSrc = itemsAll.indexOf(itemsVisible[src])
+            val orgDest = itemsAll.indexOf(itemsVisible[dest])
+            var item = itemsAll.removeAt(orgSrc)
+            itemsAll.add(orgDest, item)
+            item = itemsVisible.removeAt(src)
+            itemsVisible.add(dest, item)
 
             notifyItemMoved(src, dest)
             return true
@@ -338,35 +338,35 @@ open class FormRecyclerAdaptor(
     }
 
     fun itemByTag(tag: String): FormItem? {
-        return settings.firstOrNull { it.tag == tag }
+        return itemsAll.firstOrNull { it.tag == tag }
     }
 
     fun hideSection(item: FormItemSection, hide: Boolean) {
         // show/hide all visible children of a section (not the section item itself)
-        var idx = settingsVisible.indexOf(item)
+        var idx = itemsVisible.indexOf(item)
         if (idx == -1) {
             return
         }
-        val orgIdx = settings.indexOf(item)
+        val orgIdx = itemsAll.indexOf(item)
         if (orgIdx == -1) {
             return
         }
         if (hide) {
             idx += 1
-            while (settingsVisible.size > idx) {
-                val child = settingsVisible[idx]
+            while (itemsVisible.size > idx) {
+                val child = itemsVisible[idx]
                 if (child is FormItemSection) {
                     // start the next section
                     break
                 }
                 // hide the child
-                settingsVisible.removeAt(idx)
+                itemsVisible.removeAt(idx)
                 notifyItemRemoved(idx)
             }
         } else {
             var orgChildIdx = orgIdx + 1
-            while (orgChildIdx < settings.size) {
-                val child = settings[orgChildIdx]
+            while (orgChildIdx < itemsAll.size) {
+                val child = itemsAll[orgChildIdx]
                 orgChildIdx += 1
                 if (child is FormItemSection) {
                     // start the next section
@@ -377,33 +377,33 @@ open class FormRecyclerAdaptor(
                 }
                 // show the child
                 idx += 1
-                settingsVisible.add(idx, child)
+                itemsVisible.add(idx, child)
                 notifyItemInserted(idx)
             }
         }
     }
 
     fun evaluateHidden(item: FormItem): Boolean {
-        val orgIdx = settings.indexOf(item)
+        val orgIdx = itemsAll.indexOf(item)
         if (orgIdx == -1) {
             return false
         }
 
-        var idx = settingsVisible.indexOf(item)
+        var idx = itemsVisible.indexOf(item)
         if (item.hidden) {
             if (idx != -1) {
                 if (item is FormItemSection) {
                     // if item is section, hide all its children
                     hideSection(item, true)
                 }
-                settingsVisible.removeAt(idx)
+                itemsVisible.removeAt(idx)
                 notifyItemRemoved(idx)
             }
         } else {
             if (idx == -1) {
                 // find the corresponding index in settingVisible
                 idx = 0
-                for (tmp in settings) {
+                for (tmp in itemsAll) {
                     if (item == tmp) {
                         break
                     }
@@ -411,7 +411,7 @@ open class FormRecyclerAdaptor(
                         idx += 1
                     }
                 }
-                settingsVisible.add(idx, item)
+                itemsVisible.add(idx, item)
                 notifyItemInserted(idx)
 
                 if (item is FormItemSection) {
@@ -423,12 +423,7 @@ open class FormRecyclerAdaptor(
         return true
     }
 
-    operator fun plus(item: FormItem): FormRecyclerAdaptor {
-        settings.add(item)
-        return this
-    }
-
     operator fun FormItem.unaryPlus() {
-        settings.add(this)
+        itemsAll.add(this)
     }
 }
