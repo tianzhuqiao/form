@@ -861,12 +861,16 @@ open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: 
                 layoutManager =
                     GridLayoutManager(itemView.context, s.rows, GridLayoutManager.HORIZONTAL, false)
 
-                adapter = FormRecyclerAdaptor(colors, onItemClickListener).apply {
+                adapter = FormRecyclerAdaptor(onItemClickListener).apply {
                     this.registerViewHolder(
                         FormItemSingleColor::class.java,
                         R.layout.form_color,
                         FormSingleColorViewHolder::class.java
                     )
+                    for (clr in s.colors) {
+                        +FormItemSingleColor().tag(clr).color(clr).selected(clr == s.value).cornerRadius(s.cornerRadius)
+                    }
+                    update()
                 }
             }
         }
@@ -878,11 +882,11 @@ open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: 
             if (item is FormItemSingleColor) {
                 (this@FormColorViewHolder.item as? FormItemColor)?.let {
                     (collectionView?.adapter as? FormRecyclerAdaptor)?.let { adapter ->
-                        (adapter.itemByTag(it.value) as? FormItemSingleColor)?.let { old ->
+                        (adapter.itemBy(it.value) as? FormItemSingleColor)?.let { old ->
                             old.selected(false)
                             adapter.updateItem(old)
                         }
-                        (adapter.itemByTag(item.color) as? FormItemSingleColor)?.let { new ->
+                        (adapter.itemBy(item.color) as? FormItemSingleColor)?.let { new ->
                             new.selected(true)
                             adapter.updateItem(new)
                         }

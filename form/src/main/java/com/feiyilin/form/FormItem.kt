@@ -77,6 +77,7 @@ open class FormItem {
     var badge: String? = null
     var leadingSwipe = listOf<FormSwipeAction>()
     var trailingSwipe = listOf<FormSwipeAction>()
+    var section: FormItem? = null
 }
 
 fun <T : FormItem> T.title(title: String) = apply {
@@ -225,7 +226,106 @@ fun <T : FormItemTextArea> T.maxLines(maxLines: Int) = apply {
     this.maxLines = maxLines
 }
 
-open class FormItemSection : FormItem() {
+open class FormItemSection(visible: Boolean=true): FormItem() {
+    var items: MutableList<FormItem> = mutableListOf()
+    var itemsVisible: MutableList<FormItem> = mutableListOf()
+
+    init {
+        // self in this section too
+        this.section = this
+        if (visible) {
+            items.add(this)
+        }
+    }
+
+    operator fun FormItem.unaryPlus() {
+        if (this is FormItemSection) {
+            Objects.requireNonNull(null, "No embedded section")
+        }
+        this.section = this@FormItemSection
+        items.add(this)
+    }
+
+    fun update() {
+        itemsVisible.clear()
+        if (!hidden) {
+            items.forEach {
+                if (!it.hidden) {
+                    itemsVisible.add(it)
+                }
+            }
+        }
+    }
+
+    fun update(item: FormItem): Int {
+        // show/hide the item according to its "hidden" field
+        // return the offset in itemsVisible if updated, or -1 if it is not in itemsVisible
+        if (item.section != this) {
+            // not belong to this section
+            return -1
+        }
+        val index = itemsVisible.indexOf(item)
+        if (item.hidden) {
+            if (index != -1) {
+                itemsVisible.removeAt(index)
+                return index
+            }
+        } else {
+            if (index == -1) {
+                val count = offset(item)
+                itemsVisible.add(count, item)
+                return count
+            }
+        }
+        return -1
+    }
+
+    fun itemBy(tag: String): FormItem? {
+        return items.firstOrNull { it.tag == tag }
+    }
+
+    fun remove(item: FormItem) {
+        if (item.section != this) {
+            return
+        }
+        items.remove(item)
+        if (!item.hidden) {
+            itemsVisible.remove(item)
+        }
+        // reset the item section
+        item.section = null
+    }
+
+    fun add(item:FormItem) {
+        add(items.size, item)
+    }
+
+    fun add(index: Int, item: FormItem) {
+        if (item.section == this) {
+            // already in section
+            return
+        }
+        item.section = this
+        items.add(index, item)
+        if (!item.hidden) {
+            val count = offset(item)
+            itemsVisible.add(count, item)
+        }
+    }
+
+    fun offset(item: FormItem): Int {
+        // get the offset of item in itemsVisible
+        var count = 0
+        for ( child in items) {
+            if (child == item) {
+                break
+            }
+            if (!child.hidden) {
+                count += 1
+            }
+        }
+        return count
+    }
 }
 
 open class FormItemAction : FormItem() {

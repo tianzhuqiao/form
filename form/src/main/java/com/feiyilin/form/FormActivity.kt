@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 abstract class FormActivity : AppCompatActivity() {
-    var settings = mutableListOf<FormItem>()
     var recyclerView: RecyclerView? = null
     val adapter: FormRecyclerAdaptor?
         get() {
@@ -23,7 +22,7 @@ abstract class FormActivity : AppCompatActivity() {
         recyclerView?.apply {
             layoutManager = LinearLayoutManager(this@FormActivity)
 
-            adapter = FormRecyclerAdaptor(settings, onFormItemListener).apply {
+            adapter = FormRecyclerAdaptor(onFormItemListener).apply {
             }
         }
         initForm()
