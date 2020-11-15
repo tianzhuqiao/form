@@ -833,7 +833,7 @@ open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: 
 
     var valueView: CardView? = null
     var collectionView: RecyclerView? = null
-    var colors = mutableListOf<FormItem>()
+    var initialized = false
     init {
         valueView = itemView.findViewById(R.id.formElementValue)
         collectionView = itemView.findViewById(R.id.formElementCollection)
@@ -843,19 +843,18 @@ open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: 
         super.bind(s, listener)
 
         itemView.setOnClickListener {
-            if (collectionView?.visibility == View.GONE)
+            if (collectionView?.visibility == View.GONE) {
+                initCollections()
                 collectionView?.visibility = View.VISIBLE
-            else
+            } else {
                 collectionView?.visibility = View.GONE
+            }
             listener?.onItemClicked(s, this)
         }
         if (s is FormItemColor) {
             valueView?.setCardBackgroundColor(Color.parseColor(s.value))
             valueView?.radius = dpToPx(s.cornerRadius).toFloat()
-            colors.clear()
-            for (clr in s.colors) {
-                colors.add(FormItemSingleColor().tag(clr).color(clr).selected(clr == s.value).cornerRadius(s.cornerRadius))
-            }
+            initialized = false
 
             collectionView?.apply {
                 layoutManager =
@@ -867,15 +866,27 @@ open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: 
                         R.layout.form_color,
                         FormSingleColorViewHolder::class.java
                     )
-                    for (clr in s.colors) {
-                        +FormItemSingleColor().tag(clr).color(clr).selected(clr == s.value).cornerRadius(s.cornerRadius)
-                    }
-                    update()
                 }
             }
         }
     }
 
+    private fun initCollections() {
+        if (initialized)
+            return
+        initialized = true
+        (collectionView?.adapter as? FormRecyclerAdaptor)?.apply {
+            clear()
+            val s = item
+            if (s is FormItemColor) {
+                for (clr in s.colors) {
+                    +FormItemSingleColor().tag(clr).color(clr).selected(clr == s.value)
+                        .cornerRadius(s.cornerRadius)
+                }
+                update()
+            }
+        }
+    }
     private var onItemClickListener = object : FormItemCallback {
         override fun onItemClicked(item: FormItem, viewHolder: RecyclerView.ViewHolder) {
             super.onItemClicked(item, viewHolder)
