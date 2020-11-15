@@ -83,7 +83,7 @@ open class FormItem {
     var badge: String? = null
     var leadingSwipe = listOf<FormSwipeAction>()
     var trailingSwipe = listOf<FormSwipeAction>()
-    var section: FormItem? = null
+    internal var section: FormItemSection? = null
 }
 
 fun <T : FormItem> T.title(title: String) = apply {
@@ -233,37 +233,47 @@ fun <T : FormItemTextArea> T.maxLines(maxLines: Int) = apply {
 }
 
 open class FormItemSection(visible: Boolean=true): FormItem() {
-    var items: MutableList<FormItem> = mutableListOf()
-    var itemsVisible: MutableList<FormItem> = mutableListOf()
+    private var _items: MutableList<FormItem> = mutableListOf()
+    val items: List<FormItem>
+        get() = _items
+    private var _itemsVisible: MutableList<FormItem> = mutableListOf()
+    val itemsVisible: List<FormItem>
+        get() = _itemsVisible
 
     init {
         // self in this section too
-        this.section = this
         if (visible) {
-            items.add(this)
+            add(this)
         }
     }
 
+    /**
+     * add an non-section item to the section
+     */
     operator fun FormItem.unaryPlus() {
-        if (this is FormItemSection) {
-            Objects.requireNonNull(null, "No embedded section")
-        }
-        this.section = this@FormItemSection
-        items.add(this)
+        add(this, update=false)
     }
 
-    fun update() {
-        itemsVisible.clear()
+    /**
+     * return the item by its tag or null if not found
+     * @param tag: tag of the item
+     */
+    fun itemBy(tag: String): FormItem? {
+        return items.firstOrNull { it.tag == tag }
+    }
+
+    internal fun update() {
+        _itemsVisible.clear()
         if (!hidden) {
             items.forEach {
                 if (!it.hidden) {
-                    itemsVisible.add(it)
+                    _itemsVisible.add(it)
                 }
             }
         }
     }
 
-    fun update(item: FormItem): Int {
+    internal fun update(item: FormItem): Int {
         // show/hide the item according to its "hidden" field
         // return the offset in itemsVisible if updated, or -1 if it is not in itemsVisible
         if (item.section != this) {
@@ -273,56 +283,57 @@ open class FormItemSection(visible: Boolean=true): FormItem() {
         val index = itemsVisible.indexOf(item)
         if (item.hidden) {
             if (index != -1) {
-                itemsVisible.removeAt(index)
+                _itemsVisible.removeAt(index)
                 return index
             }
         } else {
             if (index == -1) {
                 val count = offset(item)
-                itemsVisible.add(count, item)
+                _itemsVisible.add(count, item)
                 return count
             }
         }
         return -1
     }
 
-    fun itemBy(tag: String): FormItem? {
-        return items.firstOrNull { it.tag == tag }
-    }
-
-    fun remove(item: FormItem): Int {
+    internal fun remove(item: FormItem): Int {
         if (item.section != this) {
             return -1
         }
-        items.remove(item)
-        val index = itemsVisible.indexOf(item)
+        _items.remove(item)
+        val index = _itemsVisible.indexOf(item)
         if (index != -1) {
-            itemsVisible.remove(item)
+            _itemsVisible.remove(item)
         }
         // reset the item section
         item.section = null
         return index
     }
 
-    fun add(item: FormItem): Boolean {
-        return add(items.size, item)
+    internal fun add(item: FormItem, update: Boolean=true): Boolean {
+        return add(items.size, item, update)
     }
 
-    fun add(index: Int, item: FormItem): Boolean {
+    internal fun add(index: Int, item: FormItem, update: Boolean=true): Boolean {
+        if (item is FormItemSection && item != this) {
+            Objects.requireNonNull(null, "No embedded section")
+            return false
+        }
+
         if (item.section == this) {
             // already in section
             return false
         }
         item.section = this
-        items.add(index, item)
-        if (!item.hidden) {
+        _items.add(index, item)
+        if (update && !item.hidden) {
             val count = offset(item)
-            itemsVisible.add(count, item)
+            _itemsVisible.add(count, item)
         }
         return true
     }
 
-    fun offset(item: FormItem): Int {
+    private fun offset(item: FormItem): Int {
         // get the offset of item in itemsVisible
         var count = 0
         for ( child in items) {

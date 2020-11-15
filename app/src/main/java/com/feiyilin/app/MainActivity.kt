@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.feiyilin.form.*
 import com.squareup.picasso.Picasso
@@ -257,13 +256,9 @@ class MainActivity : FormActivity() {
                 "add_item" -> {
                     newItemCreated += 1
                     adapter?.apply {
-                        val index = indexOf(item)
                         add(
                             item, FormItemNav().title("New item $newItemCreated").trailingSwipe(
-                                listOf(
-                                    FormSwipeAction().title("Delete")
-                                        .style(FormSwipeAction.Style.Destructive)
-                                )
+                                listOf(FormSwipeAction().title("Delete").style(FormSwipeAction.Style.Destructive))
                             )
                         )
                     }
@@ -271,7 +266,6 @@ class MainActivity : FormActivity() {
                 "add_section" -> {
                     newSectionCreated += 1
                     adapter?.apply {
-                        val index = indexOf(item)
                         val sec = FormItemSection().title("New section $newSectionCreated").apply {
                             trailingSwipe(
                                 listOf(FormSwipeAction().title("Delete").style(FormSwipeAction.Style.Destructive))
