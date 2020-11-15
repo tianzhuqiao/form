@@ -15,6 +15,8 @@ import java.util.*
 
 class MainActivity : FormActivity() {
 
+    var newItemCreated = 0
+    var newSectionCreated = 0
     override fun initForm() {
         val cal = Calendar.getInstance()
         cal.set(2020, 6, 19)
@@ -206,6 +208,10 @@ class MainActivity : FormActivity() {
             +FormItemSection().title("Custom item").apply {
                 +FormItemImage().tag("image").image(R.drawable.image1)
             }
+            +FormItemSection().title("Dynamic add/delete").apply {
+                +FormItemNav().title("Add item").tag("add_item")
+                +FormItemNav().title("Add section").tag("add_section")
+            }
         }?.update()
 
         adapter?.registerViewHolder(
@@ -247,6 +253,36 @@ class MainActivity : FormActivity() {
 
         override fun onItemClicked(item: FormItem, viewHolder: RecyclerView.ViewHolder) {
             Log.i("onItemClicked", item.toString())
+            when (item.tag) {
+                "add_item" -> {
+                    newItemCreated += 1
+                    adapter?.apply {
+                        val index = indexOf(item)
+                        add(
+                            item, FormItemNav().title("New item $newItemCreated").trailingSwipe(
+                                listOf(
+                                    FormSwipeAction().title("Delete")
+                                        .style(FormSwipeAction.Style.Destructive)
+                                )
+                            )
+                        )
+                    }
+                }
+                "add_section" -> {
+                    newSectionCreated += 1
+                    adapter?.apply {
+                        val index = indexOf(item)
+                        val sec = FormItemSection().title("New section $newSectionCreated").apply {
+                            trailingSwipe(
+                                listOf(FormSwipeAction().title("Delete").style(FormSwipeAction.Style.Destructive))
+                            )
+                            +FormItemNav().title("Item 0")
+                            +FormItemNav().title("item 1")
+                        }
+                        add(item, sec)
+                    }
+                }
+            }
         }
 
         override fun onSwipedAction(
@@ -257,6 +293,9 @@ class MainActivity : FormActivity() {
             super.onSwipedAction(item, action, viewHolder)
             Toast.makeText(this@MainActivity, "${item.title}: ${action.title}", Toast.LENGTH_SHORT)
                 .show()
+            if (action.title == "Delete") {
+                return adapter?.remove(item) ?: false
+            }
             return false
         }
 

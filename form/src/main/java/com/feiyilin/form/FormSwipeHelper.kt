@@ -89,15 +89,19 @@ abstract class FormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelper.D
         super.onSelectedChanged(viewHolder, actionState)
         when (actionState) {
             ItemTouchHelper.ACTION_STATE_SWIPE -> {
+                endSwipedOffset = -1.0f
+                closedSwipe = false
                 viewHolder?.adapterPosition?.let {
                     // start swiping an item
                     swipeingPosition = it
-
-                    endSwipedOffset = -1.0f
-                    closedSwipe = false
-
                     if (swipedPosition != swipeingPosition) {
                         // restore the previous swiped item
+                        updateItem(swipedPosition)
+                        swipedPosition = -1
+                    }
+                } ?: run {
+                    swipeingPosition = -1
+                    if (swipedPosition != -1) {
                         updateItem(swipedPosition)
                         swipedPosition = -1
                     }
@@ -261,6 +265,7 @@ abstract class FormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelper.D
     }
 
     open fun onActionClicked(pos: Int, action: FormSwipeAction) {
+        swipedPosition = -1
     }
 
     @SuppressLint("ClickableViewAccessibility")

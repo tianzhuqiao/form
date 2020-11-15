@@ -13,6 +13,7 @@ open class FormSwipeAction {
         Destructive,
         Normal
     }
+    var tag: String = ""
     var title: String = ""
     var icon: Drawable? = null
     var iconSize: Int = 24
@@ -23,6 +24,11 @@ open class FormSwipeAction {
     var rect = RectF()
     var padding: Float = 50f
 }
+
+fun <T : FormSwipeAction> T.tag(tag: String) = apply {
+    this.tag = tag
+}
+
 fun <T : FormSwipeAction> T.title(title: String) = apply {
     this.title = title
 }
@@ -284,26 +290,28 @@ open class FormItemSection(visible: Boolean=true): FormItem() {
         return items.firstOrNull { it.tag == tag }
     }
 
-    fun remove(item: FormItem) {
+    fun remove(item: FormItem): Int {
         if (item.section != this) {
-            return
+            return -1
         }
         items.remove(item)
-        if (!item.hidden) {
+        val index = itemsVisible.indexOf(item)
+        if (index != -1) {
             itemsVisible.remove(item)
         }
         // reset the item section
         item.section = null
+        return index
     }
 
-    fun add(item:FormItem) {
-        add(items.size, item)
+    fun add(item: FormItem): Boolean {
+        return add(items.size, item)
     }
 
-    fun add(index: Int, item: FormItem) {
+    fun add(index: Int, item: FormItem): Boolean {
         if (item.section == this) {
             // already in section
-            return
+            return false
         }
         item.section = this
         items.add(index, item)
@@ -311,6 +319,7 @@ open class FormItemSection(visible: Boolean=true): FormItem() {
             val count = offset(item)
             itemsVisible.add(count, item)
         }
+        return true
     }
 
     fun offset(item: FormItem): Int {

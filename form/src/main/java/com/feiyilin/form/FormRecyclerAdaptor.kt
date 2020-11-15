@@ -147,11 +147,13 @@ open class FormRecyclerAdaptor(
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
+        this.update()
         val touchHelper =
             object : FormSwipeHelper() {
 
                 override fun getFormItem(pos: Int): FormItem {
-                    return itemBy(pos)!!
+                    val item = itemBy(pos)
+                    return item!!
                 }
 
                 override fun updateItem(pos: Int) {
@@ -169,6 +171,7 @@ open class FormRecyclerAdaptor(
                 }
 
                 override fun onActionClicked(pos: Int, action: FormSwipeAction) {
+                    super.onActionClicked(pos, action)
                     itemBy(pos)?.let {item ->
                         var processed = false
                         recyclerView.findViewHolderForAdapterPosition(pos)?.let {
@@ -454,6 +457,10 @@ open class FormRecyclerAdaptor(
         return true
     }
 
+    fun clear() {
+        sections.clear()
+        update()
+    }
     operator fun FormItem.unaryPlus() {
         if (this is FormItemSection) {
             sections.add(this)
@@ -493,30 +500,77 @@ open class FormRecyclerAdaptor(
         return false
     }
 
-    fun add(item: FormItemSection) {
-        if (sections.indexOf(item) != -1) {
-            return
+    fun add(index: Int, section: FormItemSection): Boolean {
+        if (sections.indexOf(section) != -1 || index <0 || index > sections.size || section in sections) {
+            return false
         }
-        val start = itemCount
-        sections.add(item)
-        item.update()
-        val end = itemCount
-        if (end > start) {
+        sections.add(index, section)
+        section.update()
+
+        if (section.itemsVisible.size > 0) {
+            val start = indexOf(section)
             activity?.runOnUiThread {
-                notifyItemRangeInserted(start, end - start)
+                notifyItemRangeInserted(start, section.itemsVisible.size)
             }
         }
+        return true
     }
 
-    fun remove(item: FormItemSection) {
-        val index = indexOf(item)
+    fun add(section: FormItemSection): Boolean {
+        return add(sections.size, section)
+    }
+
+    fun add(after: FormItem, section:FormItemSection): Boolean {
+        // add section after the section of "after"
+        val (sec, offset) = findItem(after)
+        if (sec == null || offset == -1) {
+            return false
+        }
+        val index = sections.indexOf(sec)
+        return add(index+1, section)
+    }
+
+    fun add(after: FormItem, item:FormItem): Boolean {
+        val (sec, offset) = findItem(after)
+        if (sec == null || offset == -1) {
+            return false
+        }
+        if (sec.add(offset + 1, item)) {
+            val index = indexOf(sec)
+            activity?.runOnUiThread {
+                notifyItemInserted(index + offset + 1)
+            }
+            return true
+        }
+        return false
+    }
+
+    fun remove(section: FormItemSection): Boolean {
+        val index = indexOf(section)
         if (index > -1) {
-            sections.remove(item)
-            if (item.itemsVisible.size > 0) {
+            sections.remove(section)
+            if (section.itemsVisible.size > 0) {
                 activity?.runOnUiThread {
-                    notifyItemRangeRemoved(index, item.itemsVisible.size)
+                    notifyItemRangeRemoved(index, section.itemsVisible.size)
                 }
             }
+            return true
         }
+        return false
+    }
+
+    fun remove(item: FormItem): Boolean {
+        if (item is FormItemSection) {
+            return remove(item)
+        }
+        (item.section as? FormItemSection)?.let { sec ->
+            val offset = sec.remove(item)
+            if (offset != -1) {
+                val index = indexOf(sec)
+                notifyItemRemoved(index + offset)
+            }
+            return true
+        }
+        return false
     }
 }
