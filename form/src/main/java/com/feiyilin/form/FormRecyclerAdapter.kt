@@ -466,7 +466,7 @@ open class FormRecyclerAdapter(
      */
     fun hide(section: FormItemSection, hide: Boolean): Boolean {
         // show/hide a section
-        if (section.adaptor != this) {
+        if (section.adapter != this) {
              return false
         }
         if (section.hidden == hide) {
@@ -494,7 +494,7 @@ open class FormRecyclerAdapter(
      * @return true if succeed
      */
     fun collapse(section: FormItemSection, collapsed: Boolean): Boolean {
-        if (section.adaptor != this) {
+        if (section.adapter != this) {
             return false
         }
         if (!section.enableCollapse) {
@@ -529,11 +529,11 @@ open class FormRecyclerAdapter(
      * add section to adapter, need to call update() after adding all sections
      */
     operator fun FormItemSection.unaryPlus() {
-        if (sections.indexOf(this) != -1 || adaptor != null) {
+        if (sections.indexOf(this) != -1 || adapter != null) {
             return
         }
         //add(section=this)
-        adaptor = this@FormRecyclerAdapter
+        adapter = this@FormRecyclerAdapter
         _sections.add(this)
     }
 
@@ -547,7 +547,7 @@ open class FormRecyclerAdapter(
         if (sections.indexOf(section) != -1 || secIndex < 0 || secIndex > sections.size || section in sections) {
             return false
         }
-        section.adaptor = this
+        section.adapter = this
         _sections.add(secIndex, section)
         section.update()
 
@@ -605,7 +605,7 @@ open class FormRecyclerAdapter(
      * @return true if succeed
      */
     fun remove(section: FormItemSection): Boolean {
-        if (section.adaptor != this) {
+        if (section.adapter != this) {
             return false
         }
         val index = startOfSection(section)
@@ -614,7 +614,7 @@ open class FormRecyclerAdapter(
             return false
         }
         _sections.remove(section)
-        section.adaptor = null
+        section.adapter = null
 
         activity?.runOnUiThread {
             if (section.isNotEmpty) {

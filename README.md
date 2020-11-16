@@ -14,7 +14,7 @@ allprojects {
 }
 ```
 
-Add **form** to dependencies in your app's build.gradle: 
+Add **form** to dependencies in your app's build.gradle:
 ```gradle
 dependencies {
     ...
@@ -62,19 +62,19 @@ Or check [FormActivity](./form/src/main/java/com/feiyilin/form/FormActivity.kt) 
 * **onSetup**
 
     Called when the item is configured.
-    
+
 * **onValueChanged**
 
     Called when the value of an item changes.
-    
+
 * **onItemClicked**
 
     Called when an item is clicked.
-    
+
 * **onTitleImageClicked**
 
     Called when the title icon is clicked
-    
+
 * **onStartReorder**
 
     Called before moving/reordering an item. Return **true** from the callback to disable the default action.
@@ -93,7 +93,7 @@ Or check [FormActivity](./form/src/main/java/com/feiyilin/form/FormActivity.kt) 
 
 # Collapse section
 To collapse/expand a section (show/hide its children),
-1. enable collapse/expand on the section, which will also show an indicator icon 
+1. enable collapse/expand on the section, which will also show an indicator icon
 ```kotlin
 section.enableCollapse(true)
 ```
@@ -261,7 +261,6 @@ class MainActivity : FormActivity() {
         ...
     }
 }
-```
 ```
 
 

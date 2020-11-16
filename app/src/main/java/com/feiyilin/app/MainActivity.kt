@@ -212,7 +212,7 @@ class MainActivity : FormActivity() {
                 +FormItemNav().title("Add item").tag("add_item")
                 +FormItemNav().title("Add section").tag("add_section")
             }
-        }?.update()
+        }
 
         adapter?.registerViewHolder(
             FormItemImage::class.java,

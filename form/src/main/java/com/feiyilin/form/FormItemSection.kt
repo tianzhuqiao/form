@@ -12,7 +12,7 @@ open class FormItemSection(visible: Boolean=true): FormItem() {
     val itemsVisible: List<FormItem>
         get() = _itemsVisible
 
-    internal var adaptor: FormRecyclerAdapter? = null
+    internal var adapter: FormRecyclerAdapter? = null
 
     init {
         if (visible) {
@@ -117,10 +117,10 @@ open class FormItemSection(visible: Boolean=true): FormItem() {
         if (index != -1) {
             _itemsVisible.remove(item)
             if (update) {
-                adaptor?.activity?.runOnUiThread {
-                    val start = adaptor?.indexOf(this) ?: -1
+                adapter?.activity?.runOnUiThread {
+                    val start = adapter?.indexOf(this) ?: -1
                     if (start != -1) {
-                        adaptor?.notifyItemRemoved(start + index)
+                        adapter?.notifyItemRemoved(start + index)
                     }
                 }
             }
@@ -181,10 +181,10 @@ open class FormItemSection(visible: Boolean=true): FormItem() {
             val count = offset(item)
             _itemsVisible.add(count, item)
             if (update) {
-                adaptor?.activity?.runOnUiThread {
-                    val start = adaptor?.indexOf(this) ?: -1
+                adapter?.activity?.runOnUiThread {
+                    val start = adapter?.indexOf(this) ?: -1
                     if (start != -1) {
-                        adaptor?.notifyItemInserted(start + itemsVisible.indexOf(item))
+                        adapter?.notifyItemInserted(start + itemsVisible.indexOf(item))
                     }
                 }
             }
@@ -226,12 +226,12 @@ open class FormItemSection(visible: Boolean=true): FormItem() {
         item.hidden = hide
         val offset = update(item)
         if (offset != -1) {
-            adaptor?.activity?.runOnUiThread {
-                val index = adaptor?.indexOf(this) ?: -1
+            adapter?.activity?.runOnUiThread {
+                val index = adapter?.indexOf(this) ?: -1
                 if (item.hidden) {
-                    adaptor?.notifyItemRemoved(index + offset)
+                    adapter?.notifyItemRemoved(index + offset)
                 } else {
-                    adaptor?.notifyItemInserted(index + offset)
+                    adapter?.notifyItemInserted(index + offset)
                 }
             }
         }
