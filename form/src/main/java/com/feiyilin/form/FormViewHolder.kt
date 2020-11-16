@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputLayout
 import java.text.SimpleDateFormat
+import java.util.*
 
 open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     RecyclerView.ViewHolder(inflater.inflate(resource, parent, false)) {
@@ -169,7 +170,7 @@ open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
 
             if (it.badge == null) {
                 badgeView?.visibility = View.GONE
-            } else if (it.badge?.isEmpty() ?: true) {
+            } else if (it.badge?.isEmpty() != false) {
                 // dot
                 badgeView?.visibility = View.VISIBLE
                 badgeViewTitle?.visibility = View.GONE
@@ -364,11 +365,33 @@ open class FormTextAreaViewHolder(inflater: LayoutInflater, resource: Int, paren
 
 open class FormSectionViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FormViewHolder(inflater, resource, parent) {
-
+    var imageArrowUp: ImageView? = null
+    init {
+        imageArrowUp = itemView.findViewById(R.id.formElementArrowUp)
+    }
     override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
+        itemView.setOnClickListener {
+            listener?.onItemClicked(s, this)
 
-        titleView?.text = s.title.toUpperCase()
+            updateCollapse()
+        }
+        titleView?.text = s.title.toUpperCase(Locale.getDefault())
+        updateCollapse()
+    }
+    fun updateCollapse() {
+        (item as? FormItemSection)?.let {
+            if (it.enableCollapse) {
+                imageArrowUp?.visibility = View.VISIBLE
+                if (!it.collapsed) {
+                    imageArrowUp?.animate()?.rotation(180F)
+                } else {
+                    imageArrowUp?.animate()?.rotation(0F)
+                }
+            } else {
+                imageArrowUp?.visibility = View.GONE
+            }
+        }
     }
 }
 
@@ -405,7 +428,7 @@ open class FormActionViewHolder(inflater: LayoutInflater, resource: Int, parent:
 
 open class FormSwitchNativeViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FormViewHolder(inflater, resource, parent) {
-    private var switchView: Switch? = null
+    protected var switchView: Switch? = null
 
     init {
         switchView = itemView.findViewById(R.id.formElementSwitch)

@@ -488,6 +488,38 @@ open class FormRecyclerAdapter(
         return true
     }
 
+    /**
+     * collapse/un-collapse a section
+     * @param section section to be (un)collapsed
+     * @return true if succeed
+     */
+    fun collapse(section: FormItemSection, collapsed: Boolean): Boolean {
+        if (section.adaptor != this) {
+            return false
+        }
+        if (!section.enableCollapse) {
+            return false
+        }
+        if (section.collapsed == collapsed) {
+            return true
+        }
+        activity?.runOnUiThread {
+            section.collapsed(collapsed)
+            val index = startOfSection(section)
+            val size = section.size
+            section.update()
+            val sizeNew = section.size
+            if (sizeNew != size) {
+                if (section.collapsed) {
+                    notifyItemRangeRemoved(index+1, size - sizeNew)
+                } else {
+                    notifyItemRangeInserted(index+1, sizeNew - size)
+                }
+            }
+        }
+        return true
+    }
+
     fun clear() {
         _sections.clear()
         update()

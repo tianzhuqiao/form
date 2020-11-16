@@ -3,6 +3,8 @@ package com.feiyilin.form
 import java.util.*
 
 open class FormItemSection(visible: Boolean=true): FormItem() {
+    var collapsed: Boolean = false
+    var enableCollapse: Boolean = false
     private var _items: MutableList<FormItem> = mutableListOf()
     val items: List<FormItem>
         get() = _items
@@ -60,9 +62,15 @@ open class FormItemSection(visible: Boolean=true): FormItem() {
     internal fun update() {
         _itemsVisible.clear()
         if (!hidden) {
-            items.forEach {
-                if (!it.hidden) {
-                    _itemsVisible.add(it)
+            if (collapsed) {
+                if (items.firstOrNull() == this) {
+                    _itemsVisible.add(items[0])
+                }
+            } else {
+                items.forEach {
+                    if (!it.hidden) {
+                        _itemsVisible.add(it)
+                    }
                 }
             }
         }
@@ -229,4 +237,12 @@ open class FormItemSection(visible: Boolean=true): FormItem() {
         }
         return true
     }
+}
+
+fun <T : FormItemSection> T.collapsed(collapsed: Boolean) = apply {
+    this.collapsed = collapsed
+}
+
+fun <T : FormItemSection> T.enableCollapse(enable: Boolean) = apply {
+    this.enableCollapse = enable
 }

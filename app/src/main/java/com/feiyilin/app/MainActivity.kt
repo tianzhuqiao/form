@@ -22,6 +22,7 @@ class MainActivity : FormActivity() {
 
         adapter?.apply {
             +FormItemSection().title("Text").tag("sec_text").apply {
+                enableCollapse(true)
                 +FormItemText().title("Text").tag("text").required(true)
                 +FormItemText().title("Text").subTitle("here is subtitle").tag("text_subtitle")
                 +FormItemText().title("Text").subTitle("dragable").dragable(true)
@@ -246,6 +247,11 @@ class MainActivity : FormActivity() {
 
         override fun onItemClicked(item: FormItem, viewHolder: RecyclerView.ViewHolder) {
             Log.i("onItemClicked", item.toString())
+            if (item is FormItemSection) {
+                if (item.enableCollapse) {
+                    adapter?.collapse(item, !item.collapsed)
+                }
+            }
             when (item.tag) {
                 "add_item" -> {
                     newItemCreated += 1
