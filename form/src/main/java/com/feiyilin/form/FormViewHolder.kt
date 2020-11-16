@@ -860,7 +860,7 @@ open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: 
                 layoutManager =
                     GridLayoutManager(itemView.context, s.rows, GridLayoutManager.HORIZONTAL, false)
 
-                adapter = FormRecyclerAdaptor(onItemClickListener).apply {
+                adapter = FormRecyclerAdapter(onItemClickListener).apply {
                     this.registerViewHolder(
                         FormItemSingleColor::class.java,
                         R.layout.form_color,
@@ -875,13 +875,15 @@ open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: 
         if (initialized)
             return
         initialized = true
-        (collectionView?.adapter as? FormRecyclerAdaptor)?.apply {
+        (collectionView?.adapter as? FormRecyclerAdapter)?.apply {
             clear()
             val s = item
             if (s is FormItemColor) {
-                for (clr in s.colors) {
-                    +FormItemSingleColor().tag(clr).color(clr).selected(clr == s.value)
-                        .cornerRadius(s.cornerRadius)
+                +FormItemSection(false).apply {
+                    for (clr in s.colors) {
+                        +FormItemSingleColor().tag(clr).color(clr).selected(clr == s.value)
+                            .cornerRadius(s.cornerRadius)
+                    }
                 }
                 update()
             }
@@ -892,7 +894,7 @@ open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: 
             super.onItemClicked(item, viewHolder)
             if (item is FormItemSingleColor) {
                 (this@FormColorViewHolder.item as? FormItemColor)?.let {
-                    (collectionView?.adapter as? FormRecyclerAdaptor)?.let { adapter ->
+                    (collectionView?.adapter as? FormRecyclerAdapter)?.let { adapter ->
                         (adapter.itemBy(it.value) as? FormItemSingleColor)?.let { old ->
                             old.selected(false)
                             adapter.updateItem(old)

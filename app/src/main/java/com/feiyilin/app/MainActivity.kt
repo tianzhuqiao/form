@@ -226,12 +226,9 @@ class MainActivity : FormActivity() {
             if (item.tag == "switch_show_date") {
                 if (item is FormItemSwitchNative) {
                     adapter?.let { adapter ->
-                        val action = adapter.itemBy("sec_date")
+                        val action = adapter.sectionBy("sec_date")
                         action?.let {
-                            it.hidden = !item.isOn
-                            runOnUiThread {
-                                adapter.evaluateHidden(it)
-                            }
+                            adapter.hide(it, !item.isOn)
                         }
                     }
                 }
@@ -240,10 +237,7 @@ class MainActivity : FormActivity() {
                     adapter?.let { adapter ->
                         val action = adapter.itemBy("action")
                         action?.let {
-                            it.hidden = !item.isOn
-                            runOnUiThread {
-                                adapter.evaluateHidden(it)
-                            }
+                            it.section?.hide(it, !item.isOn)
                         }
                     }
                 }
@@ -256,7 +250,7 @@ class MainActivity : FormActivity() {
                 "add_item" -> {
                     newItemCreated += 1
                     adapter?.apply {
-                        add(
+                        item.section?.add(
                             item, FormItemNav().title("New item $newItemCreated").trailingSwipe(
                                 listOf(FormSwipeAction().title("Delete").style(FormSwipeAction.Style.Destructive))
                             )
@@ -274,6 +268,7 @@ class MainActivity : FormActivity() {
                             +FormItemNav().title("item 1")
                         }
                         add(item, sec)
+                        ensureVisible(sec)
                     }
                 }
             }
@@ -288,7 +283,11 @@ class MainActivity : FormActivity() {
             Toast.makeText(this@MainActivity, "${item.title}: ${action.title}", Toast.LENGTH_SHORT)
                 .show()
             if (action.title == "Delete") {
-                return adapter?.remove(item) ?: false
+                if (item is FormItemSection) {
+                    return adapter?.remove(item) ?: false
+                } else {
+                    return item.section?.remove(item) ?: false
+                }
             }
             return false
         }

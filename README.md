@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
  ...
  }
  ```
- Initialize **RecyclerView** with **FormRecyclerAdaptor**
+ Initialize **RecyclerView** with **FormRecyclerAdapter**
 ```kotlin
 class MainActivity : AppCompatActivity() {
     ...
@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
 
-            adapter = FormRecyclerAdaptor(settings, onSettingProfileItemClickListener).apply {
+            adapter = FormRecyclerAdapter(settings, onSettingProfileItemClickListener).apply {
             }
         }
     }
@@ -270,7 +270,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
 
-            adapter = FormRecyclerAdaptor(settings, onSettingProfileItemClickListener).apply {
+            adapter = FormRecyclerAdapter(settings, onSettingProfileItemClickListener).apply {
                 this.registerViewHolder(
                     FormItemImage::class.java,
                     R.layout.form_item_image,

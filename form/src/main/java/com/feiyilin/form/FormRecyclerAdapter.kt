@@ -24,12 +24,20 @@ interface FormItemCallback {
     fun getSeparator(item: FormItem) : FormItem.Separator  { return FormItem.Separator.DEFAULT }
 }
 
-open class FormRecyclerAdaptor(
-    private var listener: FormItemCallback? = null
+open class FormRecyclerAdapter(
+    protected var listener: FormItemCallback? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private var sections: MutableList<FormItemSection> = mutableListOf()
-    private var itemTouchHelper: ItemTouchHelper? = null
-    private var recyclerView: RecyclerView? = null
+
+    protected var _sections: MutableList<FormItemSection> = mutableListOf()
+    var sections: List<FormItemSection>
+        get() = _sections
+        set(value) {
+            _sections = value.toMutableList()
+            update()
+        }
+
+    protected var itemTouchHelper: ItemTouchHelper? = null
+    protected var recyclerView: RecyclerView? = null
 
     val activity: Activity?
         get() {
@@ -206,18 +214,16 @@ open class FormRecyclerAdaptor(
     }
 
     override fun getItemCount(): Int {
-        return sections.sumBy { it.itemsVisible.size}
+        return sections.sumBy { it.size}
     }
 
-    fun setSections(sections: List<FormItemSection>) {
-        this.sections = sections.toMutableList()
-        update()
-    }
-
+    /**
+     * update all items (e.g., after setting sections)
+     */
     fun update() {
         activity?.runOnUiThread {
-            for (item in sections) {
-                item.update()
+            sections.forEach {
+                it.update()
             }
             notifyDataSetChanged()
         }
@@ -228,6 +234,9 @@ open class FormRecyclerAdaptor(
         return viewHolders.indexOfFirst { it.type == m::class.java }
     }
 
+    /**
+     * register a new view holder
+     */
     fun registerViewHolder(
         type: Class<out FormItem>,
         layoutId: Int,
@@ -237,6 +246,10 @@ open class FormRecyclerAdaptor(
         return true
     }
 
+    /**
+     * update the item (e.g., after changing some fields)
+     * @param item the item to be updated
+     */
     fun updateItem(item: FormItem) {
         val index = indexOf(item)
         if (index != -1 ) {
@@ -248,6 +261,10 @@ open class FormRecyclerAdaptor(
         }
     }
 
+    /**
+     * update the radio group
+     * @param item the selected item in the radio group
+     */
     fun updateRadioGroup(item: FormItem) {
         var group = ""
         if (item is FormItemRadio) {
@@ -261,9 +278,9 @@ open class FormRecyclerAdaptor(
         if (group.isEmpty()) {
             return
         }
-        (item.section as? FormItemSection)?.let { sec ->
-            for (i in 0 until sec.itemsVisible.size) {
-                val child = sec.itemsVisible[i]
+        item.section?.let { sec ->
+            for (i in 0 until sec.size) {
+                val child = sec[i]
                 if (child is FormItemRadio && item != child ) {
                     child.isOn = false
                     updateItem(child)
@@ -277,10 +294,7 @@ open class FormRecyclerAdaptor(
 
     private var onFormItemCallback = object : FormItemCallback {
         override fun onValueChanged(item: FormItem) {
-            if (item is FormItemRadio) {
-                updateRadioGroup(item)
-            }
-            if (item is FormItemRadioNative) {
+            if (item is FormItemRadio || item is FormItemRadioNative) {
                 updateRadioGroup(item)
             }
             listener?.onValueChanged(item)
@@ -318,31 +332,35 @@ open class FormRecyclerAdaptor(
                 return true
 
             val itemSrc = itemBy(src)!!
-            val itemDec = itemBy(dest)!!
-            if (itemDec == itemSrc.section && dest == 0) {
+            val itemDest = itemBy(dest)!!
+            if (itemDest == itemSrc.section && dest == 0) {
                 // not allow to move before the first section
                 return true
             }
 
-            itemDec.section?.let {
-                val offset = it.items.indexOf(itemDec)
+            itemDest.section?.let {
+                val offset = it.items.indexOf(itemDest)
                 val secSrc = itemSrc.section
-                itemSrc.section?.remove(itemSrc)
+                // no need to update UI, will be updated with notifyItemMoved
+                itemSrc.section?.remove(itemSrc, false)
                 if (it == secSrc) {
                     // src, dest are in same section
-                    if (it != itemDec) {
-                        it.add(offset, itemSrc)
+                    if (it == itemDest) {
+                        // move it to the previous section, as in a section, the first item shall
+                        // always be the section itself
+                        itemBy(dest - 1)?.section?.add(itemSrc, false)
                     } else {
-                        // move to the previous section
-                        itemBy(dest-1)?.section?.add(itemSrc)
+                        it.add(offset, itemSrc, false)
                     }
                 } else if (dest > src) {
-                    it.add(offset + 1, itemSrc)
+                    // move to the section after
+                    it.add(offset + 1, itemSrc, false)
                 } else {
-                    it.add(offset, itemSrc)
+                    // move the the section before
+                    it.add(offset, itemSrc, false)
                 }
+                notifyItemMoved(src, dest)
             }
-            notifyItemMoved(src, dest)
             return true
         }
 
@@ -368,6 +386,25 @@ open class FormRecyclerAdaptor(
         }
     }
 
+    /**
+     * get the section by its tag from all sections (include all hidden items)
+     * @param tag the section tag
+     * @return the section or null if not found
+     */
+    fun sectionBy(tag: String): FormItemSection? {
+        for (sec in sections) {
+            if (sec.tag == tag) {
+               return sec
+            }
+        }
+        return null
+    }
+
+    /**
+     * get the item by its tag from all items (include all hidden items)
+     * @param tag the item tag
+     * @return the item or null if not found
+     */
     fun itemBy(tag: String): FormItem? {
         var item: FormItem? = null
         for (sec in sections) {
@@ -383,196 +420,188 @@ open class FormRecyclerAdaptor(
         return item
     }
 
+    /**
+     * get the item by its index from all visible items
+     * @param index the index in adapter
+     * @return the item or null if not found
+     */
     fun itemBy(index: Int): FormItem? {
         var item : FormItem? = null
         var count = 0
         for (sec in sections) {
-            if (index < count + sec.itemsVisible.size) {
-                item = sec.itemsVisible[index - count]
+            if (index < count + sec.size) {
+                item = sec[index - count]
                 break
             }
-            count += sec.itemsVisible.size
+            count += sec.size
         }
         return item
     }
 
+    /**
+     * return the index of the item in adapter
+     * @param item item to retrieve the index
+     * @return the item index or -1 if not found
+     */
     fun indexOf(item: FormItem) : Int {
         var count = 0
         for (sec in sections) {
             if (sec == item.section) {
-                val index = sec.itemsVisible.indexOf(item)
+                val index = sec.indexOf(item)
                 if (index != -1) {
                     return index + count
                 }
                 break
             }
-            count += sec.itemsVisible.size
+            count += sec.size
         }
+        require(false) {"item not in adapter"}
         return -1
     }
 
-    fun evaluateHidden(section: FormItemSection): Boolean {
-        // show/hide all visible children of a section (not the section item itself)
-        val index = indexOf(section)
-        if (index == -1) {
-            return false
+    /**
+     * show/hide a section (and all its children)
+     * @param section section to be shown/hidden
+     * @return true if succeed
+     */
+    fun hide(section: FormItemSection, hide: Boolean): Boolean {
+        // show/hide a section
+        if (section.adaptor != this) {
+             return false
         }
-        val size = section.itemsVisible.size
-        section.update()
-        val sizeNew = section.itemsVisible.size
-        if (section.hidden) {
-            notifyItemRangeRemoved(index, size - sizeNew)
-        } else {
-            notifyItemRangeInserted(index, sizeNew - size)
+        if (section.hidden == hide) {
+            return true
         }
-        return true
-    }
+        activity?.runOnUiThread {
+            section.hidden = hide
+            val index = startOfSection(section)
+            val size = section.size
+            section.update()
+            val sizeNew = section.size
 
-    fun evaluateHidden(item: FormItem): Boolean {
-        if (item is FormItemSection) {
-            return evaluateHidden(item)
-        } else {
-            item.section?.let { sec ->
-                val offset = sec.update(item)
-                if (offset != -1) {
-                    val index = indexOf(sec)
-                    if (item.hidden) {
-                        notifyItemRemoved(index + offset)
-                    } else {
-                        notifyItemInserted(index + offset)
-                    }
-                }
+            if (section.hidden) {
+                notifyItemRangeRemoved(index, size - sizeNew)
+            } else {
+                notifyItemRangeInserted(index, sizeNew - size)
             }
         }
         return true
     }
 
     fun clear() {
-        sections.clear()
+        _sections.clear()
         update()
     }
 
-    operator fun FormItem.unaryPlus() {
-        add(this)
-    }
-
-    fun findItem (item: FormItem): Pair<FormItemSection?, Int> {
-        val sec = item.section
-        var index = -1
-        if (sec != null) {
-            index = sec.items.indexOf(item)
+    /**
+     * add section to adapter, need to call update() after adding all sections
+     */
+    operator fun FormItemSection.unaryPlus() {
+        if (sections.indexOf(this) != -1 || adaptor != null) {
+            return
         }
-        return Pair(sec, index)
+        //add(section=this)
+        adaptor = this@FormRecyclerAdapter
+        _sections.add(this)
     }
 
+    /**
+     * insert a section
+     * @param secIndex the index (in sections)
+     * @param section section to be added
+     * @return true if succeed
+     */
     private fun add(secIndex: Int, section: FormItemSection): Boolean {
-        if (sections.indexOf(section) != -1 || secIndex <0 || secIndex > sections.size || section in sections) {
+        if (sections.indexOf(section) != -1 || secIndex < 0 || secIndex > sections.size || section in sections) {
             return false
         }
-        sections.add(secIndex, section)
+        section.adaptor = this
+        _sections.add(secIndex, section)
         section.update()
 
-        if (section.itemsVisible.size > 0) {
-            val start = indexOf(section)
+        if (section.isNotEmpty) {
+            val start = startOfSection(section)
             activity?.runOnUiThread {
-                notifyItemRangeInserted(start, section.itemsVisible.size)
+                notifyItemRangeInserted(start, section.size)
             }
         }
         return true
     }
 
+    /**
+     * add a section to the end
+     * @param section the section to be added
+     * @return true if succeed
+     */
     fun add(section: FormItemSection): Boolean {
         return add(sections.size, section)
     }
 
+    /**
+     * add section after the "after" section
+     * @param after any item of the section before the added section
+     * @param section the section to be added
+     * @return true if succeed
+     */
     fun add(after: FormItem, section:FormItemSection): Boolean {
-        // add section after the section of "after"
-        val (sec, offset) = findItem(after)
-        if (sec == null || offset == -1) {
-            return false
-        }
+        val sec = after.section ?: return false
         val index = sections.indexOf(sec)
-        return add(index+1, section)
-    }
-
-    fun add(section: FormItemSection, item: FormItem): Boolean {
-        if (item is FormItemSection) {
-            // item is a section, add it after "section"
-            return add(section as FormItem, item)
-        }
-        val index = sections.indexOf(section)
         if (index == -1) {
             return false
         }
-        if (section.add(item) && !item.hidden) {
-            activity?.runOnUiThread {
-                notifyItemInserted( + section.itemsVisible.indexOf(item))
-            }
-        }
-        return false
+        return add(index+1, section)
     }
 
-    fun add(item: FormItem): Boolean {
-        if (item is FormItemSection) {
-            return add(item)
-        } else {
-            val sec: FormItemSection
-            if (sections.isEmpty()) {
-                // add a dummy section
-                sec = FormItemSection(false)
-                sections.add(sec)
-            } else {
-                sec = sections.last()
+    /**
+     * If section is visible, it return the index of its first item; otherwise, return the index of
+     * its first child if the section is visible.
+     */
+    protected fun startOfSection(section: FormItemSection): Int {
+        var index = 0
+        for (sec in sections) {
+            if (sec == section) {
+                return index
             }
-            add(sec, item)
+            index += sec.size
+        }
+        return -1
+    }
+
+    /**
+     * remove the section and all its children
+     * @param section section to be removed
+     * @return true if succeed
+     */
+    fun remove(section: FormItemSection): Boolean {
+        if (section.adaptor != this) {
+            return false
+        }
+        val index = startOfSection(section)
+        if (index == -1) {
+            // section is not in adapter
+            return false
+        }
+        _sections.remove(section)
+        section.adaptor = null
+
+        activity?.runOnUiThread {
+            if (section.isNotEmpty) {
+                notifyItemRangeRemoved(index, section.size)
+            }
         }
         return true
     }
 
-    fun add(after: FormItem, item:FormItem): Boolean {
-        if (item is FormItemSection) {
-            return add(after, item)
-        }
-        val (sec, offset) = findItem(after)
-        if (sec == null || offset == -1) {
-            return false
-        }
-        if (sec.add(offset + 1, item)) {
-            val index = indexOf(sec)
+    /**
+     * ensure the item is visible
+     * @param item item to show
+     */
+    fun ensureVisible(item: FormItem) {
+        val index = indexOf(item)
+        if (index != -1) {
             activity?.runOnUiThread {
-                notifyItemInserted(index + offset + 1)
+                recyclerView?.smoothScrollToPosition(index)
             }
-            return true
         }
-        return false
-    }
-
-    fun remove(section: FormItemSection): Boolean {
-        val index = indexOf(section)
-        if (index > -1) {
-            sections.remove(section)
-            if (section.itemsVisible.size > 0) {
-                activity?.runOnUiThread {
-                    notifyItemRangeRemoved(index, section.itemsVisible.size)
-                }
-            }
-            return true
-        }
-        return false
-    }
-
-    fun remove(item: FormItem): Boolean {
-        if (item is FormItemSection) {
-            return remove(item)
-        }
-        item.section?.let { sec ->
-            val offset = sec.remove(item)
-            if (offset != -1) {
-                val index = indexOf(sec)
-                notifyItemRemoved(index + offset)
-            }
-            return true
-        }
-        return false
     }
 }

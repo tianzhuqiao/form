@@ -9,9 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 
 abstract class FormActivity : AppCompatActivity() {
     var recyclerView: RecyclerView? = null
-    val adapter: FormRecyclerAdaptor?
+    val adapter: FormRecyclerAdapter?
         get() {
-            return recyclerView?.adapter as? FormRecyclerAdaptor
+            return recyclerView?.adapter as? FormRecyclerAdapter
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +22,7 @@ abstract class FormActivity : AppCompatActivity() {
         recyclerView?.apply {
             layoutManager = LinearLayoutManager(this@FormActivity)
 
-            adapter = FormRecyclerAdaptor(onFormItemListener).apply {
+            adapter = FormRecyclerAdapter(onFormItemListener).apply {
             }
         }
         initForm()
