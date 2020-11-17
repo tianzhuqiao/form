@@ -177,7 +177,7 @@ open class FormItemSection(visible: Boolean=true): FormItem() {
         }
         item.section = this
         _items.add(index, item)
-        if (!item.hidden) {
+        if (!item.hidden && !collapsed) {
             val count = offset(item)
             _itemsVisible.add(count, item)
             if (update) {

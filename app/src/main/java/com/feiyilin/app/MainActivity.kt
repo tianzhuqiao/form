@@ -41,12 +41,14 @@ class MainActivity : FormActivity() {
                     .inputType(EditorInfo.TYPE_CLASS_PHONE)
             }
             +FormItemSection().title("Multi-line text").apply {
+                enableCollapse(true)
                 +FormItemTextArea().hint("Multi-line text here ...").tag("notes")
                 +FormItemTextAreaFloatingHint().hint("Multi-line text with floating hint here ...")
                     .tag("notes")
             }
 
             +FormItemSection().title("Navigation item").apply {
+                enableCollapse(true)
                 //FormItemLabel().title("Label").tag("label"),
                 +FormItemNav().title("Nav item").tag("nav_item")
                 +FormItemNav().title("Nav item with subtitle").subTitle("www.abc.com")

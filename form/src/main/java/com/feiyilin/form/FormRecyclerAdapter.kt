@@ -328,6 +328,7 @@ open class FormRecyclerAdapter(
 
         override fun onMoveItem(src: Int, dest: Int): Boolean {
             super.onMoveItem(src, dest)
+
             if (listener?.onMoveItem(src, dest) == true)
                 return true
 
@@ -335,33 +336,69 @@ open class FormRecyclerAdapter(
             val itemDest = itemBy(dest)!!
             if (itemDest == itemSrc.section && dest == 0) {
                 // not allow to move before the first section
-                return true
+                return false
             }
 
             itemDest.section?.let {
                 val offset = it.items.indexOf(itemDest)
                 val secSrc = itemSrc.section
-                // no need to update UI, will be updated with notifyItemMoved
-                itemSrc.section?.remove(itemSrc, false)
+
                 if (it == secSrc) {
                     // src, dest are in same section
                     if (it == itemDest) {
+                        // move the item out of the current section (swap the item with the section)
+                        // get the section of previous item
+                        val secDest = itemBy(dest - 1)?.section
+                        if (secDest == null || secDest.collapsed) {
+                            // the previous section is not able to receive the new item as it is
+                            // either invalid or in collapsed status
+                            return false
+                        }
                         // move it to the previous section, as in a section, the first item shall
-                        // always be the section itself
-                        itemBy(dest - 1)?.section?.add(itemSrc, false)
+                        // always be the section itself. No need to update UI, will be updated with
+                        // notifyItemMoved
+                        itemSrc.section?.remove(itemSrc, false)
+                        secDest.add(itemSrc, false)
                     } else {
+                        itemSrc.section?.remove(itemSrc, false)
                         it.add(offset, itemSrc, false)
                     }
                 } else if (dest > src) {
                     // move to the section after
+                    if (it.collapsed) {
+                        // the destination section is not able to receive the new item as it is
+                        // in collapsed status
+                        return false
+                    }
+
+                    itemSrc.section?.remove(itemSrc, false)
                     it.add(offset + 1, itemSrc, false)
                 } else {
-                    // move the the section before
-                    it.add(offset, itemSrc, false)
+                    // move to the section before
+
+                    var secDest : FormItemSection? = it
+                    var offsetDest = offset
+                    if (secDest?.collapsed == true && dest > 0) {
+                        // the destination section is not able to receive the new item as it is
+                        // in collapsed status; try the item above: if it is in a valid section,
+                        // add the src item there
+                        secDest = itemBy(dest - 1)?.section
+                        offsetDest = secDest?.items?.size ?: -1
+                    }
+
+                    if (secDest?.collapsed == true || offsetDest == -1) {
+                        // the destination section is still not able to receive the new item as it is
+                        // in collapsed status
+                        return false
+                    }
+
+                    itemSrc.section?.remove(itemSrc, false)
+                    secDest?.add(offsetDest, itemSrc, false)
                 }
                 notifyItemMoved(src, dest)
+                return true
             }
-            return true
+            return false
         }
 
         override fun onTitleImageClicked(item: FormItem) {
