@@ -569,9 +569,7 @@ open class FormRecyclerAdapter(
         if (sections.indexOf(this) != -1 || adapter != null) {
             return
         }
-        //add(section=this)
-        adapter = this@FormRecyclerAdapter
-        _sections.add(this)
+        add(section=this)
     }
 
     /**

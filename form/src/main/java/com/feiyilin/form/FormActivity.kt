@@ -26,7 +26,6 @@ abstract class FormActivity : AppCompatActivity() {
             }
         }
         initForm()
-        adapter?.update()
     }
 
     abstract var onFormItemListener: FormItemCallback?

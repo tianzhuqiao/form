@@ -44,8 +44,7 @@ open class FormItemSection(visible: Boolean=true): FormItem() {
         if(section != null || indexOf(this) != -1) {
             return
         }
-        section = this@FormItemSection
-        _items.add(this)
+        add(this)
     }
 
     /**
@@ -177,14 +176,19 @@ open class FormItemSection(visible: Boolean=true): FormItem() {
         }
         item.section = this
         _items.add(index, item)
-        if (!item.hidden && !collapsed) {
-            val count = offset(item)
-            _itemsVisible.add(count, item)
-            if (update) {
-                adapter?.activity?.runOnUiThread {
-                    val start = adapter?.indexOf(this) ?: -1
-                    if (start != -1) {
-                        adapter?.notifyItemInserted(start + itemsVisible.indexOf(item))
+
+        adapter?.let { adapter ->
+            // only update the itemsVisible if adapter is valid; otherwise, the adapter will call
+            // update() once the section is added.
+            if (!item.hidden && !collapsed) {
+                val count = offset(item)
+                _itemsVisible.add(count, item)
+                if (update) {
+                    adapter.activity?.runOnUiThread {
+                        val start = adapter.indexOf(this) ?: -1
+                        if (start != -1) {
+                            adapter.notifyItemInserted(start + itemsVisible.indexOf(item))
+                        }
                     }
                 }
             }
