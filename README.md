@@ -22,72 +22,40 @@ dependencies {
 }
 ```
 ## 2. Update Activity
-Add a **RecyclerView** to the activity's layout
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.feiyilin.app.MainActivity">
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/setting_profile_recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingBottom="16dp"
-        android:descendantFocusability="beforeDescendants">
+1. Add **FormItem** to the adapter
 
-    </androidx.recyclerview.widget.RecyclerView>
-</androidx.constraintlayout.widget.ConstraintLayout>
-```
-Add **FormItem** list to hold all **FormItem**
 ```kotlin
-class MainActivity : AppCompatActivity() {
-    private var settings = mutableListOf<FormItem>()
-    
+class MainActivity : FormActivity() {
     ...
-}
-```
-Add items to the list
-```kotlin
-class MainActivity : AppCompatActivity() {
-    ...
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        
-        settings = mutableListOf(
-            FormItemSection().title("Text"),
-            FormItemText().title("Text").tag("text"),
-            FormItemText().title("Text").subTitle("here is subtitle").tag("text_subtitle"),
-            FormItemText().title("Text").subTitle("dragable").dragable(true)
-                .tag("text_dragable"),
-            FormItemText().title("With icon")
-            ...
-            )
-     }
- ...
- }
- ```
- Initialize **RecyclerView** with **FormRecyclerAdapter**
-```kotlin
-class MainActivity : AppCompatActivity() {
-    ...
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        ...
-        recyclerView.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-
-            adapter = FormRecyclerAdapter(settings, onSettingProfileItemClickListener).apply {
+    override fun initForm() {
+        adapter?.apply {
+            +FormItemSection().title("Text").tag("sec_text").apply {
+                enableCollapse(true)
+                +FormItemText().title("Text").tag("text").required(true)
+                +FormItemText().title("Text").subTitle("here is subtitle").tag("text_subtitle")
+                +FormItemText().title("Text").subTitle("dragable").dragable(true)
+                    .tag("text_dragable")
+                ...
             }
         }
-    }
+     }
+...
 }
 ```
+2. override the callbacks
+```kotlin
+class MainActivity : FormActivity() {
+    ...
+    override var onFormItemListener: FormItemCallback? = object : FormItemCallback {
+        override fun onValueChanged(item: FormItem) {
+        ...
+        }
+    }
+    ...
+}
+```
+Or check [FormActivity](./form/src/main/java/com/feiyilin/form/FormActivity.kt) if you want to use **FormRecyclerAdapter** directly in the activity.
+
 # Using the callbacks
 **FormItemCallback** can be used to change the appearance and behavior of an item
 
@@ -123,22 +91,41 @@ class MainActivity : AppCompatActivity() {
 
     Called when configure/bind an item. Can be used to update the minimum height for all (or a group of) items.
 
-# Hide/show items
-You can dynamically show or hide items by 
-1. setting the **hidden** option;
-2. call **adapter.evaluateHidden()** to update the **RecyclerView**.
+# Collapse section
+To collapse/expand a section (show/hide its children),
+1. enable collapse/expand on the section, which will also show an indicator icon 
+```kotlin
+section.enableCollapse(true)
+```
+2. collapse/expand the section by calling "adapter.collapse"
+```kotlin
+override fun onItemClicked(item: FormItem, viewHolder: RecyclerView.ViewHolder) {
+    if (item is FormItemSection) {
+        if (item.enableCollapse) {
+            adapter?.collapse(item, !item.collapsed)
+        }
+    }
+...
+}
+```
+<img src="./images/collapse.gif" width="36%">
+
+# Hide/show item/section
+To dynamically show or hide item/section, call
+1. **section.hide** to hide an item in the section.
+2. **adapter.hide** to hide the whole section (section item and all its visible children)
 
 For example
 ```kotlin
-adapter.itemByTag("action")?.let {
-    it.hidden = !item.isOn
-    runOnUiThread {
-       adapter.evaluateHidden(it)
-    }
+// hide item
+adapter.itemBy("action")?.let {
+    it.section?.hide(it, true)
+}
+// hide section
+adapter.sectionBy("sec_date")?.let {
+    adapter.hide(it, true)
 }
 ```
-
-If the item is a section, it will show/hide the item itself and all its visible children.
 
 <img src="./images/hide.gif" width="36%">
 
@@ -182,6 +169,7 @@ Once an action is triggered, **onSwipedAction** callback will be called
 |Select|<img src="./images/item_select.png" width="22%"> <img src="./images/item_choice.png" width="22%"> <img src="./images/item_picker.png" width="22%">|
 |Picker inline|<img src="./images/item_picker_inline.png" width="36%">|
 |Color|<img src="./images/item_color.png" width="36%">|
+
 # Custom item
 1. Design the layout of your item, e.g., **form_item_image.xml**
 ```xml
@@ -261,25 +249,19 @@ class FormImageViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
 
 4. Register the item with **registerViewHolder**
 ```kotlin
-class MainActivity : AppCompatActivity() {
+class MainActivity : FormActivity() {
     ...
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+    override fun initForm() {
         ...
-        recyclerView.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-
-            adapter = FormRecyclerAdapter(settings, onSettingProfileItemClickListener).apply {
-                this.registerViewHolder(
-                    FormItemImage::class.java,
-                    R.layout.form_item_image,
-                    FormImageViewHolder::class.java
-                )
-            }
-        }
+        adapter?.registerViewHolder(
+            FormItemImage::class.java,
+            R.layout.form_item_image,
+            FormImageViewHolder::class.java
+        )
+        ...
     }
 }
+```
 ```
 
 
