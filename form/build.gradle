@@ -15,7 +15,7 @@ ext {
     siteUrl = 'https://github.com/tianzhuqiao/form'
     gitUrl = 'https://github.com/tianzhuqiao/form.git'
 
-    libraryVersion = '0.2.2'
+    libraryVersion = '0.2.3'
 
     developerId = 'tianzhuqiao'
     developerName = 'Tianzhu Qiao'
