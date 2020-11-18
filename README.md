@@ -91,6 +91,13 @@ Or check [FormActivity](./form/src/main/java/com/feiyilin/form/FormActivity.kt) 
 
     Called when configure/bind an item. Can be used to update the minimum height for all (or a group of) items.
 
+# Access item/section
+Tag can be used to access an item or section
+```kotlin
+val item = adapter.itemBy("item_tag") // or null if not found
+val section = adapter.sectionBy("section_tag")
+```
+
 # Collapse section
 To collapse/expand a section (show/hide its children),
 1. enable collapse/expand on the section, which will also show an indicator icon
@@ -111,17 +118,15 @@ override fun onItemClicked(item: FormItem, viewHolder: RecyclerView.ViewHolder) 
 <img src="./images/collapse.gif" width="36%">
 
 # Hide/show item/section
-To dynamically show or hide item/section, call
-1. **section.hide** to hide an item in the section.
-2. **adapter.hide** to hide the whole section (section item and all its visible children)
+Call **adapter.hide** to dynamically show/hide item/section. If it is a section, it will hide the section item and all its visible children.
 
 For example
 ```kotlin
-// hide item
+// hide an item
 adapter.itemBy("action")?.let {
-    it.section?.hide(it, true)
+    adapter.hide(it, true)
 }
-// hide section
+// hide a section
 adapter.sectionBy("sec_date")?.let {
     adapter.hide(it, true)
 }
