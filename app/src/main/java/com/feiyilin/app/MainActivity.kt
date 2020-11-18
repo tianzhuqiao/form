@@ -240,7 +240,7 @@ class MainActivity : FormActivity() {
                     adapter?.let { adapter ->
                         val action = adapter.itemBy("action")
                         action?.let {
-                            it.section?.hide(it, !item.isOn)
+                            adapter.hide(it, !item.isOn)
                         }
                     }
                 }
@@ -252,6 +252,11 @@ class MainActivity : FormActivity() {
             if (item is FormItemSection) {
                 if (item.enableCollapse) {
                     adapter?.collapse(item, !item.collapsed)
+                    return
+                }
+                if (item.title.contains("click to clear children")) {
+                    item.clear()
+                    return
                 }
             }
             when (item.tag) {
@@ -268,7 +273,7 @@ class MainActivity : FormActivity() {
                 "add_section" -> {
                     newSectionCreated += 1
                     adapter?.apply {
-                        val sec = FormItemSection().title("New section $newSectionCreated").apply {
+                        val sec = FormItemSection().title("New section $newSectionCreated (click to clear children)").apply {
                             trailingSwipe(
                                 listOf(FormSwipeAction().title("Delete").style(FormSwipeAction.Style.Destructive))
                             )

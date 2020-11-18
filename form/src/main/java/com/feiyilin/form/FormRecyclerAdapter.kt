@@ -214,7 +214,7 @@ open class FormRecyclerAdapter(
     }
 
     override fun getItemCount(): Int {
-        return sections.sumBy { it.size}
+        return sections.sumBy { it.sizeVisible}
     }
 
     /**
@@ -251,6 +251,9 @@ open class FormRecyclerAdapter(
      * @param item the item to be updated
      */
     fun updateItem(item: FormItem) {
+        if (item.hidden) {
+            return
+        }
         val index = indexOf(item)
         if (index != -1 ) {
             activity?.let {
@@ -279,7 +282,7 @@ open class FormRecyclerAdapter(
             return
         }
         item.section?.let { sec ->
-            for (i in 0 until sec.size) {
+            for (i in 0 until sec.sizeVisible) {
                 val child = sec[i]
                 if (child is FormItemRadio && item != child ) {
                     child.isOn = false
@@ -466,11 +469,11 @@ open class FormRecyclerAdapter(
         var item : FormItem? = null
         var count = 0
         for (sec in sections) {
-            if (index < count + sec.size) {
+            if (index < count + sec.sizeVisible) {
                 item = sec[index - count]
                 break
             }
-            count += sec.size
+            count += sec.sizeVisible
         }
         return item
     }
@@ -490,7 +493,7 @@ open class FormRecyclerAdapter(
                 }
                 break
             }
-            count += sec.size
+            count += sec.sizeVisible
         }
         require(false) {"item not in adapter"}
         return -1
@@ -512,17 +515,25 @@ open class FormRecyclerAdapter(
         activity?.runOnUiThread {
             section.hidden = hide
             val index = startOfSection(section)
-            val size = section.size
+            val size = section.sizeVisible
             section.update()
-            val sizeNew = section.size
+            val sizeNew = section.sizeVisible
 
+            // show/hide the last |size-sizeNew| items
             if (section.hidden) {
-                notifyItemRangeRemoved(index, size - sizeNew)
+                notifyItemRangeRemoved(index + sizeNew, size - sizeNew)
             } else {
-                notifyItemRangeInserted(index, sizeNew - size)
+                notifyItemRangeInserted(index + sizeNew, sizeNew - size)
             }
         }
         return true
+    }
+
+    fun hide(item: FormItem, hide: Boolean): Boolean {
+        if (item is FormItemSection) {
+            return hide(item, hide)
+        }
+        return item.section?.hide(item, hide) ?: false
     }
 
     /**
@@ -543,21 +554,28 @@ open class FormRecyclerAdapter(
         activity?.runOnUiThread {
             section.collapsed(collapsed)
             val index = startOfSection(section)
-            val size = section.size
+            val size = section.sizeVisible
             section.update()
-            val sizeNew = section.size
+            val sizeNew = section.sizeVisible
             if (sizeNew != size) {
+                // show/hide the last |size-sizeNew| items
                 if (section.collapsed) {
-                    notifyItemRangeRemoved(index+1, size - sizeNew)
+                    notifyItemRangeRemoved(index + sizeNew, size - sizeNew)
                 } else {
-                    notifyItemRangeInserted(index+1, sizeNew - size)
+                    notifyItemRangeInserted(index + sizeNew, sizeNew - size)
                 }
             }
         }
         return true
     }
 
+    /**
+     * clear all sections
+     */
     fun clear() {
+        sections.forEach {
+            it.adapter = null
+        }
         _sections.clear()
         update()
     }
@@ -589,7 +607,7 @@ open class FormRecyclerAdapter(
         if (section.isNotEmpty) {
             val start = startOfSection(section)
             activity?.runOnUiThread {
-                notifyItemRangeInserted(start, section.size)
+                notifyItemRangeInserted(start, section.sizeVisible)
             }
         }
         return true
@@ -629,7 +647,7 @@ open class FormRecyclerAdapter(
             if (sec == section) {
                 return index
             }
-            index += sec.size
+            index += sec.sizeVisible
         }
         return -1
     }
@@ -653,7 +671,7 @@ open class FormRecyclerAdapter(
 
         activity?.runOnUiThread {
             if (section.isNotEmpty) {
-                notifyItemRangeRemoved(index, section.size)
+                notifyItemRangeRemoved(index, section.sizeVisible)
             }
         }
         return true

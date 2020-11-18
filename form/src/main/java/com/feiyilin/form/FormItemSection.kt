@@ -2,7 +2,7 @@ package com.feiyilin.form
 
 import java.util.*
 
-open class FormItemSection(visible: Boolean=true): FormItem() {
+open class FormItemSection(private val visible: Boolean=true): FormItem() {
     var collapsed: Boolean = false
     var enableCollapse: Boolean = false
     private var _items: MutableList<FormItem> = mutableListOf()
@@ -23,7 +23,7 @@ open class FormItemSection(visible: Boolean=true): FormItem() {
         section = this
     }
 
-    val size: Int
+    val sizeVisible: Int
         get() = _itemsVisible.size
     val isEmpty: Boolean
         get() = _itemsVisible.isEmpty()
@@ -32,8 +32,14 @@ open class FormItemSection(visible: Boolean=true): FormItem() {
     fun indexOf(item: FormItem): Int {
         return _itemsVisible.indexOf(item)
     }
+
+    /**
+     * get the visible item by index
+     * @param index the index of item in visibleItems
+     * @return item at index
+     */
     operator fun get(index: Int):FormItem {
-        require(index in 0 until size) { "index out of range" }
+        require(index in 0 until sizeVisible) { "index out of range" }
         return _itemsVisible[index]
     }
 
@@ -240,6 +246,32 @@ open class FormItemSection(visible: Boolean=true): FormItem() {
             }
         }
         return true
+    }
+
+    /**
+     * clear all the children
+     */
+    fun clear() {
+        _items.clear()
+        if(visible) {
+            this.section = this
+            _items.add(this)
+        }
+        adapter?.let {adapter ->
+            if (sizeVisible == 0) {
+                return
+            }
+            val index = adapter.indexOf(itemsVisible[0])
+            val size = sizeVisible
+            update()
+            val sizeNew = sizeVisible
+            if (size > sizeNew) {
+                // the last (size - sizeNew) items are hidden
+                adapter.activity?.runOnUiThread {
+                    adapter.notifyItemRangeRemoved(index + sizeNew, size - sizeNew)
+                }
+            }
+        }
     }
 }
 
