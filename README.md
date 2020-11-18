@@ -91,6 +91,36 @@ Or check [FormActivity](./form/src/main/java/com/feiyilin/form/FormActivity.kt) 
 
     Called when configure/bind an item. Can be used to update the minimum height for all (or a group of) items.
 
+# Add/remove item/section
+Use **+** operator to add an item or a section to adapter
+```kotlin
+adapter?.apply {
+    // add a section
+    +FormItemSection().apply {
+        // add item to section
+        +FormItemNav().title("Item 0")
+    }
+}
+```
+Or call **add** 
+```kotlin
+val sec = FormItemSection().title("New section").apply {
+            +FormItemNav().title("Item 0")
+            +FormItemNav().title("item 1")
+          }
+sec.add(FormItemNav().title("Item 2"))
+adapter?.add(sec)
+```
+And to remove an item or a section from adatper
+```kotlin
+// remove a section
+adapter?.remove(sec)
+// remove an item
+adapter?.remove(item)
+// or
+sec.remove(item)
+```
+
 # Access item/section
 Tag can be used to access an item or section
 ```kotlin
