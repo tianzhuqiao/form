@@ -677,6 +677,13 @@ open class FormRecyclerAdapter(
         return true
     }
 
+    fun remove(item: FormItem): Boolean {
+        if (item is FormItemSection) {
+            return remove(item)
+        }
+        return item.section?.remove(item) ?: false
+    }
+
     /**
      * ensure the item is visible
      * @param item item to show

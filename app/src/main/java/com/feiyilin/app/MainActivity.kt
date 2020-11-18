@@ -280,6 +280,8 @@ class MainActivity : FormActivity() {
                             +FormItemNav().title("Item 0")
                             +FormItemNav().title("item 1")
                         }
+
+                        sec.add(FormItemNav().title("Item 2"))
                         add(item, sec)
                         ensureVisible(sec)
                     }
@@ -296,11 +298,7 @@ class MainActivity : FormActivity() {
             Toast.makeText(this@MainActivity, "${item.title}: ${action.title}", Toast.LENGTH_SHORT)
                 .show()
             if (action.title == "Delete") {
-                if (item is FormItemSection) {
-                    return adapter?.remove(item) ?: false
-                } else {
-                    return item.section?.remove(item) ?: false
-                }
+                return adapter?.remove(item) ?: false
             }
             return false
         }
