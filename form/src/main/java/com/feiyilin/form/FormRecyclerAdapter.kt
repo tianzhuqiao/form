@@ -537,7 +537,7 @@ open class FormRecyclerAdapter(
             if (section.hidden) {
                 notifyItemRangeRemoved(index + sizeNew, size - sizeNew)
             } else {
-                notifyItemRangeInserted(index + sizeNew, sizeNew - size)
+                notifyItemRangeInserted(index + size, sizeNew - size)
             }
         }
         return true
@@ -576,7 +576,7 @@ open class FormRecyclerAdapter(
                 if (section.collapsed) {
                     notifyItemRangeRemoved(index + sizeNew, size - sizeNew)
                 } else {
-                    notifyItemRangeInserted(index + sizeNew, sizeNew - size)
+                    notifyItemRangeInserted(index + size, sizeNew - size)
                 }
             }
         }
