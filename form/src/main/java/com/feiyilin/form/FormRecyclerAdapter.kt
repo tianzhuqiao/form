@@ -19,9 +19,21 @@ interface FormItemCallback {
         return false
     }
 
-    fun onSwipedAction(item: FormItem, action: FormSwipeAction, viewHolder: RecyclerView.ViewHolder): Boolean { return false }
-    fun getMinItemHeight(item: FormItem) : Int { return 0 }
-    fun getSeparator(item: FormItem) : FormItem.Separator  { return FormItem.Separator.DEFAULT }
+    fun onSwipedAction(
+        item: FormItem,
+        action: FormSwipeAction,
+        viewHolder: RecyclerView.ViewHolder
+    ): Boolean {
+        return false
+    }
+
+    fun getMinItemHeight(item: FormItem): Int {
+        return 0
+    }
+
+    fun getSeparator(item: FormItem): FormItem.Separator {
+        return FormItem.Separator.DEFAULT
+    }
 }
 
 open class FormRecyclerAdapter(
@@ -332,8 +344,10 @@ open class FormRecyclerAdapter(
         override fun onMoveItem(src: Int, dest: Int): Boolean {
             super.onMoveItem(src, dest)
 
-            if (listener?.onMoveItem(src, dest) == true)
-                return true
+            if (listener?.onMoveItem(src, dest) == true) {
+                // it has been processed, ignore the default operation
+                return false
+            }
 
             val itemSrc = itemBy(src)!!
             val itemDest = itemBy(dest)!!
