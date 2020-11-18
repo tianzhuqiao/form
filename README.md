@@ -18,7 +18,7 @@ Add **form** to dependencies in your app's build.gradle:
 ```gradle
 dependencies {
     ...
-    implementation 'com.feiyilin:form:0.2'
+    implementation 'com.feiyilin:form:0.3.0'
 }
 ```
 ## 2. Update Activity
@@ -55,6 +55,8 @@ class MainActivity : FormActivity() {
 }
 ```
 Or check [FormActivity](./form/src/main/java/com/feiyilin/form/FormActivity.kt) if you want to use **FormRecyclerAdapter** directly in the activity.
+
+**Ver 0.3** supports section. It is a breaking change. Check branch **0.2.x** if prefer the old way.   
 
 # Using the callbacks
 **FormItemCallback** can be used to change the appearance and behavior of an item
