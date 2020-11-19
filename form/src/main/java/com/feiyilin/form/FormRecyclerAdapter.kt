@@ -160,6 +160,11 @@ open class FormRecyclerAdapter(
                 FormItemColor::class.java,
                 R.layout.form_item_color,
                 FormColorViewHolder::class.java
+            ),
+            ViewHolderItem(
+                FormItemSeekBar::class.java,
+                R.layout.form_item_seekbar,
+                FormSeekBarViewHolder::class.java
             )
         )
     }

@@ -972,3 +972,61 @@ open class FormColorViewHolder(inflater: LayoutInflater, resource: Int, parent: 
         }
     }
 }
+
+open class FormSeekBarViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormViewHolder(inflater, resource, parent) {
+
+    var seekBar: SeekBar? = null
+    var valueView: TextView? = null
+
+    init {
+        seekBar = itemView.findViewById(R.id.formElementSeekBar)
+        valueView = itemView.findViewById(R.id.formElementValue)
+    }
+
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
+        super.bind(s, listener)
+        if (s is FormItemSeekBar) {
+            valueView?.setOnClickListener {
+                if (seekBar?.visibility == View.GONE)
+                    seekBar?.visibility = View.VISIBLE
+                else
+                    seekBar?.visibility = View.GONE
+                listener?.onItemClicked(s, this)
+            }
+
+            seekBar?.setOnSeekBarChangeListener(null)
+
+            if (s.value >= s.minValue) {
+                valueView?.text = s.value.toString()
+                seekBar?.progress = s.value - s.minValue
+            } else {
+                valueView?.text = ""
+                seekBar?.progress = 0
+            }
+            seekBar?.max = s.maxValue - s.minValue
+            //seekBar?.min = 0
+
+            seekBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seekBar: SeekBar?,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
+                    s.value = progress + s.minValue
+                    valueView?.text = s.value.toString()
+                    if (fromUser) {
+                        listener?.onValueChanged(s)
+                    }
+                }
+
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                }
+
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                }
+            })
+
+        }
+    }
+}

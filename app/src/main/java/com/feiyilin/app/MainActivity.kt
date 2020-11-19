@@ -1,5 +1,8 @@
 package com.feiyilin.app
 
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -102,6 +105,10 @@ class MainActivity : FormActivity() {
                     .dateOnly(true)
                 +FormItemDate().tag("time_only").title("Time only").date(cal.time)
                     .timeOnly(true)
+            }
+            +FormItemSection().title("SeekBar").apply {
+                +FormItemSeekBar().title("seekbar").value(19)
+                +FormItemSeekBar().title("seekbar red").tag("seekbar_red").maxValue(50).minValue(10).value(29)
             }
 
             +FormItemSection().title("Swipe Action").tag("sec_swipe").apply {
@@ -324,6 +331,18 @@ class MainActivity : FormActivity() {
                 }
             }
             return false
+        }
+
+        override fun onSetup(item: FormItem, viewHolder: RecyclerView.ViewHolder) {
+            super.onSetup(item, viewHolder)
+            if (item is FormItemSeekBar) {
+                if (item.tag == "seekbar_red") {
+                    if (viewHolder is FormSeekBarViewHolder) {
+                        viewHolder.seekBar?.progressDrawable?.colorFilter = PorterDuffColorFilter(Color.parseColor("#ff5722"), PorterDuff.Mode.SRC_IN)
+                        viewHolder.seekBar?.thumb?.colorFilter = PorterDuffColorFilter(Color.parseColor("#ff5722"), PorterDuff.Mode.SRC_IN)
+                    }
+                }
+            }
         }
     }
 }

@@ -497,3 +497,21 @@ fun <T : FormItemColor> T.cornerRadius(cornerRadius: Int) = apply {
 fun <T : FormItemColor> T.rows(rows: Int) = apply {
     this.rows = rows
 }
+
+open class FormItemSeekBar : FormItem() {
+    var value: Int = 0
+    var maxValue: Int = 100
+    var minValue: Int = 0
+}
+
+fun <T : FormItemSeekBar> T.value(value: Int) = apply {
+    this.value = value
+}
+
+fun <T : FormItemSeekBar> T.maxValue(maxValue: Int) = apply {
+    this.maxValue = maxValue
+}
+
+fun <T : FormItemSeekBar> T.minValue(minValue: Int) = apply {
+    this.minValue = minValue
+}
