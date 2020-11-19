@@ -166,6 +166,20 @@ adapter.sectionBy("sec_date")?.let {
 
 <img src="./images/hide.gif" width="36%">
 
+# Radio group
+**FormItemRadio**s will be considered to be in the same group (i.e., selecting one will de-select others), if 
+1. they have the same group name, and
+2. in the same section.
+```kotlin
++FormItemSection().title("Radio").apply {
+     +FormItemRadio().group("radio0").title("item 0")
+                     .tag("radio0_item0").isOn(true)
+     +FormItemRadio().group("radio0").title("item 1")
+                     .tag("radio0_item1")
+ }
+```
+<img src="./images/radio.gif" width="36%">
+
 # Swipe actions
 For each item, we can define the leading/left or trailing/right swipe actions (following the idea [here](https://stackoverflow.com/questions/44965278/recyclerview-itemtouchhelper-buttons-on-swipe/45062745#45062745)).
  For example
