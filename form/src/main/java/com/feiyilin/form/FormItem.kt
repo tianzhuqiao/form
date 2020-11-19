@@ -248,47 +248,49 @@ fun <T : FormItemToggle> T.isOn(isOn: Boolean) = apply {
     this.isOn = isOn
 }
 
-abstract class FormItemToggleCustomDraw : FormItemToggle() {
+open class FormItemSwitch : FormItemToggle() {
+}
+
+open class FormItemSwitchCustom : FormItemSwitch() {
     var iconOff: Drawable? = null
     var iconOn: Drawable? = null
-}
-
-fun <T : FormItemToggleCustomDraw> T.iconOn(iconOn: Drawable?) = apply {
-    this.iconOn = iconOn
-}
-
-fun <T : FormItemToggleCustomDraw> T.iconOff(iconOff: Drawable?) = apply {
-    this.iconOff = iconOff
-}
-
-
-open class FormItemSwitchNative : FormItemToggle() {
-}
-
-open class FormItemSwitch : FormItemToggleCustomDraw() {
     init {
         this.iconSize(Size(48, 24))
     }
 }
 
-open class FormItemRadioNative : FormItemToggle() {
-    var group: String = ""
+fun <T : FormItemSwitchCustom> T.iconOn(iconOn: Drawable?) = apply {
+    this.iconOn = iconOn
 }
 
-fun <T : FormItemRadioNative> T.group(group: String) = apply {
-    this.group = group
+fun <T : FormItemSwitchCustom> T.iconOff(iconOff: Drawable?) = apply {
+    this.iconOff = iconOff
 }
 
-open class FormItemRadio : FormItemToggleCustomDraw() {
+open class FormItemRadio : FormItemToggle() {
     var group: String = ""
-    init {
-        this.iconSize(Size(24, 24))
-    }
 }
 
 fun <T : FormItemRadio> T.group(group: String) = apply {
     this.group = group
 }
+
+open class FormItemRadioCustom : FormItemRadio() {
+    var iconOff: Drawable? = null
+    var iconOn: Drawable? = null
+    init {
+        this.iconSize(Size(24, 24))
+    }
+}
+
+fun <T : FormItemRadioCustom> T.iconOn(iconOn: Drawable?) = apply {
+    this.iconOn = iconOn
+}
+
+fun <T : FormItemRadioCustom> T.iconOff(iconOff: Drawable?) = apply {
+    this.iconOff = iconOff
+}
+
 
 open class FormItemNav : FormItem() {
     var value: String = ""

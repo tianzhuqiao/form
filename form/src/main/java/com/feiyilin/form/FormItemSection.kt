@@ -65,6 +65,7 @@ open class FormItemSection(private val visible: Boolean=true): FormItem() {
      * add all visible items to itemsVisible
      */
     internal fun update() {
+        updateRadionGroup()
         _itemsVisible.clear()
         if (!hidden) {
             if (collapsed) {
@@ -75,6 +76,21 @@ open class FormItemSection(private val visible: Boolean=true): FormItem() {
                 items.forEach {
                     if (!it.hidden) {
                         _itemsVisible.add(it)
+                    }
+                }
+            }
+        }
+    }
+
+    internal fun updateRadionGroup() {
+        val groupChecked = mutableListOf<String>()
+        for (item in items.reversed()) {
+            if (item is FormItemRadio) {
+                if (item.isOn && item.group.isNotEmpty()) {
+                    if (item.group in groupChecked) {
+                        item.isOn(false)
+                    } else {
+                        groupChecked.add(item.group)
                     }
                 }
             }

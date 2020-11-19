@@ -66,31 +66,33 @@ class MainActivity : FormActivity() {
             }
 
             +FormItemSection().title("Radio").apply {
-                +FormItemRadio().isOn(true).group("radio0")
-                    .title("item 0")
-                    .tag("radio0_item0")
-                +FormItemRadio().group("radio0").title("item 1")
-                    .tag("radio0_item1")
-            }
-
-            +FormItemSection().title("Radio native").apply {
-                +FormItemRadioNative().isOn(true).group("radio1")
+                +FormItemRadio().isOn(true).group("radio")
                     .title("item 0")
                     .tag("radio1_item0")
-                +FormItemRadioNative().group("radio1").title("item 1")
+                +FormItemRadio().group("radio").title("item 1")
                     .tag("radio1_item1")
+                +FormItemRadio().group("radio").title("item 2")
+                    .tag("radio1_item2")
+            }
+            +FormItemSection().title("Radio custom").apply {
+                +FormItemRadioCustom().isOn(true).group("radio")
+                    .title("item 0")
+                    .tag("radio0_item0").isOn(true)
+                +FormItemRadioCustom().group("radio").title("item 1")
+                    .tag("radio0_item1").isOn(true)
+                +FormItemRadioCustom().group("radio").title("item 2")
+                    .tag("radio0_item2").isOn(true)
             }
 
             +FormItemSection().title("Switch").apply {
-                +FormItemSwitch().isOn(true).title("Switch").tag("switch")
-                +FormItemSwitchNative().isOn(true).title("Switch native").tag("switch_native")
-
-                +FormItemSwitchNative().isOn(true).title("Show action item")
+                +FormItemSwitch().isOn(true).title("Switch").tag("switch_native")
+                +FormItemSwitchCustom().isOn(true).title("Switch custom").tag("switch")
+                +FormItemSwitch().isOn(true).title("Show action item")
                     .tag("switch_show_action")
                 +FormItemAction().title("Action").tag("action").subTitle("description")
                     .iconTitle(drawable(R.drawable.ic_form_info))
 
-                +FormItemSwitchNative().isOn(true).title("Show date/time section")
+                +FormItemSwitch().isOn(true).title("Show date/time section")
                     .tag("switch_show_date")
             }
 
@@ -229,7 +231,7 @@ class MainActivity : FormActivity() {
         override fun onValueChanged(item: FormItem) {
             Log.i("onValueChanged", item.toString())
             if (item.tag == "switch_show_date") {
-                if (item is FormItemSwitchNative) {
+                if (item is FormItemSwitch) {
                     adapter?.let { adapter ->
                         val action = adapter.sectionBy("sec_date")
                         action?.let {
@@ -238,7 +240,7 @@ class MainActivity : FormActivity() {
                     }
                 }
             } else if (item.tag == "switch_show_action") {
-                if (item is FormItemSwitchNative) {
+                if (item is FormItemSwitch) {
                     adapter?.let { adapter ->
                         val action = adapter.itemBy("action")
                         action?.let {

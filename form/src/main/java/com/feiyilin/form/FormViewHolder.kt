@@ -426,7 +426,7 @@ open class FormActionViewHolder(inflater: LayoutInflater, resource: Int, parent:
     }
 }
 
-open class FormSwitchNativeViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+open class FormSwitchViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FormViewHolder(inflater, resource, parent) {
     protected var switchView: Switch? = null
 
@@ -436,7 +436,7 @@ open class FormSwitchNativeViewHolder(inflater: LayoutInflater, resource: Int, p
 
     override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
-        if (s is FormItemSwitchNative) {
+        if (s is FormItemSwitch) {
             itemView.setOnClickListener {
                 listener?.onItemClicked(s, this)
                 s.isOn = !s.isOn
@@ -455,7 +455,7 @@ open class FormSwitchNativeViewHolder(inflater: LayoutInflater, resource: Int, p
     }
 }
 
-open class FormSwitchViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+open class FormSwitchCustomViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FormViewHolder(inflater, resource, parent) {
     private var switchView: ImageView? = null
 
@@ -466,7 +466,7 @@ open class FormSwitchViewHolder(inflater: LayoutInflater, resource: Int, parent:
     override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
 
-        if (s is FormItemSwitch) {
+        if (s is FormItemSwitchCustom) {
             itemView.setOnClickListener {
                 listener?.onItemClicked(s, this)
                 s.isOn = !s.isOn
@@ -480,7 +480,7 @@ open class FormSwitchViewHolder(inflater: LayoutInflater, resource: Int, parent:
     }
 
     fun setSwitchImage(checked: Boolean) {
-        (item as? FormItemSwitch)?.let { item ->
+        (item as? FormItemSwitchCustom)?.let { item ->
             if (checked) {
                 if (item.iconOn != null) {
                     switchView?.setImageDrawable(item.iconOn)
@@ -498,9 +498,55 @@ open class FormSwitchViewHolder(inflater: LayoutInflater, resource: Int, parent:
     }
 }
 
-open class FormRadioViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+open class FormRadioCustomViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FormViewHolder(inflater, resource, parent) {
     private var radioView: ImageView? = null
+
+    init {
+        radioView = itemView.findViewById(R.id.formElementRadio)
+    }
+
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
+        super.bind(s, listener)
+        itemView.setOnClickListener {
+            if (s is FormItemRadioCustom) {
+                listener?.onItemClicked(s, this)
+                if (s.isOn) {
+                    return@setOnClickListener
+                }
+                s.isOn = !s.isOn
+                listener?.onValueChanged(s)
+            }
+        }
+        if (s is FormItemRadioCustom) {
+            radioView?.layoutParams?.height = dpToPx(s.iconSize.height)
+            radioView?.layoutParams?.width = dpToPx(s.iconSize.width)
+            setRadioImage(s.isOn)
+        }
+    }
+
+    fun setRadioImage(checked: Boolean) {
+        (item as? FormItemRadioCustom)?.let { item ->
+            if (checked) {
+                if (item.iconOn != null) {
+                    radioView?.setImageDrawable(item.iconOn)
+                } else {
+                    radioView?.setImageResource(R.drawable.ic_form_radio_on)
+                }
+            } else {
+                if (item.iconOff != null) {
+                    radioView?.setImageDrawable(item.iconOff)
+                } else {
+                    radioView?.setImageResource(R.drawable.ic_form_radio_off)
+                }
+            }
+        }
+    }
+}
+
+open class FormRadioViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormViewHolder(inflater, resource, parent) {
+    private var radioView: RadioButton? = null
 
     init {
         radioView = itemView.findViewById(R.id.formElementRadio)
@@ -519,52 +565,6 @@ open class FormRadioViewHolder(inflater: LayoutInflater, resource: Int, parent: 
             }
         }
         if (s is FormItemRadio) {
-            radioView?.layoutParams?.height = dpToPx(s.iconSize.height)
-            radioView?.layoutParams?.width = dpToPx(s.iconSize.width)
-            setRadioImage(s.isOn)
-        }
-    }
-
-    fun setRadioImage(checked: Boolean) {
-        (item as? FormItemRadio)?.let { item ->
-            if (checked) {
-                if (item.iconOn != null) {
-                    radioView?.setImageDrawable(item.iconOn)
-                } else {
-                    radioView?.setImageResource(R.drawable.ic_form_radio_on)
-                }
-            } else {
-                if (item.iconOff != null) {
-                    radioView?.setImageDrawable(item.iconOff)
-                } else {
-                    radioView?.setImageResource(R.drawable.ic_form_radio_off)
-                }
-            }
-        }
-    }
-}
-
-open class FormRadioNativeViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
-    FormViewHolder(inflater, resource, parent) {
-    private var radioView: RadioButton? = null
-
-    init {
-        radioView = itemView.findViewById(R.id.formElementRadio)
-    }
-
-    override fun bind(s: FormItem, listener: FormItemCallback?) {
-        super.bind(s, listener)
-        itemView.setOnClickListener {
-            if (s is FormItemRadioNative) {
-                listener?.onItemClicked(s, this)
-                if (s.isOn) {
-                    return@setOnClickListener
-                }
-                s.isOn = !s.isOn
-                listener?.onValueChanged(s)
-            }
-        }
-        if (s is FormItemRadioNative) {
             radioView?.setOnCheckedChangeListener(null)
             radioView?.isChecked = s.isOn
             radioView?.setOnCheckedChangeListener { _, checked ->

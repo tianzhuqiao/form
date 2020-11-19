@@ -97,24 +97,24 @@ open class FormRecyclerAdapter(
                 FormActionViewHolder::class.java
             ),
             ViewHolderItem(
-                FormItemSwitch::class.java,
+                FormItemSwitchCustom::class.java,
                 R.layout.from_item_switch,
+                FormSwitchCustomViewHolder::class.java
+            ),
+            ViewHolderItem(
+                FormItemSwitch::class.java,
+                R.layout.from_item_switch_native,
                 FormSwitchViewHolder::class.java
             ),
             ViewHolderItem(
-                FormItemSwitchNative::class.java,
-                R.layout.from_item_switch_native,
-                FormSwitchNativeViewHolder::class.java
+                FormItemRadioCustom::class.java,
+                R.layout.form_item_radio,
+                FormRadioCustomViewHolder::class.java
             ),
             ViewHolderItem(
                 FormItemRadio::class.java,
-                R.layout.form_item_radio,
-                FormRadioViewHolder::class.java
-            ),
-            ViewHolderItem(
-                FormItemRadioNative::class.java,
                 R.layout.form_item_radio_native,
-                FormRadioNativeViewHolder::class.java
+                FormRadioViewHolder::class.java
             ),
             ViewHolderItem(
                 FormItemNav::class.java,
@@ -285,9 +285,6 @@ open class FormRecyclerAdapter(
         if (item is FormItemRadio) {
             group = item.group
             item.isOn = true
-        } else if (item is FormItemRadioNative) {
-            group = item.group
-            item.isOn = true
         }
         updateItem(item)
         if (group.isEmpty()) {
@@ -299,9 +296,6 @@ open class FormRecyclerAdapter(
                 if (child is FormItemRadio && item != child ) {
                     child.isOn = false
                     updateItem(child)
-                } else if (child is FormItemRadioNative) {
-                    child.isOn = (item == child)
-                    updateItem(child)
                 }
             }
         }
@@ -309,7 +303,7 @@ open class FormRecyclerAdapter(
 
     private var onFormItemCallback = object : FormItemCallback {
         override fun onValueChanged(item: FormItem) {
-            if (item is FormItemRadio || item is FormItemRadioNative) {
+            if (item is FormItemRadio) {
                 updateRadioGroup(item)
             }
             listener?.onValueChanged(item)
