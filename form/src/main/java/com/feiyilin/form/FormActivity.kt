@@ -28,7 +28,7 @@ abstract class FormActivity : AppCompatActivity() {
         initForm()
     }
 
-    abstract var onFormItemListener: FormItemCallback?
+    open var onFormItemListener: FormItemCallback? = null
 
     abstract fun initForm()
 

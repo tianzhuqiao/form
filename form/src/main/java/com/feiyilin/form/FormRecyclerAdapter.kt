@@ -10,7 +10,7 @@ interface FormItemCallback {
     fun onSetup(item: FormItem, viewHolder: RecyclerView.ViewHolder) {}
     fun onValueChanged(item: FormItem) {}
     fun onItemClicked(item: FormItem, viewHolder: RecyclerView.ViewHolder) {}
-    fun onTitleImageClicked(item: FormItem) {}
+    fun onTitleImageClicked(item: FormItem, viewHolder: RecyclerView.ViewHolder) {}
     fun onStartReorder(item: FormItem, viewHolder: RecyclerView.ViewHolder): Boolean {
         return false
     }
@@ -226,7 +226,8 @@ open class FormRecyclerAdapter(
 
         if (holder is FormViewHolder && s != null) {
             holder.bind(s, onFormItemCallback)
-            listener?.onSetup(s, holder)
+
+            onFormItemCallback.onSetup(s, holder)
         }
     }
 
@@ -306,12 +307,16 @@ open class FormRecyclerAdapter(
         }
     }
 
-    private var onFormItemCallback = object : FormItemCallback {
+    protected var onFormItemCallback = object : FormItemCallback {
         override fun onValueChanged(item: FormItem) {
             if (item is FormItemRadio) {
                 updateRadioGroup(item)
             }
-            listener?.onValueChanged(item)
+            if (item.onValueChanged != null) {
+                item.onValueChanged?.invoke()
+            } else {
+                listener?.onValueChanged(item)
+            }
         }
 
         override fun onItemClicked(item: FormItem, viewHolder: RecyclerView.ViewHolder) {
@@ -323,18 +328,31 @@ open class FormRecyclerAdapter(
                     recyclerView?.smoothScrollToPosition(index)
                 }
             }, 100)
-            listener?.onItemClicked(item, viewHolder)
+
+            if (item.onItemClicked != null) {
+                item.onItemClicked?.invoke(viewHolder)
+            } else {
+                listener?.onItemClicked(item, viewHolder)
+            }
         }
 
         override fun onSetup(item: FormItem, viewHolder: RecyclerView.ViewHolder) {
-            listener?.onSetup(item, viewHolder)
+            if (item.onSetup != null) {
+                item.onSetup?.invoke(viewHolder)
+            } else {
+                listener?.onSetup(item, viewHolder)
+            }
         }
 
         override fun onStartReorder(
             item: FormItem,
             viewHolder: RecyclerView.ViewHolder
         ): Boolean {
-            if (listener?.onStartReorder(item, viewHolder) == true)
+            if (item.onStartReorder != null) {
+                if (item.onStartReorder?.invoke(viewHolder) == true) {
+                    return true
+                }
+            } else if (listener?.onStartReorder(item, viewHolder) == true)
                 return true
             itemTouchHelper?.startDrag(viewHolder)
             return true
@@ -342,13 +360,16 @@ open class FormRecyclerAdapter(
 
         override fun onMoveItem(src: Int, dest: Int): Boolean {
             super.onMoveItem(src, dest)
-
-            if (listener?.onMoveItem(src, dest) == true) {
+            val itemSrc = itemBy(src)!!
+            if (itemSrc.onMoveItem != null) {
+                if (itemSrc.onMoveItem?.invoke(src, dest) == true) {
+                    return false
+                }
+            } else if (listener?.onMoveItem(src, dest) == true) {
                 // it has been processed, ignore the default operation
                 return false
             }
 
-            val itemSrc = itemBy(src)!!
             val itemDest = itemBy(dest)!!
             if (itemDest == itemSrc.section && dest == 0) {
                 // not allow to move before the first section
@@ -417,8 +438,13 @@ open class FormRecyclerAdapter(
             return false
         }
 
-        override fun onTitleImageClicked(item: FormItem) {
-            listener?.onTitleImageClicked(item)
+        override fun onTitleImageClicked(item: FormItem, viewHolder: RecyclerView.ViewHolder) {
+            super.onTitleImageClicked(item, viewHolder)
+            if (item.onTitleImageClicked != null) {
+                item.onTitleImageClicked?.invoke(viewHolder)
+            } else {
+                listener?.onTitleImageClicked(item, viewHolder)
+            }
         }
 
         override fun onSwipedAction(
@@ -427,6 +453,9 @@ open class FormRecyclerAdapter(
             viewHolder: RecyclerView.ViewHolder
         ): Boolean {
             super.onSwipedAction(item, action, viewHolder)
+            if (item.onSwipedAction != null) {
+                return item.onSwipedAction?.invoke(action, viewHolder) ?: false
+            }
             return listener?.onSwipedAction(item, action, viewHolder) ?: false
         }
 

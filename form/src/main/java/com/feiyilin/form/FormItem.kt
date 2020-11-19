@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import android.util.Size
 import android.view.Gravity
 import android.view.inputmethod.EditorInfo
+import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 
 open class FormSwipeAction {
@@ -84,6 +85,15 @@ open class FormItem {
     var leadingSwipe = listOf<FormSwipeAction>()
     var trailingSwipe = listOf<FormSwipeAction>()
     var section: FormItemSection? = null
+
+    // callback
+    var onSetup: ((viewHolder: RecyclerView.ViewHolder) -> Unit)? = null
+    var onValueChanged: (() -> Unit)? = null
+    var onItemClicked: ((viewHolder: RecyclerView.ViewHolder) -> Unit)? = null
+    var onTitleImageClicked: ((viewHolder: RecyclerView.ViewHolder) -> Unit)? = null
+    var onStartReorder: ((viewHolder: RecyclerView.ViewHolder) -> Boolean)? = null
+    var onMoveItem: ((src: Int, dest: Int) -> Boolean)? = null
+    var onSwipedAction: ((action: FormSwipeAction, viewHolder: RecyclerView.ViewHolder) -> Boolean)? = null
 }
 
 fun <T : FormItem> T.title(title: String) = apply {
@@ -152,6 +162,70 @@ fun <T : FormItem> T.leadingSwipe(actions: List<FormSwipeAction>) = apply {
 
 fun <T : FormItem> T.trailingSwipe(actions: List<FormSwipeAction>) = apply {
     this.trailingSwipe = actions
+}
+
+fun <T : FormItem> T.onSetup(callback: ((item: T, viewHolder: RecyclerView.ViewHolder) -> Unit)?) = apply {
+    if (callback == null) {
+        this.onSetup = null
+    } else {
+        this.onSetup = { viewHolder ->
+            callback.invoke(this, viewHolder)
+        }
+    }
+}
+
+fun <T : FormItem> T.onValueChanged(callback: ((item: T) -> Unit)?) = apply {
+    if( callback == null) {
+        this.onValueChanged = null
+    } else {
+        this.onValueChanged = {
+            callback.invoke(this)
+        }
+    }
+}
+
+fun <T : FormItem> T.onItemClicked(callback: ((item: T, viewHolder: RecyclerView.ViewHolder) -> Unit)?) = apply {
+    if (callback == null) {
+        this.onItemClicked = null
+    } else {
+        this.onItemClicked = { viewHolder ->
+            callback.invoke(this, viewHolder)
+        }
+    }
+}
+
+fun <T : FormItem> T.onTitleImageClicked(callback: ((item: T, viewHolder: RecyclerView.ViewHolder) -> Unit)?) = apply {
+    if (callback == null) {
+        this.onTitleImageClicked = null
+    } else {
+        this.onTitleImageClicked = { viewHolder ->
+            callback.invoke(this, viewHolder)
+        }
+    }
+}
+
+fun <T : FormItem> T.onStartReorder(callback: ((item: T, viewHolder: RecyclerView.ViewHolder) -> Boolean)?) = apply {
+    if (callback == null) {
+        this.onStartReorder = null
+    } else {
+        this.onStartReorder = { viewHolder ->
+            callback.invoke(this, viewHolder)
+        }
+    }
+}
+
+fun <T : FormItem> T.onMoveItem(callback: ((src: Int, dest: Int) -> Boolean)?) = apply {
+    this.onMoveItem = callback
+}
+
+fun <T : FormItem> T.onSwipedAction(callback: ((item: T, action: FormSwipeAction, viewHolder: RecyclerView.ViewHolder) -> Boolean)?) = apply {
+    if (callback == null) {
+        this.onSwipedAction = null
+    } else {
+        this.onSwipedAction = { action, viewHolder ->
+            callback.invoke(this, action, viewHolder)
+        }
+    }
 }
 
 open class FormItemLabel : FormItem() {

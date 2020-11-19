@@ -162,7 +162,7 @@ open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
                 titleImageWrap?.visibility = View.VISIBLE
                 titleImageView?.visibility = View.VISIBLE
                 titleImageView?.setOnClickListener { _ ->
-                    listener?.onTitleImageClicked(it)
+                    listener?.onTitleImageClicked(it, this)
                 }
             } else {
                 titleImageView?.visibility = View.GONE

@@ -55,13 +55,22 @@ class MainActivity : FormActivity() {
             +FormItemSection().title("Navigation item").apply {
                 enableCollapse(true)
                 //FormItemLabel().title("Label").tag("label"),
-                +FormItemNav().title("Nav item").tag("nav_item")
+                +FormItemNav().title("Nav item").tag("nav_item").onItemClicked {item, _ ->
+                    Toast.makeText(this@MainActivity, "Click on ${item.title}", Toast.LENGTH_SHORT).show()
+                }
                 +FormItemNav().title("Nav item with subtitle").subTitle("www.abc.com")
                     .tag("nav_item_subtitle")
                 +FormItemNav().title("Nav item with badge").tag("nav_item_badge").badge("")
                 +FormItemNav().title("Nav item with badge and icon").tag("nav_item_badge_icon")
                     .badge("")
                     .iconTitle(drawable(R.drawable.ic_form_info))
+                    .onTitleImageClicked { item, _ ->
+                        Toast.makeText(this@MainActivity, "Click on ${item.title} title image", Toast.LENGTH_SHORT).show()
+                    }
+                    .onItemClicked { item, _ ->
+                        Toast.makeText(this@MainActivity, "Click on ${item.title}", Toast.LENGTH_SHORT).show()
+                    }
+
                 +FormItemNav().title("Nav item with number badge").tag("nav_item_badge_num")
                     .badge("99")
                     .iconSize(44, 44)
@@ -109,6 +118,13 @@ class MainActivity : FormActivity() {
             +FormItemSection().title("SeekBar").apply {
                 +FormItemSeekBar().title("seekbar").value(19)
                 +FormItemSeekBar().title("seekbar red").tag("seekbar_red").maxValue(50).minValue(10).value(29)
+                +FormItemSeekBar().title("seekbar orange").tag("seekbar_orange").maxValue(50).minValue(10).value(39)
+                    .onSetup { _, viewHolder ->
+                        if (viewHolder is FormSeekBarViewHolder) {
+                            viewHolder.seekBar?.progressDrawable?.colorFilter = PorterDuffColorFilter(Color.parseColor("#ff9800"), PorterDuff.Mode.SRC_IN)
+                            viewHolder.seekBar?.thumb?.colorFilter = PorterDuffColorFilter(Color.parseColor("#ff9800"), PorterDuff.Mode.SRC_IN)
+                        }
+                    }
             }
 
             +FormItemSection().title("Swipe Action").tag("sec_swipe").apply {
@@ -135,7 +151,14 @@ class MainActivity : FormActivity() {
                             color(android.R.color.holo_green_light)
                         )
                     )
-                )
+                ).onSwipedAction { item, action, _ ->
+                    Toast.makeText(this@MainActivity, "Inline callback ${item.title}: ${action.title}", Toast.LENGTH_SHORT)
+                        .show()
+                    if (action.title == "Delete") {
+                        return@onSwipedAction adapter?.remove(item) ?: false
+                    }
+                    return@onSwipedAction false
+                }
                 +FormItemNav().title("Swipe left: multiple actions with icon").trailingSwipe(
                     listOf(
                         FormSwipeAction().title("Delete").backgroundColor(
@@ -192,6 +215,9 @@ class MainActivity : FormActivity() {
                 +FormItemSelect().tag("select").title("Select").value("Monday")
                     .selectorTitle("Select day of week")
                     .options(arrayOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"))
+                    .onValueChanged {item ->
+                        Toast.makeText(this@MainActivity, "${item.title} value changed to ${item.value}", Toast.LENGTH_SHORT).show()
+                    }
                 +FormItemChoice().tag("choice").title("Choice").value("Tuesday")
                     .selectorTitle("Select day of week")
                     .options(arrayOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"))
