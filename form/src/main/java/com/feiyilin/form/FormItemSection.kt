@@ -207,7 +207,7 @@ open class FormItemSection(private val visible: Boolean=true): FormItem() {
                 _itemsVisible.add(count, item)
                 if (update) {
                     adapter.activity?.runOnUiThread {
-                        val start = adapter.indexOf(this) ?: -1
+                        val start = adapter.indexOf(this)
                         if (start != -1) {
                             adapter.notifyItemInserted(start + itemsVisible.indexOf(item))
                         }
