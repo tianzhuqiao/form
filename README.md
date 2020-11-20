@@ -59,7 +59,15 @@ Or check [FormActivity](./form/src/main/java/com/feiyilin/form/FormActivity.kt) 
 **Ver 0.3** supports section. It is a breaking change. Check branch **0.2.x** if prefer the old way.   
 
 # Using the callbacks
-**FormItemCallback** can be used to change the appearance and behavior of an item
+Callback can be used to change the appearance and behavior of an item. It can be set
+1. in a signle item, for example
+```kotlin
++FormItemNav().title("Nav item").tag("nav_item")
+              .onItemClicked {item, viewHolder ->
+                  Toast.makeText(this@MainActivity, "Click on ${item.title}", Toast.LENGTH_SHORT).show()
+              }
+```
+2. Or in **FormItemCallback** (for multiple items)
 
 * **onSetup**
 
@@ -89,7 +97,7 @@ Or check [FormActivity](./form/src/main/java/com/feiyilin/form/FormActivity.kt) 
 
     Called when a swipe action is triggered.
 
-* **getMinItemHeight**
+* **getMinItemHeight** (**FormItemCallback** only)
 
     Called when configure/bind an item. Can be used to update the minimum height for all (or a group of) items.
 
@@ -176,6 +184,7 @@ adapter.sectionBy("sec_date")?.let {
                      .tag("radio0_item0").isOn(true)
      +FormItemRadio().group("radio0").title("item 1")
                      .tag("radio0_item1")
+     ...
  }
 ```
 <img src="./images/radio.gif" width="36%">
@@ -214,6 +223,7 @@ Once an action is triggered, **onSwipedAction** callback will be called
 |Text area|<img src="./images/item_textarea.png" width="36%">|
 |Switch|<img src="./images/item_switch.png" width="36%">|
 |Radio|<img src="./images/item_radio.png" width="36%">|
+|SeekBar|<img src="./images/seekbar.png" width="36%">|
 |Nav|<img src="./images/item_nav.png" width="36%">|
 |Action|<img src="./images/item_action.png" width="36%">|
 |Date|<img src="./images/item_date.png" width="36%">|
@@ -313,6 +323,3 @@ class MainActivity : FormActivity() {
     }
 }
 ```
-
-
-
