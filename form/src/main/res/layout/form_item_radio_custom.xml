@@ -14,12 +14,12 @@
             android:id="@+id/formElementMainLayout"
             style="@style/formMainLayout">
 
-        <RadioButton
-            android:id="@+id/formElementRadio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="2dp"
-            android:text="" />
+        <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginEnd="5dp"
+                app:srcCompat="@drawable/ic_form_radio_off"
+                android:id="@+id/formElementRadio"/>
         <include layout="@layout/form_icon" />
         <include layout="@layout/form_title"/>
         <include layout="@layout/form_reorder"/>

@@ -98,22 +98,22 @@ open class FormRecyclerAdapter(
             ),
             ViewHolderItem(
                 FormItemSwitchCustom::class.java,
-                R.layout.from_item_switch,
+                R.layout.from_item_switch_custom,
                 FormSwitchCustomViewHolder::class.java
             ),
             ViewHolderItem(
                 FormItemSwitch::class.java,
-                R.layout.from_item_switch_native,
+                R.layout.from_item_switch,
                 FormSwitchViewHolder::class.java
             ),
             ViewHolderItem(
                 FormItemRadioCustom::class.java,
-                R.layout.form_item_radio,
+                R.layout.form_item_radio_custom,
                 FormRadioCustomViewHolder::class.java
             ),
             ViewHolderItem(
                 FormItemRadio::class.java,
-                R.layout.form_item_radio_native,
+                R.layout.form_item_radio,
                 FormRadioViewHolder::class.java
             ),
             ViewHolderItem(
