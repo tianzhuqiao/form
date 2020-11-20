@@ -69,6 +69,7 @@ Callback can be used to change the appearance and behavior of an item. It can be
 ```
 2. Or in **FormItemCallback** (for multiple items)
 
+Supported callbacks
 * **onSetup**
 
     Called when the item is configured.
@@ -221,6 +222,7 @@ Once an action is triggered, **onSwipedAction** callback will be called
 |------|------|
 |Text|<img src="./images/item_text.png" width="36%">|
 |Text area|<img src="./images/item_textarea.png" width="36%">|
+|Label|<img src="./images/label.png" width="36%">|
 |Switch|<img src="./images/item_switch.png" width="36%">|
 |Radio|<img src="./images/item_radio.png" width="36%">|
 |SeekBar|<img src="./images/seekbar.png" width="36%">|
