@@ -118,9 +118,9 @@ class MainActivity : FormActivity() {
                     .timeOnly(true)
             }
             +FormItemSection().title("SeekBar").apply {
-                +FormItemSeekBar().title("seekbar").value(19)
-                +FormItemSeekBar().title("seekbar red").tag("seekbar_red").maxValue(50).minValue(10).value(29)
-                +FormItemSeekBar().title("seekbar orange").tag("seekbar_orange").maxValue(50).minValue(10).value(39)
+                +FormItemSeekBar().title("SeekBar").value(19)
+                +FormItemSeekBar().title("SeekBar red").tag("seekbar_red").maxValue(50).minValue(10).value(29)
+                +FormItemSeekBar().title("SeekBar orange").tag("seekbar_orange").maxValue(50).minValue(10).value(39)
                     .onSetup { _, viewHolder ->
                         if (viewHolder is FormSeekBarViewHolder) {
                             viewHolder.seekBar?.progressDrawable?.colorFilter = PorterDuffColorFilter(Color.parseColor("#ff9800"), PorterDuff.Mode.SRC_IN)
