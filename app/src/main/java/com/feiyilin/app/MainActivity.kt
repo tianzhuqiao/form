@@ -44,6 +44,8 @@ class MainActivity : FormActivity() {
                     .inputType(EditorInfo.TYPE_CLASS_NUMBER)
                 +FormItemText().title("Phone").tag("phone")
                     .inputType(EditorInfo.TYPE_CLASS_PHONE)
+                +FormItemLabel().title("Label").tag("label")
+                    .subTitle("subtitle of label")
             }
             +FormItemSection().title("Multi-line text").apply {
                 enableCollapse(true)
