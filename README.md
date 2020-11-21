@@ -18,7 +18,7 @@ Add **form** to dependencies in your app's build.gradle:
 ```gradle
 dependencies {
     ...
-    implementation 'com.feiyilin:form:0.3.1'
+    implementation 'com.feiyilin:form:0.3.2'
 }
 ```
 ## 2. Update Activity
@@ -56,7 +56,7 @@ class MainActivity : FormActivity() {
 ```
 Or check [FormActivity](./form/src/main/java/com/feiyilin/form/FormActivity.kt) if you want to use **FormRecyclerAdapter** directly in the activity.
 
-**Ver 0.3** supports section. It is a breaking change. Check branch **0.2.x** if prefer the old way.   
+**Ver 0.3** supports section. It is a breaking change. Check branch **0.2.x** if prefer the old way.
 
 # Using the callbacks
 Callback can be used to change the appearance and behavior of an item. It can be set
@@ -113,7 +113,7 @@ adapter?.apply {
     }
 }
 ```
-Or call **add** 
+Or call **add**
 ```kotlin
 val sec = FormItemSection().title("New section").apply {
             +FormItemNav().title("Item 0")
@@ -176,7 +176,7 @@ adapter.sectionBy("sec_date")?.let {
 <img src="./images/hide.gif" width="36%">
 
 # Radio group
-**FormItemRadio**s will be considered to be in the same group (i.e., selecting one will de-select others), if 
+**FormItemRadio**s will be considered to be in the same group (i.e., selecting one will de-select others), if
 1. they have the same group name, and
 2. in the same section.
 ```kotlin
