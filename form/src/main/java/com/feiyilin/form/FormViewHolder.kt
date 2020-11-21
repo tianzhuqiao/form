@@ -11,7 +11,6 @@ import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.*
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
@@ -242,6 +241,13 @@ open class FormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, paren
                     }, 10)
                 }
             }
+        }
+        valueView?.setOnEditorActionListener { v, actionId, _ ->
+            item?.let {
+                listener?.onEditAction(it, actionId, this)
+                return@setOnEditorActionListener true
+            }
+            false
         }
     }
 

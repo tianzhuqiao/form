@@ -3,6 +3,7 @@ package com.feiyilin.form
 import android.app.Activity
 import android.os.Handler
 import android.view.*
+import android.view.inputmethod.EditorInfo
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
@@ -27,6 +28,9 @@ interface FormItemCallback {
         return false
     }
 
+    fun onEditAction(item: FormItem, actionId: Int, viewHolder: RecyclerView.ViewHolder): Boolean {
+        return false
+    }
     fun getMinItemHeight(item: FormItem): Int {
         return 0
     }
@@ -459,6 +463,22 @@ open class FormRecyclerAdapter(
             return listener?.onSwipedAction(item, action, viewHolder) ?: false
         }
 
+        override fun onEditAction(item: FormItem, actionId: Int, viewHolder: RecyclerView.ViewHolder): Boolean {
+            super.onEditAction(item, actionId, viewHolder)
+            if (listener?.onEditAction(item, actionId, viewHolder) == true) {
+                return true
+            }
+            when (actionId) {
+                EditorInfo.IME_ACTION_NEXT -> {
+                    goToNextEdit(item)
+                }
+                EditorInfo.IME_ACTION_PREVIOUS -> {
+                    goToNextEdit(item, false)
+                }
+            }
+            return true
+        }
+
         override fun getMinItemHeight(item: FormItem): Int {
             return listener?.getMinItemHeight(item) ?: 0
         }
@@ -735,6 +755,26 @@ open class FormRecyclerAdapter(
         if (index != -1) {
             activity?.runOnUiThread {
                 recyclerView?.smoothScrollToPosition(index)
+            }
+        }
+    }
+
+    /**
+     * go to the next text item and show keyboard
+     * @param item the item to start
+     * @param next if true, go to the next text item; otherwise, go the the previous item
+     */
+    fun goToNextEdit(item: FormItem, next: Boolean = true) {
+        var index = indexOf(item)
+        while (index != -1) {
+            index += if (next) 1 else -1
+            // TODO: itemBy() is O(n), could be slow
+            val nextItem = itemBy(index) ?: break
+            if (nextItem is FormItemText && !nextItem.readOnly) {
+                ensureVisible(nextItem)
+                nextItem.focused(true)
+                updateItem(nextItem)
+                break
             }
         }
     }

@@ -44,7 +44,7 @@ class MainActivity : FormActivity() {
                 +FormItemText().title("Number").tag("number")
                     .inputType(EditorInfo.TYPE_CLASS_NUMBER)
                 +FormItemText().title("Phone").tag("phone")
-                    .inputType(EditorInfo.TYPE_CLASS_PHONE)
+                    .inputType(EditorInfo.TYPE_CLASS_PHONE).imeOptions(EditorInfo.IME_ACTION_PREVIOUS)
                 +FormItemLabel().title("Label").tag("label")
                     .subTitle("subtitle of label")
             }
