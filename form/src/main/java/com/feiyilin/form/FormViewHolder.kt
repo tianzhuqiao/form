@@ -15,6 +15,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -112,7 +113,7 @@ open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
         }
 
         updateIcon()
-        reorderView?.visibility = if (s.dragable) View.VISIBLE else View.GONE
+        reorderView?.visibility = if (s.draggable) View.VISIBLE else View.GONE
         reorderView?.setOnTouchListener { _, event ->
             if (event.actionMasked == MotionEvent.ACTION_DOWN)
                 listener?.onStartReorder(s, this)
@@ -219,6 +220,14 @@ open class FormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, paren
             }
 
             override fun afterTextChanged(s: Editable?) {
+                (item as? FormItemText)?.let {
+                    if (it.clearIcon) {
+                        val clearIcon = if (s?.isNotEmpty() == true) R.drawable.ic_form_clear else 0
+                        valueView?.setCompoundDrawablesWithIntrinsicBounds(0, 0, clearIcon, 0)
+                    } else {
+                        valueView?.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+                    }
+                }
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -260,7 +269,16 @@ open class FormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, paren
             }
             valueView?.setOnTouchListener(object : View.OnTouchListener {
                 override fun onTouch(v: View, event: MotionEvent): Boolean {
-                    return s.readOnly // the listener has consumed the event
+                    if (s.readOnly) {
+                        return true
+                    }
+                    if (s.clearIcon && event.action == MotionEvent.ACTION_UP) {
+                        if (event.rawX >= ((valueView?.right ?: 0) - (valueView?.compoundPaddingRight ?: 0))) {
+                            valueView?.setText("")
+                            return true
+                        }
+                    }
+                    return false
                 }
             })
 
@@ -305,15 +323,8 @@ open class FormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, paren
                 )
             }
 
-            if (s.imeOptions != 0) {
-                valueView?.imeOptions = s.imeOptions
-            } else {
-                valueView?.imeOptions =
-                    EditorInfo.IME_ACTION_NEXT or EditorInfo.IME_FLAG_NAVIGATE_NEXT or EditorInfo.IME_FLAG_NAVIGATE_PREVIOUS
-            }
-            if (s.inputType != 0) {
-                valueView?.inputType = s.inputType
-            }
+            valueView?.imeOptions = s.imeOptions
+            valueView?.inputType = s.inputType
 
 
             if (s.focused) {
@@ -428,7 +439,7 @@ open class FormActionViewHolder(inflater: LayoutInflater, resource: Int, parent:
 
 open class FormSwitchViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FormViewHolder(inflater, resource, parent) {
-    protected var switchView: Switch? = null
+    protected var switchView: SwitchCompat? = null
 
     init {
         switchView = itemView.findViewById(R.id.formElementSwitch)

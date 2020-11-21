@@ -75,7 +75,7 @@ open class FormItem {
     var subTitleColor: Int? = null
     var iconTitle: Drawable? = null
     var iconSize: Size = Size(24, 24)
-    var dragable: Boolean = false
+    var draggable: Boolean = false
     var tag: String = ""
     var required: Boolean = false
     var hidden: Boolean = false
@@ -132,8 +132,8 @@ fun <T : FormItem> T.tag(tag: String) = apply {
     this.tag = tag
 }
 
-fun <T : FormItem> T.dragable(dragable: Boolean) = apply {
-    this.dragable = dragable
+fun <T : FormItem> T.draggable(draggable: Boolean) = apply {
+    this.draggable = draggable
 }
 
 fun <T : FormItem> T.required(required: Boolean=true) = apply {
@@ -238,9 +238,10 @@ open class FormItemText : FormItem() {
     var hintColor: Int? = null
     var gravity: Int = Gravity.END
     var readOnly: Boolean = false
-    var imeOptions: Int = 0
-    var inputType: Int = 0
+    var imeOptions: Int = EditorInfo.IME_ACTION_NEXT or EditorInfo.IME_FLAG_NAVIGATE_NEXT or EditorInfo.IME_FLAG_NAVIGATE_PREVIOUS
+    var inputType: Int = EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT or EditorInfo.TYPE_CLASS_TEXT
     var focused: Boolean = false
+    var clearIcon: Boolean = false
 }
 
 open class FormItemTextFloatingHint : FormItemText() {
@@ -280,6 +281,10 @@ fun <T : FormItemText> T.inputType(inputType: Int) = apply {
 
 fun <T : FormItemText> T.focused(focused: Boolean) = apply {
     this.focused = focused
+}
+
+fun <T : FormItemText> T.clearIcon(clearIcon: Boolean) = apply {
+    this.clearIcon = clearIcon
 }
 
 open class FormItemTextArea : FormItemText() {

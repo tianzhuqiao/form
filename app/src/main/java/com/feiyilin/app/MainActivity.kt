@@ -27,11 +27,12 @@ class MainActivity : FormActivity() {
             +FormItemSection().title("Text").tag("sec_text").apply {
                 enableCollapse(true)
                 +FormItemText().title("Text").tag("text").required(true)
+                +FormItemText().title("Text").subTitle("with clear text icon").tag("text").clearIcon(true)
                 +FormItemText().title("Text").subTitle("here is subtitle").tag("text_subtitle")
-                +FormItemText().title("Text").subTitle("dragable").dragable(true)
-                    .tag("text_dragable")
-                +FormItemText().title("Text").subTitle("dragable in this section").dragable(true)
-                    .tag("text_dragable_in_section")
+                +FormItemText().title("Text").subTitle("draggable").draggable(true)
+                    .tag("text_draggable")
+                +FormItemText().title("Text").subTitle("draggable in this section").draggable(true)
+                    .tag("text_draggable_in_section")
                 +FormItemText().title("With icon").iconTitle(drawable(R.drawable.ic_form_info))
                     .tag("text_icon")
                 +FormItemText().title("Ready only").tag("read_only").value("www.feiyilin.com")
@@ -351,7 +352,7 @@ class MainActivity : FormActivity() {
 
         override fun onMoveItem(src: Int, dest: Int): Boolean {
             val srcItem = adapter?.itemBy(src)
-            if (srcItem?.tag == "text_dragable_in_section") {
+            if (srcItem?.tag == "text_draggable_in_section") {
                 val destItem = adapter?.itemBy(dest)
                 if (srcItem.section != destItem?.section) {
                     // not allow to move out of section

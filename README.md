@@ -18,7 +18,7 @@ Add **form** to dependencies in your app's build.gradle:
 ```gradle
 dependencies {
     ...
-    implementation 'com.feiyilin:form:0.3.0'
+    implementation 'com.feiyilin:form:0.3.1'
 }
 ```
 ## 2. Update Activity
@@ -33,8 +33,8 @@ class MainActivity : FormActivity() {
                 enableCollapse(true)
                 +FormItemText().title("Text").tag("text").required(true)
                 +FormItemText().title("Text").subTitle("here is subtitle").tag("text_subtitle")
-                +FormItemText().title("Text").subTitle("dragable").dragable(true)
-                    .tag("text_dragable")
+                +FormItemText().title("Text").subTitle("draggable").draggable(true)
+                    .tag("text_draggable")
                 ...
             }
         }
