@@ -706,35 +706,25 @@ open class FormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: V
     var datePickerView: DatePicker? = null
     var timeView: TextView? = null
     var timePickerView: TimePicker? = null
+    var valueColor: Int = ContextCompat.getColor(itemView.context, R.color.colorFormText)
 
     init {
         dateView = itemView.findViewById(R.id.formElementDate)
         datePickerView = itemView.findViewById(R.id.formElementDatePicker)
         timeView = itemView.findViewById(R.id.formElementTime)
         timePickerView = itemView.findViewById(R.id.formElementTimePicker)
+
+        dateView?.setOnClickListener {
+            showDateTimePicker(true)
+        }
+        timeView?.setOnClickListener {
+            showDateTimePicker(false)
+        }
     }
 
     override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
         if (s is FormItemDate) {
-            dateView?.setOnClickListener {
-                if (datePickerView?.visibility == View.GONE)
-                    datePickerView?.visibility = View.VISIBLE
-                else
-                    datePickerView?.visibility = View.GONE
-                timePickerView?.visibility = View.GONE
-                listener?.onItemClicked(s, this)
-            }
-            timeView?.setOnClickListener {
-                datePickerView?.visibility = View.GONE
-                if (timePickerView?.visibility == View.GONE) {
-                    timePickerView?.visibility = View.VISIBLE
-                } else {
-                    timePickerView?.visibility = View.GONE
-                }
-                listener?.onItemClicked(s, this)
-            }
-
 
             dateView?.text = SimpleDateFormat(s.dateFormat).format(s.date)
             timeView?.text = SimpleDateFormat(s.timeFormat).format(s.date)
@@ -742,23 +732,13 @@ open class FormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: V
             s.dateColor?.let {
                 dateView?.setTextColor(it)
             } ?: run {
-                dateView?.setTextColor(
-                    ContextCompat.getColor(
-                        itemView.context,
-                        R.color.colorFormText
-                    )
-                )
+                dateView?.setTextColor(valueColor)
             }
 
             s.timeColor?.let {
                 timeView?.setTextColor(it)
             } ?: run {
-                timeView?.setTextColor(
-                    ContextCompat.getColor(
-                        itemView.context,
-                        R.color.colorFormText
-                    )
-                )
+                timeView?.setTextColor(valueColor)
             }
 
             if (s.dateOnly) {
@@ -789,6 +769,24 @@ open class FormDateViewHolder(inflater: LayoutInflater, resource: Int, parent: V
                     listener?.onValueChanged(s)
                 }
             }
+        }
+    }
+
+    fun showDateTimePicker(showDate: Boolean) {
+        item?.let {
+            var showView: View? = datePickerView
+            var hideView: View? = timePickerView
+            if (!showDate) {
+                showView = timePickerView
+                hideView = datePickerView
+            }
+            if (showView?.visibility == View.GONE) {
+                showView.visibility = View.VISIBLE
+            } else {
+                showView?.visibility = View.GONE
+            }
+            hideView?.visibility = View.GONE
+            listener?.onItemClicked(it, this)
         }
     }
 }

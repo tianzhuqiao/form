@@ -25,18 +25,18 @@ class MainActivity : FormActivity() {
 
         adapter?.apply {
             +FormItemSection().title("Text").tag("sec_text").apply {
-                enableCollapse(true)
-                +FormItemText().title("Text").tag("text").required(true)
-                +FormItemText().title("Text").subTitle("with clear text icon").tag("text").clearIcon(true)
+                enableCollapse()
+                +FormItemText().title("Text").tag("text").required()
+                +FormItemText().title("Text").subTitle("with clear text icon").tag("text").clearIcon()
                 +FormItemText().title("Text").subTitle("here is subtitle").tag("text_subtitle")
-                +FormItemText().title("Text").subTitle("draggable").draggable(true)
+                +FormItemText().title("Text").subTitle("draggable").draggable()
                     .tag("text_draggable")
-                +FormItemText().title("Text").subTitle("draggable in this section").draggable(true)
+                +FormItemText().title("Text").subTitle("draggable in this section").draggable()
                     .tag("text_draggable_in_section")
                 +FormItemText().title("With icon").iconTitle(drawable(R.drawable.ic_form_info))
                     .tag("text_icon")
                 +FormItemText().title("Ready only").tag("read_only").value("www.feiyilin.com")
-                    .readOnly(true)
+                    .readOnly()
                 +FormItemTextFloatingHint().hint("Text with floating hint").tag("text")
                     .gravity(Gravity.START)
                 +FormItemText().title("Email").tag("email")
@@ -50,14 +50,14 @@ class MainActivity : FormActivity() {
                     .subTitle("subtitle of label")
             }
             +FormItemSection().title("Multi-line text").apply {
-                enableCollapse(true)
+                enableCollapse()
                 +FormItemTextArea().hint("Multi-line text here ...").tag("notes")
                 +FormItemTextAreaFloatingHint().hint("Multi-line text with floating hint here ...")
                     .tag("notes")
             }
 
             +FormItemSection().title("Navigation item").apply {
-                enableCollapse(true)
+                enableCollapse()
                 //FormItemLabel().title("Label").tag("label"),
                 +FormItemNav().title("Nav item").tag("nav_item").onItemClicked {item, _ ->
                     Toast.makeText(this@MainActivity, "Click on ${item.title}", Toast.LENGTH_SHORT).show()
@@ -81,7 +81,7 @@ class MainActivity : FormActivity() {
                     .iconTitle(drawable(R.drawable.ic_form_info))
             }
             +FormItemSection().title("Radio").apply {
-                +FormItemRadio().isOn(true).group("radio")
+                +FormItemRadio().isOn().group("radio")
                     .title("item 0")
                     .tag("radio1_item0")
                 +FormItemRadio().group("radio").title("item 1")
@@ -90,36 +90,36 @@ class MainActivity : FormActivity() {
                     .tag("radio1_item2")
             }
             +FormItemSection().title("Radio custom").apply {
-                +FormItemRadioCustom().isOn(true).group("radio")
+                +FormItemRadioCustom().isOn().group("radio")
                     .title("item 0")
-                    .tag("radio0_item0").isOn(true)
+                    .tag("radio0_item0").isOn()
                 +FormItemRadioCustom().group("radio").title("item 1")
-                    .tag("radio0_item1").isOn(true)
+                    .tag("radio0_item1").isOn()
                 +FormItemRadioCustom().group("radio").title("item 2")
-                    .tag("radio0_item2").isOn(true)
+                    .tag("radio0_item2").isOn()
             }
             +FormItemSection().title("Checkbox").apply {
-                +FormItemCheck().isOn(true).title("Check")
+                +FormItemCheck().isOn().title("Check")
                 +FormItemCheckCustom().title("Check custom")
             }
             +FormItemSection().title("Switch").apply {
-                +FormItemSwitch().isOn(true).title("Switch").tag("switch_native")
-                +FormItemSwitchCustom().isOn(true).title("Switch custom").tag("switch")
-                +FormItemSwitch().isOn(true).title("Show action item")
+                +FormItemSwitch().isOn().title("Switch").tag("switch_native")
+                +FormItemSwitchCustom().isOn().title("Switch custom").tag("switch")
+                +FormItemSwitch().isOn().title("Show action item")
                     .tag("switch_show_action")
                 +FormItemAction().title("Action").tag("action").subTitle("description")
                     .iconTitle(drawable(R.drawable.ic_form_info))
 
-                +FormItemSwitch().isOn(true).title("Show date/time section")
+                +FormItemSwitch().isOn().title("Show date/time section")
                     .tag("switch_show_date")
             }
 
             +FormItemSection().title("Date / Time").tag("sec_date").apply {
                 +FormItemDate().tag("date").title("Date").date(cal.time)
                 +FormItemDate().tag("date_only").title("Date only").date(cal.time)
-                    .dateOnly(true)
+                    .dateOnly()
                 +FormItemDate().tag("time_only").title("Time only").date(cal.time)
-                    .timeOnly(true)
+                    .timeOnly()
             }
             +FormItemSection().title("SeekBar").apply {
                 +FormItemSeekBar().title("SeekBar").value(19)

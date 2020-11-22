@@ -23,7 +23,7 @@
             android:clickable="true"
             android:foreground="?android:attr/selectableItemBackground"
             android:gravity="center"
-            android:text="6/19/2020"
+            android:text=""
             android:textColor="@color/colorFormText"
             android:textSize="18sp" />
 
@@ -36,7 +36,7 @@
             android:clickable="true"
             android:foreground="?android:attr/selectableItemBackground"
             android:gravity="center"
-            android:text="10:31 AM"
+            android:text=""
             android:textColor="@color/colorFormText"
             android:textSize="18sp" />
 

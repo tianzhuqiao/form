@@ -295,6 +295,6 @@ fun <T : FormItemSection> T.collapsed(collapsed: Boolean) = apply {
     this.collapsed = collapsed
 }
 
-fun <T : FormItemSection> T.enableCollapse(enable: Boolean) = apply {
+fun <T : FormItemSection> T.enableCollapse(enable: Boolean = true) = apply {
     this.enableCollapse = enable
 }

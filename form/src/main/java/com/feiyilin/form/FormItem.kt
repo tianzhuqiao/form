@@ -133,7 +133,7 @@ fun <T : FormItem> T.tag(tag: String) = apply {
     this.tag = tag
 }
 
-fun <T : FormItem> T.draggable(draggable: Boolean) = apply {
+fun <T : FormItem> T.draggable(draggable: Boolean = true) = apply {
     this.draggable = draggable
 }
 
@@ -266,7 +266,7 @@ fun <T : FormItemText> T.gravity(gravity: Int) = apply {
     this.gravity = gravity
 }
 
-fun <T : FormItemText> T.readOnly(readOnly: Boolean) = apply {
+fun <T : FormItemText> T.readOnly(readOnly: Boolean = true) = apply {
     this.readOnly = readOnly
 }
 
@@ -278,11 +278,11 @@ fun <T : FormItemText> T.inputType(inputType: Int) = apply {
     this.inputType = inputType
 }
 
-fun <T : FormItemText> T.focused(focused: Boolean) = apply {
+fun <T : FormItemText> T.focused(focused: Boolean = true) = apply {
     this.focused = focused
 }
 
-fun <T : FormItemText> T.clearIcon(clearIcon: Boolean) = apply {
+fun <T : FormItemText> T.clearIcon(clearIcon: Boolean = true) = apply {
     this.clearIcon = clearIcon
 }
 
@@ -293,7 +293,7 @@ open class FormItemPassword : FormItemText() {
     }
 }
 
-fun <T : FormItemPassword> T.shown(shown: Boolean) = apply {
+fun <T : FormItemPassword> T.shown(shown: Boolean = true) = apply {
     this.shownPassword = shown
 }
 
@@ -336,7 +336,7 @@ abstract class FormItemToggle : FormItem() {
     var isOn: Boolean = false
 }
 
-fun <T : FormItemToggle> T.isOn(isOn: Boolean) = apply {
+fun <T : FormItemToggle> T.isOn(isOn: Boolean = true) = apply {
     this.isOn = isOn
 }
 
@@ -493,12 +493,18 @@ fun <T : FormItemDate> T.date(date: Date) = apply {
     this.date = date
 }
 
-fun <T : FormItemDate> T.dateOnly(dateOnly: Boolean) = apply {
+fun <T : FormItemDate> T.dateOnly(dateOnly: Boolean = true) = apply {
     this.dateOnly = dateOnly
+    if (dateOnly) {
+        this.timeOnly = false
+    }
 }
 
-fun <T : FormItemDate> T.timeOnly(timeOnly: Boolean) = apply {
+fun <T : FormItemDate> T.timeOnly(timeOnly: Boolean = true) = apply {
     this.timeOnly = timeOnly
+    if (timeOnly) {
+        this.dateOnly = false
+    }
 }
 
 fun <T : FormItemDate> T.dateFormat(dateFormat: String) = apply {
