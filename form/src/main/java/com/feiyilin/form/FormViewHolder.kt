@@ -592,6 +592,77 @@ open class FormRadioViewHolder(inflater: LayoutInflater, resource: Int, parent: 
     }
 }
 
+open class FormCheckViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormViewHolder(inflater, resource, parent) {
+    protected var checkView: CheckBox? = null
+
+    init {
+        checkView = itemView.findViewById(R.id.formElementCheck)
+    }
+
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
+        super.bind(s, listener)
+        if (s is FormItemCheck) {
+            itemView.setOnClickListener {
+                listener?.onItemClicked(s, this)
+                s.isOn = !s.isOn
+                checkView?.isChecked = s.isOn
+                listener?.onValueChanged(s)
+            }
+
+            checkView?.setOnClickListener(null)
+            checkView?.isChecked = s.isOn
+            checkView?.setOnClickListener {
+                s.isOn = checkView?.isChecked ?: (!s.isOn)
+                listener?.onValueChanged(s)
+            }
+        }
+    }
+}
+
+open class FormCheckCustomViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormViewHolder(inflater, resource, parent) {
+    var imageView: ImageView? = null
+
+    init {
+        imageView = itemView.findViewById(R.id.formElementCheck)
+    }
+
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
+        super.bind(s, listener)
+
+        if (s is FormItemCheckCustom) {
+            itemView.setOnClickListener {
+                listener?.onItemClicked(s, this)
+                s.isOn = !s.isOn
+                setImage(s.isOn)
+                listener?.onValueChanged(s)
+            }
+            imageView?.layoutParams?.height = dpToPx(s.iconSize.height)
+            imageView?.layoutParams?.width = dpToPx(s.iconSize.width)
+            setImage(s.isOn)
+        }
+    }
+
+    fun setImage(checked: Boolean) {
+        (item as? FormItemCheckCustom)?.let { item ->
+            if (checked) {
+                if (item.iconOn != null) {
+                    imageView?.setImageDrawable(item.iconOn)
+                } else {
+                    imageView?.setImageResource(R.drawable.ic_form_check_on)
+                }
+            } else {
+                if (item.iconOff != null) {
+                    imageView?.setImageDrawable(item.iconOff)
+                } else {
+                    imageView?.setImageResource(R.drawable.ic_form_check_off)
+                }
+            }
+        }
+    }
+}
+
 open class FormNavViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FormViewHolder(inflater, resource, parent) {
     var valueView: TextView? = null

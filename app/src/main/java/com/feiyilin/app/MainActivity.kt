@@ -79,7 +79,6 @@ class MainActivity : FormActivity() {
                     .iconSize(44, 44)
                     .iconTitle(drawable(R.drawable.ic_form_info))
             }
-
             +FormItemSection().title("Radio").apply {
                 +FormItemRadio().isOn(true).group("radio")
                     .title("item 0")
@@ -98,7 +97,10 @@ class MainActivity : FormActivity() {
                 +FormItemRadioCustom().group("radio").title("item 2")
                     .tag("radio0_item2").isOn(true)
             }
-
+            +FormItemSection().title("Checkbox").apply {
+                +FormItemCheck().isOn(true).title("Check")
+                +FormItemCheckCustom().title("Check custom")
+            }
             +FormItemSection().title("Switch").apply {
                 +FormItemSwitch().isOn(true).title("Switch").tag("switch_native")
                 +FormItemSwitchCustom().isOn(true).title("Switch custom").tag("switch")

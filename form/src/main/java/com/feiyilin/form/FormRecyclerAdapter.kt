@@ -102,12 +102,12 @@ open class FormRecyclerAdapter(
             ),
             ViewHolderItem(
                 FormItemSwitchCustom::class.java,
-                R.layout.from_item_switch_custom,
+                R.layout.form_item_switch_custom,
                 FormSwitchCustomViewHolder::class.java
             ),
             ViewHolderItem(
                 FormItemSwitch::class.java,
-                R.layout.from_item_switch,
+                R.layout.form_item_switch,
                 FormSwitchViewHolder::class.java
             ),
             ViewHolderItem(
@@ -169,6 +169,16 @@ open class FormRecyclerAdapter(
                 FormItemSeekBar::class.java,
                 R.layout.form_item_seekbar,
                 FormSeekBarViewHolder::class.java
+            ),
+            ViewHolderItem(
+                FormItemCheck::class.java,
+                R.layout.form_item_check,
+                FormCheckViewHolder::class.java
+            ),
+            ViewHolderItem(
+                FormItemCheckCustom::class.java,
+                R.layout.form_item_check_custom,
+                FormCheckCustomViewHolder::class.java
             )
         )
     }

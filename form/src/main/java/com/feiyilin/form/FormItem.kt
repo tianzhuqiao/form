@@ -370,6 +370,25 @@ fun <T : FormItemRadioCustom> T.iconOff(iconOff: Drawable?) = apply {
     this.iconOff = iconOff
 }
 
+open class FormItemCheck : FormItemToggle() {
+}
+
+open class FormItemCheckCustom : FormItemCheck() {
+    var iconOff: Drawable? = null
+    var iconOn: Drawable? = null
+    init {
+        this.iconSize(Size(32, 32))
+    }
+}
+
+fun <T : FormItemCheckCustom> T.iconOn(iconOn: Drawable?) = apply {
+    this.iconOn = iconOn
+}
+
+fun <T : FormItemCheckCustom> T.iconOff(iconOff: Drawable?) = apply {
+    this.iconOff = iconOff
+}
+
 
 open class FormItemNav : FormItem() {
     var value: String = ""
