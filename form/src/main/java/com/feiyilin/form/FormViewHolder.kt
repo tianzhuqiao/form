@@ -8,6 +8,8 @@ import android.os.Handler
 import android.text.Editable
 import android.text.SpannableString
 import android.text.TextWatcher
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.*
@@ -350,6 +352,20 @@ open class FormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, paren
 
 open class FormTextViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     FormBaseTextViewHolder(inflater, resource, parent) {
+}
+
+open class FormPasswordViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormTextViewHolder(inflater, resource, parent) {
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
+        super.bind(s, listener)
+        if (s is FormItemPassword) {
+            if (s.shownPassword) {
+                valueView?.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            } else {
+                valueView?.transformationMethod = PasswordTransformationMethod.getInstance()
+            }
+        }
+    }
 }
 
 open class FormTextGroupViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :

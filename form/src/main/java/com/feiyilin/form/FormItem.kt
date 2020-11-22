@@ -14,6 +14,7 @@ open class FormSwipeAction {
         Destructive,
         Normal
     }
+
     var tag: String = ""
     var title: String = ""
     var icon: Drawable? = null
@@ -136,11 +137,11 @@ fun <T : FormItem> T.draggable(draggable: Boolean) = apply {
     this.draggable = draggable
 }
 
-fun <T : FormItem> T.required(required: Boolean=true) = apply {
+fun <T : FormItem> T.required(required: Boolean = true) = apply {
     this.required = required
 }
 
-fun <T : FormItem> T.hidden(hidden: Boolean=true) = apply {
+fun <T : FormItem> T.hidden(hidden: Boolean = true) = apply {
     this.hidden = hidden
 }
 
@@ -175,7 +176,7 @@ fun <T : FormItem> T.onSetup(callback: ((item: T, viewHolder: RecyclerView.ViewH
 }
 
 fun <T : FormItem> T.onValueChanged(callback: ((item: T) -> Unit)?) = apply {
-    if( callback == null) {
+    if (callback == null) {
         this.onValueChanged = null
     } else {
         this.onValueChanged = {
@@ -238,13 +239,11 @@ open class FormItemText : FormItem() {
     var hintColor: Int? = null
     var gravity: Int = Gravity.END
     var readOnly: Boolean = false
-    var imeOptions: Int = EditorInfo.IME_ACTION_NEXT or EditorInfo.IME_FLAG_NAVIGATE_NEXT or EditorInfo.IME_FLAG_NAVIGATE_PREVIOUS
+    var imeOptions: Int =
+        EditorInfo.IME_ACTION_NEXT or EditorInfo.IME_FLAG_NAVIGATE_NEXT or EditorInfo.IME_FLAG_NAVIGATE_PREVIOUS
     var inputType: Int = EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT or EditorInfo.TYPE_CLASS_TEXT
     var focused: Boolean = false
     var clearIcon: Boolean = false
-}
-
-open class FormItemTextFloatingHint : FormItemText() {
 }
 
 fun <T : FormItemText> T.value(value: String) = apply {
@@ -285,6 +284,20 @@ fun <T : FormItemText> T.focused(focused: Boolean) = apply {
 
 fun <T : FormItemText> T.clearIcon(clearIcon: Boolean) = apply {
     this.clearIcon = clearIcon
+}
+
+open class FormItemPassword : FormItemText() {
+    var shownPassword: Boolean = false
+    init {
+        this.inputType = EditorInfo.TYPE_TEXT_VARIATION_PASSWORD
+    }
+}
+
+fun <T : FormItemPassword> T.shown(shown: Boolean) = apply {
+    this.shownPassword = shown
+}
+
+open class FormItemTextFloatingHint : FormItemText() {
 }
 
 open class FormItemTextArea : FormItemText() {
@@ -333,6 +346,7 @@ open class FormItemSwitch : FormItemToggle() {
 open class FormItemSwitchCustom : FormItemSwitch() {
     var iconOff: Drawable? = null
     var iconOn: Drawable? = null
+
     init {
         this.iconSize(Size(48, 24))
     }
@@ -357,6 +371,7 @@ fun <T : FormItemRadio> T.group(group: String) = apply {
 open class FormItemRadioCustom : FormItemRadio() {
     var iconOff: Drawable? = null
     var iconOn: Drawable? = null
+
     init {
         this.iconSize(Size(24, 24))
     }
@@ -376,6 +391,7 @@ open class FormItemCheck : FormItemToggle() {
 open class FormItemCheckCustom : FormItemCheck() {
     var iconOff: Drawable? = null
     var iconOn: Drawable? = null
+
     init {
         this.iconSize(Size(32, 32))
     }
@@ -433,7 +449,7 @@ open class FormItemDate : FormItem() {
             date = calendar.time
         }
 
-    var  day : Int
+    var day: Int
         get() {
             val calendar: Calendar = Calendar.getInstance()
             calendar.time = date
@@ -446,7 +462,7 @@ open class FormItemDate : FormItem() {
             date = calendar.time
         }
 
-    var hour : Int
+    var hour: Int
         get() {
             val calendar: Calendar = Calendar.getInstance()
             calendar.time = date
@@ -480,6 +496,7 @@ fun <T : FormItemDate> T.date(date: Date) = apply {
 fun <T : FormItemDate> T.dateOnly(dateOnly: Boolean) = apply {
     this.dateOnly = dateOnly
 }
+
 fun <T : FormItemDate> T.timeOnly(timeOnly: Boolean) = apply {
     this.timeOnly = timeOnly
 }
@@ -487,6 +504,7 @@ fun <T : FormItemDate> T.timeOnly(timeOnly: Boolean) = apply {
 fun <T : FormItemDate> T.dateFormat(dateFormat: String) = apply {
     this.dateFormat = dateFormat
 }
+
 fun <T : FormItemDate> T.timeFormat(timeFormat: String) = apply {
     this.timeFormat = timeFormat
 }
@@ -509,7 +527,7 @@ fun <T : FormItemSelect> T.value(value: String) = apply {
     this.value = value
 }
 
-fun <T : FormItemSelect> T.selectorTitle(title:String) = apply {
+fun <T : FormItemSelect> T.selectorTitle(title: String) = apply {
     this.selectorTitle = title
 }
 
@@ -530,17 +548,20 @@ fun <T : FormItemChoice> T.noButtonTitle(title: String) = apply {
     this.noButtonTitle = title
 }
 
-open class FormItemPicker :FormItemChoice() {
+open class FormItemPicker : FormItemChoice() {
 }
 
-open class FormItemPickerInline :FormItemPicker() {
+open class FormItemPickerInline : FormItemPicker() {
 }
 
 open class FormItemMultipleChoice : FormItemChoice() {
-    var checked : Array<Boolean> = arrayOf()
+    var checked: Array<Boolean> = arrayOf()
 }
 
-fun <T : FormItemMultipleChoice> T.options(options: Array<String>, checked: Array<Boolean> = arrayOf()) = apply {
+fun <T : FormItemMultipleChoice> T.options(
+    options: Array<String>,
+    checked: Array<Boolean> = arrayOf()
+) = apply {
     this.options = options
     this.checked = checked
     if (this.checked.size != this.options.size) {
@@ -552,7 +573,8 @@ fun <T : FormItemMultipleChoice> T.options(options: Array<String>, checked: Arra
             }
         }
     } else {
-        this.value = this.options.filterIndexed { index, _ -> this.checked[index] == true }.joinToString(", ")
+        this.value = this.options.filterIndexed { index, _ -> this.checked[index] == true }
+            .joinToString(", ")
     }
 }
 
