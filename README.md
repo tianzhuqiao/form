@@ -18,7 +18,7 @@ Add **form** to dependencies in your app's build.gradle:
 ```gradle
 dependencies {
     ...
-    implementation 'com.feiyilin:form:0.3.2'
+    implementation 'com.feiyilin:form:0.3.3'
 }
 ```
 ## 2. Update Activity
