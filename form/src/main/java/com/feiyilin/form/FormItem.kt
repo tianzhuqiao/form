@@ -624,20 +624,26 @@ fun <T : FormItemColor> T.rows(rows: Int) = apply {
     this.rows = rows
 }
 
-open class FormItemSeekBar : FormItem() {
+open class FormItemInteger : FormItem() {
     var value: Int = 0
     var maxValue: Int = 100
     var minValue: Int = 0
 }
 
-fun <T : FormItemSeekBar> T.value(value: Int) = apply {
+fun <T : FormItemInteger> T.value(value: Int) = apply {
     this.value = value
 }
 
-fun <T : FormItemSeekBar> T.maxValue(maxValue: Int) = apply {
+fun <T : FormItemInteger> T.maxValue(maxValue: Int) = apply {
     this.maxValue = maxValue
 }
 
-fun <T : FormItemSeekBar> T.minValue(minValue: Int) = apply {
+fun <T : FormItemInteger> T.minValue(minValue: Int) = apply {
     this.minValue = minValue
+}
+
+open class FormItemSeekBar : FormItemInteger() {
+}
+
+open class FormItemStepper : FormItemInteger() {
 }

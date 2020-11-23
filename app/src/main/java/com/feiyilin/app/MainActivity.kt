@@ -121,7 +121,7 @@ class MainActivity : FormActivity() {
                 +FormItemDate().tag("time_only").title("Time only").date(cal.time)
                     .timeOnly()
             }
-            +FormItemSection().title("SeekBar").apply {
+            +FormItemSection().title("SeekBar & Stepper").apply {
                 +FormItemSeekBar().title("SeekBar").value(19)
                 +FormItemSeekBar().title("SeekBar red").tag("seekbar_red").maxValue(50).minValue(10).value(29)
                 +FormItemSeekBar().title("SeekBar orange").tag("seekbar_orange").maxValue(50).minValue(10).value(39)
@@ -131,6 +131,7 @@ class MainActivity : FormActivity() {
                             viewHolder.seekBar?.thumb?.colorFilter = PorterDuffColorFilter(Color.parseColor("#ff9800"), PorterDuff.Mode.SRC_IN)
                         }
                     }
+                +FormItemStepper().title("Stepper").value(19)
             }
 
             +FormItemSection().title("Swipe Action").tag("sec_swipe").apply {

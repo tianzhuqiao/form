@@ -176,6 +176,11 @@ open class FormRecyclerAdapter(
                 FormSeekBarViewHolder::class.java
             ),
             ViewHolderItem(
+                FormItemStepper::class.java,
+                R.layout.form_item_stepper,
+                FormStepperViewHolder::class.java
+            ),
+            ViewHolderItem(
                 FormItemCheck::class.java,
                 R.layout.form_item_check,
                 FormCheckViewHolder::class.java

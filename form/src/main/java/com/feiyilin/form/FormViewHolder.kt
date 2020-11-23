@@ -1132,3 +1132,88 @@ open class FormSeekBarViewHolder(inflater: LayoutInflater, resource: Int, parent
         }
     }
 }
+
+open class FormStepperViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
+    FormViewHolder(inflater, resource, parent) {
+
+    var valueView: TextView? = null
+    var imageAddView: ImageView? = null
+    var imageSubView: ImageView? = null
+
+    protected val repeatUpdateHandler = Handler()
+    protected var autoIncrement = false
+    protected var autoDecrement = false
+    inner class RptUpdater : Runnable {
+        override fun run() {
+            if (autoIncrement) {
+                update(true)
+                repeatUpdateHandler.postDelayed(RptUpdater(), 50)
+            } else if (autoDecrement) {
+                update(false)
+                repeatUpdateHandler.postDelayed(RptUpdater(), 50)
+            }
+        }
+    }
+    init {
+        valueView = itemView.findViewById(R.id.formElementValue)
+        imageAddView = itemView.findViewById(R.id.formElementAdd)
+        imageSubView = itemView.findViewById(R.id.formElementSubtract)
+
+        imageAddView?.setOnClickListener {
+            update(true)
+        }
+        imageSubView?.setOnClickListener {
+            update(false)
+        }
+        imageAddView?.setOnLongClickListener {
+            autoIncrement = true
+            autoDecrement = false
+            repeatUpdateHandler.post(RptUpdater())
+            false
+        }
+        imageSubView?.setOnLongClickListener {
+            autoDecrement = true
+            autoIncrement = false
+            repeatUpdateHandler.post(RptUpdater())
+            false
+        }
+        imageAddView?.setOnTouchListener {_, event ->
+            if (event.action == MotionEvent.ACTION_UP || event.action == MotionEvent.ACTION_CANCEL) {
+                autoDecrement = false
+                autoIncrement = false
+            }
+            false
+        }
+        imageSubView?.setOnTouchListener {_, event ->
+            if (event.action == MotionEvent.ACTION_UP || event.action == MotionEvent.ACTION_CANCEL) {
+                autoDecrement = false
+                autoIncrement = false
+            }
+            false
+        }
+    }
+
+    override fun bind(s: FormItem, listener: FormItemCallback?) {
+        super.bind(s, listener)
+        if (s is FormItemStepper) {
+
+            if (s.value >= s.minValue && s.value <= s.maxValue) {
+                valueView?.text = s.value.toString()
+            } else {
+                valueView?.text = ""
+            }
+        }
+    }
+    fun update(increase: Boolean) {
+        (item as? FormItemStepper)?.let {
+            var value = if (increase) it.value + 1 else it.value -1
+            value = value.coerceAtLeast(it.minValue)
+            value = value.coerceAtMost(it.maxValue)
+            if (value != it.value) {
+                it.value = value
+                valueView?.text = it.value.toString()
+                listener?.onValueChanged(it)
+            }
+        }
+    }
+}
