@@ -220,12 +220,13 @@ Once an action is triggered, **onSwipedAction** callback will be called
 # Built-in items
 |      |      |
 |------|------|
-|Text|<img src="./images/item_text.png" width="36%">|
-|Text area|<img src="./images/item_textarea.png" width="36%">|
+|Text|<img src="./images/item_text.png" width="36%"> </br><img src="./images/item_text_floating_hint.png" width="36%">|
+|Text area|<img src="./images/item_textarea.png" width="36%">  |
 |Label|<img src="./images/label.png" width="36%">|
 |Switch|<img src="./images/item_switch.png" width="36%">|
 |Radio|<img src="./images/item_radio.png" width="36%">|
 |SeekBar|<img src="./images/seekbar.png" width="36%">|
+|Stepper|<img src="./images/item_stepper.png" width="36%">|
 |Nav|<img src="./images/item_nav.png" width="36%">|
 |Action|<img src="./images/item_action.png" width="36%">|
 |Date|<img src="./images/item_date.png" width="36%">|
