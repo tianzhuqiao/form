@@ -95,6 +95,7 @@ open class FormItem {
     var onStartReorder: ((viewHolder: RecyclerView.ViewHolder) -> Boolean)? = null
     var onMoveItem: ((src: Int, dest: Int) -> Boolean)? = null
     var onSwipedAction: ((action: FormSwipeAction, viewHolder: RecyclerView.ViewHolder) -> Boolean)? = null
+    var onEditorAction: ((actionId: Int, viewHolder: RecyclerView.ViewHolder) -> Boolean)? = null
 }
 
 fun <T : FormItem> T.title(title: String) = apply {
@@ -228,6 +229,17 @@ fun <T : FormItem> T.onSwipedAction(callback: ((item: T, action: FormSwipeAction
         }
     }
 }
+
+fun <T : FormItem> T.onEditorAction(callback: ((item: T, actionId: Int, viewHolder: RecyclerView.ViewHolder) -> Boolean)?) = apply {
+    if (callback == null) {
+        this.onEditorAction = null
+    } else {
+        this.onEditorAction = { actionId, viewHolder ->
+            callback.invoke(this, actionId, viewHolder)
+        }
+    }
+}
+
 
 open class FormItemLabel : FormItem() {
 }

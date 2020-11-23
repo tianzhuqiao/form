@@ -246,7 +246,7 @@ open class FormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, paren
         }
         valueView?.setOnEditorActionListener { v, actionId, _ ->
             item?.let {
-                listener?.onEditAction(it, actionId, this)
+                listener?.onEditorAction(it, actionId, this)
                 return@setOnEditorActionListener true
             }
             false

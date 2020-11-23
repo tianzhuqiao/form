@@ -28,7 +28,7 @@ interface FormItemCallback {
         return false
     }
 
-    fun onEditAction(item: FormItem, actionId: Int, viewHolder: RecyclerView.ViewHolder): Boolean {
+    fun onEditorAction(item: FormItem, actionId: Int, viewHolder: RecyclerView.ViewHolder): Boolean {
         return false
     }
     fun getMinItemHeight(item: FormItem): Int {
@@ -483,9 +483,13 @@ open class FormRecyclerAdapter(
             return listener?.onSwipedAction(item, action, viewHolder) ?: false
         }
 
-        override fun onEditAction(item: FormItem, actionId: Int, viewHolder: RecyclerView.ViewHolder): Boolean {
-            super.onEditAction(item, actionId, viewHolder)
-            if (listener?.onEditAction(item, actionId, viewHolder) == true) {
+        override fun onEditorAction(item: FormItem, actionId: Int, viewHolder: RecyclerView.ViewHolder): Boolean {
+            super.onEditorAction(item, actionId, viewHolder)
+            if (item.onEditorAction != null) {
+                if (item.onEditorAction?.invoke(actionId, viewHolder) == true) {
+                    return true
+                }
+            } else if (listener?.onEditorAction(item, actionId, viewHolder) == true) {
                 return true
             }
             when (actionId) {

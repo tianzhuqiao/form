@@ -45,6 +45,10 @@ class MainActivity : FormActivity() {
                     .inputType(EditorInfo.TYPE_CLASS_NUMBER)
                 +FormItemText().title("Phone").tag("phone")
                     .inputType(EditorInfo.TYPE_CLASS_PHONE).imeOptions(EditorInfo.IME_ACTION_PREVIOUS)
+                    .onEditorAction {item, _, _ ->
+                        Toast.makeText(this@MainActivity, "EditorAction on ${item.title}", Toast.LENGTH_SHORT).show()
+                        false
+                    }
                 +FormItemPassword().title("Password").tag("password")
                 +FormItemLabel().title("Label").tag("label")
                     .subTitle("subtitle of label")
@@ -376,6 +380,14 @@ class MainActivity : FormActivity() {
                     }
                 }
             }
+        }
+
+        override fun onEditorAction(
+            item: FormItem,
+            actionId: Int,
+            viewHolder: RecyclerView.ViewHolder
+        ): Boolean {
+            return super.onEditorAction(item, actionId, viewHolder)
         }
     }
 }
