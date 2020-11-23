@@ -98,6 +98,10 @@ Supported callbacks
 
     Called when a swipe action is triggered.
 
+* **onEditorAction**
+    
+    "called when the enter key is pressed , or when an action supplied to the IME is selected by the user" ([text](https://developer.android.com/reference/android/widget/TextView.OnEditorActionListener) item)
+    
 * **getMinItemHeight** (**FormItemCallback** only)
 
     Called when configure/bind an item. Can be used to update the minimum height for all (or a group of) items.
@@ -220,7 +224,7 @@ Once an action is triggered, **onSwipedAction** callback will be called
 # Built-in items
 |      |      |
 |------|------|
-|Text|<img src="./images/item_text.png" width="36%"> </br><img src="./images/item_text_floating_hint.png" width="36%">|
+|Text|<img src="./images/item_text.png" width="36%"> </br><img src="./images/item_text_floating_hint.png" width="36%"></br><img src="./images/item_text_password.png" width="36%">|
 |Text area|<img src="./images/item_textarea.png" width="36%">  |
 |Label|<img src="./images/label.png" width="36%">|
 |Switch|<img src="./images/item_switch.png" width="36%">|
