@@ -212,16 +212,15 @@ open class FormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, paren
         reorderView = itemView.findViewById(R.id.formElementReorder)
         valueView?.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                (item as? FormItemText)?.let {
-                    if (it.value != s.toString()) {
-                        it.value = s.toString()
+                (item as? FormItemValue)?.let {
+                    if (it.from(s.toString())) {
                         listener?.onValueChanged(it)
                     }
                 }
             }
 
             override fun afterTextChanged(s: Editable?) {
-                (item as? FormItemText)?.let {
+                (item as? FormItemValue)?.let {
                     if (it.clearIcon) {
                         val clearIcon = if (s?.isNotEmpty() == true) R.drawable.ic_form_clear else 0
                         valueView?.setCompoundDrawablesWithIntrinsicBounds(0, 0, clearIcon, 0)
@@ -236,13 +235,21 @@ open class FormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, paren
         }
         )
         valueView?.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) {
-                if (v is EditText) {
+            if (v is EditText) {
+                if (hasFocus) {
                     Handler().postDelayed({
-                        v.setSelection(v.text.length)
+                        (item as? FormItemValue)?.let {
+                            v.setText(it.toEdit())
+                            v.setSelection(v.text.length)
+                        }
                     }, 10)
+                } else {
+                    (item as? FormItemValue)?.let {
+                        v.setText(it.toDisplay())
+                    }
                 }
             }
+
         }
         valueView?.setOnEditorActionListener { _, actionId, _ ->
             item?.let {
@@ -256,7 +263,7 @@ open class FormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, paren
     override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
 
-        if (s is FormItemText) {
+        if (s is FormItemValue) {
             itemView.setOnClickListener {
                 listener?.onItemClicked(s, this)
                 valueView?.requestFocus()
@@ -290,7 +297,7 @@ open class FormBaseTextViewHolder(inflater: LayoutInflater, resource: Int, paren
                 }
             })
 
-            valueView?.setText(s.value)
+            valueView?.setText(s.toDisplay())
             s.valueColor?.let {
                 valueView?.setTextColor(it)
             } ?: run {

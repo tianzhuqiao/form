@@ -86,6 +86,11 @@ open class FormRecyclerAdapter(
                 FormPasswordViewHolder::class.java
             ),
             ViewHolderItem(
+                FormItemNumber::class.java,
+                R.layout.form_item_text,
+                FormTextViewHolder::class.java
+            ),
+            ViewHolderItem(
                 FormItemTextFloatingHint::class.java,
                 R.layout.form_item_text_floating_hint,
                 FormTextViewHolder::class.java

@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.feiyilin.form.*
 import com.squareup.picasso.Picasso
+import java.text.NumberFormat
 import java.util.*
 
 class MainActivity : FormActivity() {
@@ -41,8 +42,7 @@ class MainActivity : FormActivity() {
                     .gravity(Gravity.START)
                 +FormItemText().title("Email").tag("email")
                     .inputType(EditorInfo.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
-                +FormItemText().title("Number").tag("number")
-                    .inputType(EditorInfo.TYPE_CLASS_NUMBER)
+
                 +FormItemText().title("Phone").tag("phone")
                     .inputType(EditorInfo.TYPE_CLASS_PHONE).imeOptions(EditorInfo.IME_ACTION_PREVIOUS)
                     .onEditorAction {item, _, _ ->
@@ -53,6 +53,14 @@ class MainActivity : FormActivity() {
                 +FormItemLabel().title("Label").tag("label")
                     .subTitle("subtitle of label")
             }
+
+            +FormItemSection().title("Number").apply {
+                +FormItemNumber().title("Number").value(123456.789)
+                +FormItemNumber().title("Currency").value(123456.789).toDisplayString {
+                    NumberFormat.getCurrencyInstance().format(it.value)
+                }
+            }
+
             +FormItemSection().title("Multi-line text").apply {
                 enableCollapse()
                 +FormItemTextArea().hint("Multi-line text here ...").tag("notes")

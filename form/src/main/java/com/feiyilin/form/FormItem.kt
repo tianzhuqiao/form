@@ -7,6 +7,8 @@ import android.util.Size
 import android.view.Gravity
 import android.view.inputmethod.EditorInfo
 import androidx.recyclerview.widget.RecyclerView
+import java.lang.Exception
+import java.text.NumberFormat
 import java.util.*
 
 open class FormSwipeAction {
@@ -244,8 +246,7 @@ fun <T : FormItem> T.onEditorAction(callback: ((item: T, actionId: Int, viewHold
 open class FormItemLabel : FormItem() {
 }
 
-open class FormItemText : FormItem() {
-    var value: String = ""
+open class FormItemValue : FormItem() {
     var valueColor: Int? = null
     var hint: String = ""
     var hintColor: Int? = null
@@ -256,46 +257,110 @@ open class FormItemText : FormItem() {
     var inputType: Int = EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT or EditorInfo.TYPE_CLASS_TEXT
     var focused: Boolean = false
     var clearIcon: Boolean = false
+
+    var toDisplayString: (() -> String)? = null
+    var toEditString: (() -> String)? = null
+    var fromString: ((String) -> Boolean)? = null
+    open fun toDisplay(): String {
+        return toDisplayString?.invoke() ?: ""
+    }
+    open fun toEdit(): String {
+        return toEditString?.invoke() ?: ""
+    }
+    open fun from(value: String): Boolean {
+        return fromString?.invoke(value) ?: false
+    }
 }
 
-fun <T : FormItemText> T.value(value: String) = apply {
-    this.value = value
+fun <T : FormItemValue> T.toDisplayString(callback: ((item: T) -> String)?) = apply {
+    if (callback == null) {
+        this.toDisplayString = null
+    } else {
+        this.toDisplayString = {
+            callback.invoke(this)
+        }
+    }
 }
 
-fun <T : FormItemText> T.valueColor(valueColor: Int) = apply {
+fun <T : FormItemValue> T.toEditString(callback: ((item: T) -> String)?) = apply {
+    if (callback == null) {
+        this.toEditString = null
+    } else {
+        this.toEditString = {
+            callback.invoke(this)
+        }
+    }
+}
+
+fun <T : FormItemValue> T.fromString(callback: ((item: T, value: String) -> Boolean)?) = apply {
+    if (callback == null) {
+        this.fromString = null
+    } else {
+        this.fromString = { value ->
+            callback.invoke(this, value)
+        }
+    }
+}
+
+fun <T : FormItemValue> T.valueColor(valueColor: Int) = apply {
     this.valueColor = valueColor
 }
 
-fun <T : FormItemText> T.hint(hint: String) = apply {
+fun <T : FormItemValue> T.hint(hint: String) = apply {
     this.hint = hint
 }
 
-fun <T : FormItemText> T.hintColor(hintColor: Int) = apply {
+fun <T : FormItemValue> T.hintColor(hintColor: Int) = apply {
     this.hintColor = hintColor
 }
 
-fun <T : FormItemText> T.gravity(gravity: Int) = apply {
+fun <T : FormItemValue> T.gravity(gravity: Int) = apply {
     this.gravity = gravity
 }
 
-fun <T : FormItemText> T.readOnly(readOnly: Boolean = true) = apply {
+fun <T : FormItemValue> T.readOnly(readOnly: Boolean = true) = apply {
     this.readOnly = readOnly
 }
 
-fun <T : FormItemText> T.imeOptions(imeOptions: Int) = apply {
+fun <T : FormItemValue> T.imeOptions(imeOptions: Int) = apply {
     this.imeOptions = imeOptions
 }
 
-fun <T : FormItemText> T.inputType(inputType: Int) = apply {
+fun <T : FormItemValue> T.inputType(inputType: Int) = apply {
     this.inputType = inputType
 }
 
-fun <T : FormItemText> T.focused(focused: Boolean = true) = apply {
+fun <T : FormItemValue> T.focused(focused: Boolean = true) = apply {
     this.focused = focused
 }
 
-fun <T : FormItemText> T.clearIcon(clearIcon: Boolean = true) = apply {
+fun <T : FormItemValue> T.clearIcon(clearIcon: Boolean = true) = apply {
     this.clearIcon = clearIcon
+}
+
+open class FormItemText : FormItemValue() {
+    var value: String = ""
+
+    init {
+        toDisplayString = {
+            value
+        }
+        toEditString = {
+            value
+        }
+
+        fromString = { value ->
+            if (value != this.value) {
+                this.value = value
+                true
+            } else
+                false
+        }
+    }
+}
+
+fun <T : FormItemText > T.value(value: String) = apply {
+    this.value = value
 }
 
 open class FormItemPassword : FormItemText() {
@@ -303,6 +368,39 @@ open class FormItemPassword : FormItemText() {
     init {
         this.inputType = EditorInfo.TYPE_TEXT_VARIATION_PASSWORD
     }
+}
+
+open class FormItemNumber : FormItemValue() {
+    var value: Number = 0
+
+    init {
+        this.inputType =
+            EditorInfo.TYPE_CLASS_NUMBER or EditorInfo.TYPE_NUMBER_FLAG_SIGNED or EditorInfo.TYPE_NUMBER_FLAG_DECIMAL
+
+        toDisplayString = {
+            NumberFormat.getInstance().format(value)
+        }
+        toEditString = {
+            NumberFormat.getInstance().format(value)
+        }
+
+        fromString = { value ->
+            var changed = false
+            try {
+                val v = NumberFormat.getInstance().parse(value) ?: 0
+                if (v != this.value) {
+                    this.value = v
+                    changed = true
+                }
+            } catch (e: Exception) {
+            }
+            changed
+        }
+    }
+}
+
+fun <T : FormItemNumber> T.value(value: Number) = apply {
+    this.value = value
 }
 
 fun <T : FormItemPassword> T.shown(shown: Boolean = true) = apply {
