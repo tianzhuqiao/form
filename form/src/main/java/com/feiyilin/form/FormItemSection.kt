@@ -139,7 +139,7 @@ open class FormItemSection(private val visible: Boolean=true): FormItem() {
             _itemsVisible.remove(item)
             if (update) {
                 adapter?.activity?.runOnUiThread {
-                    val start = adapter?.indexOf(this) ?: -1
+                    val start = adapter?.startOfSection(this) ?: -1
                     if (start != -1) {
                         adapter?.notifyItemRemoved(start + index)
                     }
@@ -173,11 +173,17 @@ open class FormItemSection(private val visible: Boolean=true): FormItem() {
         if (after.section != this) {
             return false
         }
-        val index = items.indexOf(after)
+        var index = items.indexOf(after)
         if (index == -1) {
-            return false
+            if (after == this) {
+                index = 0
+            } else {
+                return false
+            }
+        } else {
+            index += 1
         }
-        return add(index + 1, item, update)
+        return add(index, item, update)
     }
     /**
      * add an item at given position
@@ -207,7 +213,7 @@ open class FormItemSection(private val visible: Boolean=true): FormItem() {
                 _itemsVisible.add(count, item)
                 if (update) {
                     adapter.activity?.runOnUiThread {
-                        val start = adapter.indexOf(this)
+                        val start = adapter.startOfSection(this)
                         if (start != -1) {
                             adapter.notifyItemInserted(start + itemsVisible.indexOf(item))
                         }
@@ -253,11 +259,13 @@ open class FormItemSection(private val visible: Boolean=true): FormItem() {
         val offset = update(item)
         if (offset != -1) {
             adapter?.activity?.runOnUiThread {
-                val index = adapter?.indexOf(this) ?: -1
-                if (item.hidden) {
-                    adapter?.notifyItemRemoved(index + offset)
-                } else {
-                    adapter?.notifyItemInserted(index + offset)
+                val index = adapter?.startOfSection(this) ?: -1
+                if (index != -1) {
+                    if (item.hidden) {
+                        adapter?.notifyItemRemoved(index + offset)
+                    } else {
+                        adapter?.notifyItemInserted(index + offset)
+                    }
                 }
             }
         }

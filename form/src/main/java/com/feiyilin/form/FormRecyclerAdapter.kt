@@ -270,6 +270,7 @@ open class FormRecyclerAdapter(
     fun update() {
         activity?.runOnUiThread {
             sections.forEach {
+                it.adapter = this
                 it.update()
             }
             notifyDataSetChanged()
@@ -732,7 +733,7 @@ open class FormRecyclerAdapter(
      * If section is visible, it return the index of its first item; otherwise, return the index of
      * its first child if the section is visible.
      */
-    protected fun startOfSection(section: FormItemSection): Int {
+    internal fun startOfSection(section: FormItemSection): Int {
         var index = 0
         for (sec in sections) {
             if (sec == section) {

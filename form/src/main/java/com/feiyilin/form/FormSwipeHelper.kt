@@ -43,13 +43,16 @@ abstract class FormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelper.D
         swipedDirection = direction
 
         if (swipedPosition >= 0) {
-            val item = getFormItem(swipedPosition)
-            val actions = if (swipedDirection == ItemTouchHelper.LEFT) {
-                item.trailingSwipe
-            } else {
-                item.leadingSwipe
+            var item: FormItem? = null
+            if (viewHolder is FormViewHolder) {
+                item = viewHolder.item
             }
-            if (isDestructive(actions)) {
+            val actions = if (swipedDirection == ItemTouchHelper.LEFT) {
+                item?.trailingSwipe
+            } else {
+                item?.leadingSwipe
+            }
+            if (actions != null && isDestructive(actions)) {
                 onActionClicked(swipedPosition, actions[0])
             }
         }
@@ -64,15 +67,17 @@ abstract class FormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelper.D
         viewHolder: RecyclerView.ViewHolder
     ): Int {
         var flag = super.getMovementFlags(recyclerView, viewHolder)
-        val position = viewHolder.adapterPosition
-        val item = getFormItem(position)
-        if (item.leadingSwipe.isEmpty()) {
+        var item : FormItem? = null
+        if (viewHolder is FormViewHolder) {
+            item = viewHolder.item
+        }
+        if (item?.leadingSwipe?.isEmpty() == true) {
             flag = flag xor ItemTouchHelper.Callback.makeFlag(
                 ItemTouchHelper.ACTION_STATE_SWIPE,
                 ItemTouchHelper.RIGHT
             )
         }
-        if (item.trailingSwipe.isEmpty()) {
+        if (item?.trailingSwipe?.isEmpty() == true) {
             flag = flag xor ItemTouchHelper.Callback.makeFlag(
                 ItemTouchHelper.ACTION_STATE_SWIPE,
                 ItemTouchHelper.LEFT
@@ -216,9 +221,13 @@ abstract class FormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelper.D
         val position = viewHolder.adapterPosition
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE && position == swipeingPosition) {
             val itemView = viewHolder.itemView
+
             if (dX < 0) {
                 // swipe to left
-                val actions = getFormItem(position).trailingSwipe
+                var actions: List<FormSwipeAction> = listOf()
+                if (viewHolder is FormViewHolder) {
+                    actions = viewHolder.item?.trailingSwipe ?: listOf()
+                }
                 if (actions.isNotEmpty()) {
                     if (!isDestructive(actions)) {
                         val minSwipedOffset = -recyclerView.width.toFloat()
@@ -240,7 +249,10 @@ abstract class FormSwipeHelper: ItemTouchHelper.SimpleCallback(ItemTouchHelper.D
             }
             if (dX > 0) {
                 // swipe to right
-                val actions = getFormItem(position).leadingSwipe
+                var actions: List<FormSwipeAction> = listOf()
+                if (viewHolder is FormViewHolder) {
+                    actions = viewHolder.item?.leadingSwipe ?: listOf()
+                }
                 if (actions.isNotEmpty()) {
                     if (!isDestructive(actions)) {
                         val maxSwipedOffset = recyclerView.width.toFloat()
