@@ -688,7 +688,7 @@ open class FormRecyclerAdapter(
      * @param section section to be added
      * @return true if succeed
      */
-    private fun add(secIndex: Int, section: FormItemSection): Boolean {
+     fun add(secIndex: Int, section: FormItemSection): Boolean {
         if (sections.indexOf(section) != -1 || secIndex < 0 || secIndex > sections.size || section in sections) {
             return false
         }
@@ -728,6 +728,7 @@ open class FormRecyclerAdapter(
         }
         return add(index+1, section)
     }
+
 
     /**
      * If section is visible, it return the index of its first item; otherwise, return the index of
