@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.os.Handler
 import android.text.Editable
 import android.text.SpannableString
@@ -20,7 +22,6 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
@@ -198,6 +199,9 @@ open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
                 badgeViewTitle?.text = it.badge
                 badgeView?.minHeight = dpToPx(20)
                 badgeView?.minWidth = dpToPx(20)
+            }
+            it.badgeColor?.let { clr ->
+                badgeView?.background?.colorFilter = PorterDuffColorFilter(clr, PorterDuff.Mode.SRC_IN)
             }
             val param = badgeView?.layoutParams as? ViewGroup.MarginLayoutParams
             if (titleImageView?.visibility == View.VISIBLE) {

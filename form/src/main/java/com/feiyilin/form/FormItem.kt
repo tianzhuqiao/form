@@ -85,6 +85,7 @@ open class FormItem {
     var minHeight: Int = 0
     var separator: Separator? = null
     var badge: String? = null
+    var badgeColor: Int? = null
     var leadingSwipe = listOf<FormSwipeAction>()
     var trailingSwipe = listOf<FormSwipeAction>()
     var section: FormItemSection? = null
@@ -158,6 +159,10 @@ fun <T : FormItem> T.separator(separator: FormItem.Separator?) = apply {
 
 fun <T : FormItem> T.badge(badge: String?) = apply {
     this.badge = badge
+}
+
+fun <T : FormItem> T.badgeColor(color: Int?) = apply {
+    this.badgeColor = color
 }
 
 fun <T : FormItem> T.leadingSwipe(actions: List<FormSwipeAction>) = apply {

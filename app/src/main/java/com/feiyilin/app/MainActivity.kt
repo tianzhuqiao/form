@@ -88,7 +88,7 @@ class MainActivity : FormActivity() {
                     }
 
                 +FormItemNav().title("Nav item with number badge").tag("nav_item_badge_num")
-                    .badge("99")
+                    .badge("99").badgeColor(Color.parseColor("#ff9800"))
                     .iconSize(44, 44)
                     .iconTitle(drawable(R.drawable.ic_form_info))
             }
