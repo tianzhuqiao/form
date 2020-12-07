@@ -13,15 +13,13 @@
         <include layout="@layout/form_icon" />
         <include layout="@layout/form_title" />
 
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
 
         <ImageView
             android:id="@+id/formElementSubtract"
             android:layout_width="24dp"
             android:layout_height="match_parent"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
             android:layout_marginEnd="8dp"
             android:visibility="visible"
             app:srcCompat="@drawable/ic_form_subtract"
@@ -45,8 +43,10 @@
         <ImageView
             android:id="@+id/formElementAdd"
             android:layout_width="24dp"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
             android:layout_height="match_parent"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="2dp"
             android:visibility="visible"
             app:srcCompat="@drawable/ic_form_add"
             android:foreground="?android:attr/selectableItemBackground"

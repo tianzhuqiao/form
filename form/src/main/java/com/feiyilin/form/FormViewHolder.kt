@@ -20,6 +20,7 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
@@ -30,6 +31,7 @@ import java.util.*
 open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewGroup) :
     RecyclerView.ViewHolder(inflater.inflate(resource, parent, false)) {
 
+    var titleViewWrap: View? = null
     var titleView: TextView? = null
     var subtitleView: TextView? = null
     var titleImageView: ImageView? = null
@@ -43,6 +45,7 @@ open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
     var listener: FormItemCallback? = null
 
     init {
+        titleViewWrap = itemView.findViewById(R.id.formElementTitleWrap)
         titleView = itemView.findViewById(R.id.formElementTitle)
         subtitleView = itemView.findViewById(R.id.formElementSubTitle)
         titleImageView = itemView.findViewById(R.id.formElementTitleImage)
@@ -68,51 +71,8 @@ open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
         itemView.setOnClickListener {
             listener?.onItemClicked(s, this)
         }
-        titleView?.text = s.title
-        if (s.title.isNotEmpty()) {
-            titleView?.visibility = View.VISIBLE
-        } else {
-            titleView?.visibility = View.GONE
-        }
-        if (s.required) {
-            val styledString = SpannableString(s.title + "*")
-            styledString.setSpan(
-                ForegroundColorSpan(Color.RED),
-                styledString.length - 1,
-                styledString.length,
-                0
-            )
-            titleView?.text = styledString
-        }
 
-        s.titleColor?.let {
-            titleView?.setTextColor(it)
-        } ?: run {
-            titleView?.setTextColor(
-                ContextCompat.getColor(
-                    itemView.context,
-                    R.color.colorFormTitle
-                )
-            )
-        }
-
-        subtitleView?.text = s.subTitle
-        if (s.subTitle.isNotEmpty()) {
-            subtitleView?.visibility = View.VISIBLE
-        } else {
-            subtitleView?.visibility = View.GONE
-        }
-        s.subTitleColor?.let {
-            subtitleView?.setTextColor(it)
-        } ?: run {
-            subtitleView?.setTextColor(
-                ContextCompat.getColor(
-                    itemView.context,
-                    R.color.colorFormSubtitle
-                )
-            )
-        }
-
+        updateTitle()
         updateIcon()
         reorderView?.visibility = if (s.draggable) View.VISIBLE else View.GONE
         reorderView?.setOnTouchListener { _, event ->
@@ -132,6 +92,59 @@ open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
         ).toInt()
     }
 
+    fun updateTitle() {
+        item?.let { item ->
+            titleView?.text = item.title
+            if (item.title.isNotEmpty()) {
+                titleView?.visibility = View.VISIBLE
+            } else {
+                titleView?.visibility = View.GONE
+            }
+            if (item.required) {
+                val styledString = SpannableString(item.title + "*")
+                styledString.setSpan(
+                    ForegroundColorSpan(Color.RED),
+                    styledString.length - 1,
+                    styledString.length,
+                    0
+                )
+                titleView?.text = styledString
+            }
+
+            item.titleColor?.let {
+                titleView?.setTextColor(it)
+            } ?: run {
+                titleView?.setTextColor(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        R.color.colorFormTitle
+                    )
+                )
+            }
+
+            subtitleView?.text = item.subTitle
+            if (item.subTitle.isNotEmpty()) {
+                subtitleView?.visibility = View.VISIBLE
+            } else {
+                subtitleView?.visibility = View.GONE
+            }
+            item.subTitleColor?.let {
+                subtitleView?.setTextColor(it)
+            } ?: run {
+                subtitleView?.setTextColor(
+                    ContextCompat.getColor(
+                        itemView.context,
+                        R.color.colorFormSubtitle
+                    )
+                )
+            }
+            if (item.title.isNotEmpty() || item.subTitle.isNotEmpty()) {
+                titleViewWrap?.visibility = View.VISIBLE
+            } else {
+                titleViewWrap?.visibility = View.GONE
+            }
+        }
+    }
     fun updateSeparator() {
         item?.let {item ->
             val separator = item.separator ?: listener?.getSeparator(item)
@@ -455,7 +468,7 @@ open class FormActionViewHolder(inflater: LayoutInflater, resource: Int, parent:
                 }
                 Gravity.START, Gravity.LEFT -> {
                     leftSpace?.visibility = View.GONE
-                    rightSpace?.visibility = View.VISIBLE
+                    rightSpace?.visibility = View.GONE
                 }
                 Gravity.END, Gravity.RIGHT -> {
                     leftSpace?.visibility = View.VISIBLE
@@ -697,7 +710,12 @@ open class FormNavViewHolder(inflater: LayoutInflater, resource: Int, parent: Vi
     override fun bind(s: FormItem, listener: FormItemCallback?) {
         super.bind(s, listener)
         if (s is FormItemNav) {
-            valueView?.text = s.value
+            if (s.value.isNotEmpty()) {
+                valueView?.text = s.value
+                valueView?.visibility = View.VISIBLE
+            } else {
+                valueView?.visibility = View.GONE
+            }
         }
     }
 }

@@ -12,6 +12,11 @@
         style="@style/formMainLayout">
 
         <include layout="@layout/form_icon" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
         <include layout="@layout/form_title" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -31,12 +36,12 @@
                 android:imeOptions="actionNext"
                 android:inputType="textNoSuggestions"
                 android:maxLines="1"
-                android:text=""
+                android:text="value"
                 android:gravity="end"
                 android:textColor="@color/colorFormText"
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
-
+        </LinearLayout>
         <include layout="@layout/form_reorder" />
     </LinearLayout>
 

@@ -16,11 +16,6 @@
         <include layout="@layout/form_icon" />
         <include layout="@layout/form_title" />
 
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
         <CheckBox
             android:id="@+id/formElementCheck"
             android:layout_width="wrap_content"

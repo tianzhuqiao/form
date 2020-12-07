@@ -14,20 +14,30 @@
         android:id="@+id/formElementMainLayout"
         style="@style/formMainLayout">
 
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:gravity="center_vertical">
         <Space
             android:id="@+id/formSapceLeft"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="99"
+            android:minWidth="0dp"
+            android:visibility="visible" />
 
         <include layout="@layout/form_icon" />
-        <include layout="@layout/form_title" />
+        <include layout="@layout/form_title"/>
 
-        <Space
-            android:id="@+id/formSapceRight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            <Space
+                android:id="@+id/formSapceRight"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="99"
+                android:visibility="visible" />
+        </LinearLayout>
 
         <include layout="@layout/form_reorder" />
     </LinearLayout>

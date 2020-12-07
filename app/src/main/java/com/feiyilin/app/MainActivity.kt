@@ -92,6 +92,13 @@ class MainActivity : FormActivity() {
                     .iconSize(44, 44)
                     .iconTitle(drawable(R.drawable.ic_form_info))
             }
+            +FormItemSection().title("Action").apply {
+                +FormItemAction().title("Action").iconTitle(drawable(R.drawable.ic_form_info))
+                +FormItemAction().title("Action").subTitle("description")
+                    .iconTitle(drawable(R.drawable.ic_form_info)).alignment(Gravity.START)
+                +FormItemAction().title("Action").subTitle("description")
+                    .iconTitle(drawable(R.drawable.ic_form_info)).alignment(Gravity.END)
+            }
             +FormItemSection().title("Radio").apply {
                 +FormItemRadio().isOn().group("radio")
                     .title("item 0")
@@ -121,7 +128,6 @@ class MainActivity : FormActivity() {
                     .tag("switch_show_action")
                 +FormItemAction().title("Action").tag("action").subTitle("description")
                     .iconTitle(drawable(R.drawable.ic_form_info))
-
                 +FormItemSwitch().isOn().title("Show date/time section")
                     .tag("switch_show_date")
             }
@@ -130,7 +136,7 @@ class MainActivity : FormActivity() {
                 +FormItemDate().tag("date").title("Date").date(cal.time)
                 +FormItemDate().tag("date_only").title("Date only").date(cal.time)
                     .dateOnly()
-                +FormItemDate().tag("time_only").title("Time only").date(cal.time)
+                +FormItemDate().tag("time_only").title("Time only  formElementValue formElementValue formElementValue formElementValue").date(cal.time)
                     .timeOnly()
             }
             +FormItemSection().title("SeekBar & Stepper").apply {

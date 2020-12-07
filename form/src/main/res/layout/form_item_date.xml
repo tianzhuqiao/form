@@ -14,29 +14,29 @@
         <include layout="@layout/form_icon" />
         <include layout="@layout/form_title" />
 
-        <TextView
-            android:id="@+id/formElementDate"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:gravity="center"
-            android:text=""
-            android:textColor="@color/colorFormText"
-            android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/formElementTime"
-            android:layout_width="0dp"
+            android:id="@+id/formElementDate"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_marginStart="12dp"
             android:layout_marginEnd="8dp"
-            android:layout_weight="1"
             android:clickable="true"
             android:foreground="?android:attr/selectableItemBackground"
             android:gravity="center"
-            android:text=""
+            android:text="07/19/2020"
+            android:textColor="@color/colorFormText"
+            android:textSize="18sp" />
+        <TextView
+            android:id="@+id/formElementTime"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="10:00 AM"
             android:textColor="@color/colorFormText"
             android:textSize="18sp" />
 

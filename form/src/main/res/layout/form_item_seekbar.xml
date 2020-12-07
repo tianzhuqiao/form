@@ -12,33 +12,41 @@
         style="@style/formMainLayout">
 
         <include layout="@layout/form_icon" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical">
         <include layout="@layout/form_title" />
 
         <TextView
             android:id="@+id/formElementValue"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:layout_weight="1"
+            android:layout_weight="99"
             android:ellipsize="end"
             android:gravity="end"
             android:maxLines="1"
-            android:text=""
+            android:text="value"
             android:textColor="@color/colorFormText"
             android:textSize="18sp"
             tools:text="Value" />
-
+        </LinearLayout>
+        <include layout="@layout/form_reorder" />
 
     </LinearLayout>
 
     <SeekBar
-            android:id="@+id/formElementSeekBar"
-            style="@android:style/Widget.Material.Light.SeekBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:minHeight="48dp"
-            android:visibility="gone" />
+        android:id="@+id/formElementSeekBar"
+        style="@android:style/Widget.Material.Light.SeekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:minHeight="48dp"
+        android:visibility="gone" />
+
     <include layout="@layout/form_divider" />
 </LinearLayout>
