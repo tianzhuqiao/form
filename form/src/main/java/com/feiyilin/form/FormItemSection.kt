@@ -65,7 +65,7 @@ open class FormItemSection(private val visible: Boolean=true): FormItem() {
      * add all visible items to itemsVisible
      */
     internal fun update() {
-        updateRadionGroup()
+        updateRadioGroup()
         _itemsVisible.clear()
         if (!hidden) {
             if (collapsed) {
@@ -82,7 +82,7 @@ open class FormItemSection(private val visible: Boolean=true): FormItem() {
         }
     }
 
-    internal fun updateRadionGroup() {
+    internal fun updateRadioGroup() {
         val groupChecked = mutableListOf<String>()
         for (item in items.reversed()) {
             if (item is FormItemRadio) {
@@ -94,6 +94,41 @@ open class FormItemSection(private val visible: Boolean=true): FormItem() {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * update the radio group
+     * @param item the selected item in the radio group
+     */
+    fun updateRadioGroup(selected: FormItemRadio) {
+        if (selected.section != this) {
+            return
+        }
+        selected.isOn(true)
+        if (selected.group.isEmpty()) {
+            return
+        }
+        for (item in items) {
+            if (item is FormItemRadio && item.group == selected.group) {
+                item.isOn(item == selected)
+                adapter?.updateItem(item)
+            }
+        }
+    }
+
+    /**
+     * select the item in radio group
+     * @param item the selected item in the radio group
+     */
+    fun selectRadioItem(item: FormItemRadio) {
+        if (item.section != this) {
+            return
+        }
+        adapter?.let {
+            adapter?.selectRadioItem(item)
+        }?: run {
+            updateRadioGroup(item)
         }
     }
 

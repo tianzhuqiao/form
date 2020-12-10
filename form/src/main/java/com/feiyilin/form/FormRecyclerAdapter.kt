@@ -316,25 +316,16 @@ open class FormRecyclerAdapter(
      * update the radio group
      * @param item the selected item in the radio group
      */
-    fun updateRadioGroup(item: FormItem) {
-        var group = ""
-        if (item is FormItemRadio) {
-            group = item.group
-            item.isOn = true
-        }
-        updateItem(item)
-        if (group.isEmpty()) {
-            return
-        }
-        item.section?.let { sec ->
-            for (i in 0 until sec.sizeVisible) {
-                val child = sec[i]
-                if (child is FormItemRadio && item != child ) {
-                    child.isOn = false
-                    updateItem(child)
-                }
-            }
-        }
+    fun updateRadioGroup(item: FormItemRadio) {
+        item.section?.updateRadioGroup(item)
+    }
+
+    /**
+     * select the item in radio group
+     * @param item the selected item in the radio group
+     */
+    fun selectRadioItem(item: FormItemRadio) {
+        onFormItemCallback.onValueChanged(item)
     }
 
     protected var onFormItemCallback = object : FormItemCallback {
