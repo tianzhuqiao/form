@@ -243,7 +243,7 @@ open class FormItemSection(private val visible: Boolean=true): FormItem() {
         adapter?.let { adapter ->
             // only update the itemsVisible if adapter is valid; otherwise, the adapter will call
             // update() once the section is added.
-            if (!item.hidden && !collapsed) {
+            if (!item.hidden && !(hidden || collapsed)) {
                 val count = offset(item)
                 _itemsVisible.add(count, item)
                 if (update) {
