@@ -262,11 +262,11 @@ class MainActivity : FormActivity() {
             }
 
             +FormItemSection().title("Separator").apply {
-                +FormItemNav().title("No separator").separator(FormItem.Separator.NONE)
+                +FormItemNav().title("Default").separator(null)
                     .iconTitle(drawable(R.drawable.ic_form_info))
-                +FormItemNav().title("Ignore icon").separator(FormItem.Separator.IGNORE_ICON)
+                +FormItemNav().title("Insets").separator(FormItem.Separator.Insets(16, 0, 24, 0))
                     .iconTitle(drawable(R.drawable.ic_form_info))
-                +FormItemNav().title("Default").separator(FormItem.Separator.DEFAULT)
+                +FormItemNav().title("No separator").separator(FormItem.Separator.None())
                     .iconTitle(drawable(R.drawable.ic_form_info))
             }
             +FormItemSection().title("Custom item").apply {

@@ -35,8 +35,8 @@ interface FormItemCallback {
         return 0
     }
 
-    fun getSeparator(item: FormItem): FormItem.Separator {
-        return FormItem.Separator.DEFAULT
+    fun getSeparator(item: FormItem): FormItem.Separator? {
+        return null
     }
 }
 
@@ -504,7 +504,7 @@ open class FormRecyclerAdapter(
             return listener?.getMinItemHeight(item) ?: 0
         }
 
-        override fun getSeparator(item: FormItem): FormItem.Separator {
+        override fun getSeparator(item: FormItem): FormItem.Separator? {
             return listener?.getSeparator(item) ?: super.getSeparator(item)
         }
     }

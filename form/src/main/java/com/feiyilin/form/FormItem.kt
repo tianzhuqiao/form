@@ -66,10 +66,27 @@ fun <T : FormSwipeAction> T.padding(padding: Float) = apply {
 }
 
 open class FormItem {
-    enum class Separator {
-        DEFAULT,
-        NONE,
-        IGNORE_ICON;
+     class Separator {
+         var hidden: Boolean = false
+         var left: Int = 0
+         var right: Int = 0
+         var top: Int = 0
+         var bottom: Int = 0
+         companion object {
+             fun None() : Separator {
+                 val sep = Separator()
+                 sep.hidden = true
+                 return sep
+             }
+             fun Insets(left: Int, top: Int, right: Int, bottom: Int) : Separator {
+                 val sep = Separator()
+                 sep.left = left
+                 sep.top = top
+                 sep.right = right
+                 sep.bottom = bottom
+                 return sep
+             }
+         }
     }
 
     var title: String = ""

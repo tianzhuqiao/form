@@ -150,19 +150,19 @@ open class FormViewHolder(inflater: LayoutInflater, resource: Int, parent: ViewG
         item?.let {item ->
             val separator = item.separator ?: listener?.getSeparator(item)
             val param = dividerView?.layoutParams as? ViewGroup.MarginLayoutParams
-            param?.leftMargin = dpToPx(0)
-            when (separator) {
-                FormItem.Separator.NONE -> {
+            param?.leftMargin = 0
+            param?.rightMargin = 0
+            param?.topMargin = 0
+            param?.bottomMargin = 0
+            separator?.let {
+                if (it.hidden) {
                     dividerView?.visibility = View.GONE
-                }
-                FormItem.Separator.IGNORE_ICON -> {
+                } else {
                     dividerView?.visibility = View.VISIBLE
-                    if (titleImageView?.visibility == View.VISIBLE)
-                        param?.leftMargin = dpToPx(16 + item.iconSize.width + 8)
-                }
-                else -> {
-                    dividerView?.visibility = View.VISIBLE
-                    param?.leftMargin = dpToPx(0)
+                    param?.leftMargin = dpToPx(it.left)
+                    param?.rightMargin = dpToPx(it.right)
+                    param?.topMargin = dpToPx(it.top)
+                    param?.bottomMargin = dpToPx(it.bottom)
                 }
             }
             dividerView?.requestLayout()
