@@ -18,7 +18,7 @@ Add **form** to dependencies in your app's build.gradle:
 ```gradle
 dependencies {
     ...
-    implementation 'com.feiyilin:form:0.3.3'
+    implementation 'com.feiyilin:form:0.3.5'
 }
 ```
 ## 2. Update Activity
@@ -99,9 +99,9 @@ Supported callbacks
     Called when a swipe action is triggered.
 
 * **onEditorAction**
-    
+
     "called when the enter key is pressed , or when an action supplied to the IME is selected by the user" ([text](https://developer.android.com/reference/android/widget/TextView.OnEditorActionListener) item)
-    
+
 * **getMinItemHeight** (**FormItemCallback** only)
 
     Called when configure/bind an item. Can be used to update the minimum height for all (or a group of) items.
