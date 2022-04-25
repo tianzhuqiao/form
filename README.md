@@ -4,12 +4,12 @@
 
 # Usage
 ## 1. Add to project
-Add **jcenter()** to repository in your project's build.gradle:
+Add **mavenCentral()** (or **jcenter()**) to repository in your project's build.gradle:
 ```gradle
 allprojects {
     repositories {
         ...
-        jcenter()
+        mavenCentral() // or jcenter()
     }
 }
 ```
